@@ -1,3 +1,5 @@
+# 상욱: 프로젝트 clone 받고 터미널에서 npm install 명령어 쳐서 의존성 파일들 다 다운받은 뒤 npm start 명령어 치시면 됩니다
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
