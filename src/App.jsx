@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { apiCall } from '../src/utils/apiCall'
+import { apiCall } from '../src/utils/apiCall'  // TODO: 상대경로에서 절대경로로 바꾸기
 import { API_LIST } from '../src/utils/apiList'
 
 function App() {
@@ -35,10 +35,11 @@ function App() {
     const parameters = {
       name: name,
     }
+    
     const response = await apiCall(API_LIST.TEST_GREETING, parameters)
     if (response.status) {
       setGreeting(response.data);
-    }    
+    }
   }
 
   const handleNameChange = (e) => {
