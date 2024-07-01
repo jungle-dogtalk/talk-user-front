@@ -1,0 +1,132 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { OpenVidu } from 'openvidu-browser';
+import { createSession, createToken } from '../../services/openviduService';
+import './VideoChatPage.css';
+import dogImage from '../../../assets/dog.jpg'; // 강아지 이미지
+import dogHouseImage from '../../../assets/doghouse.jpg'; // 강아지 집 이미지
+
+const VideoChatPage = () => {
+  const [session, setSession] = useState(null);
+  const [mainStreamManager, setMainStreamManager] = useState(null); // 메인 스트림 관리자 상태를 관리
+  const [publisher, setPublisher] = useState(null);
+  const [subscribers, setSubscribers] = useState([]); // 구독자 목록 상태 관리
+  const sessionRef = useRef(); // 세션 참조 관리
+
+  useEffect(() => {
+    const initOpenVidu = async () => {
+      try {
+        const OV = new OpenVidu(); // OpenVidu 인스턴스를 생성
+        const session = OV.initSession(); // 세션을 초기화
+
+        // 새로운 스트림이 생성될 때 호출되는 이벤트 핸들러
+        session.on('streamCreated', (event) => {
+          const subscriber = session.subscribe(event.stream, undefined);
+          setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
+        });
+
+        // 스트림이 파괴될 때 호출되는 이벤트 핸들러
+        session.on('streamDestroyed', (event) => {
+          setSubscribers((prevSubscribers) =>
+            prevSubscribers.filter(
+              (subscriber) => subscriber !== event.stream.streamManager
+            )
+          );
+        });
+
+        session.on('exception', (exception) => {
+          console.error(exception);
+        });
+
+        // 세션 ID를 생성
+        const sessionId = await createSession();
+        // 세션에 연결할 토큰 생성
+        const token = await createToken(sessionId);
+
+        sessionRef.current = session;
+        // 세션에 연결
+        await session.connect(token, { clientData: 'Participant' });
+
+        // 퍼블리셔를 초기화하고 퍼블리셔 설정 작용
+        const publisher = OV.initPublisher(undefined, {
+          audioSource: undefined, // 기본 마이크
+          videoSource: undefined, // 기본 웹캠
+          publishAudio: true, // 오디오를 퍼블리시
+          publishVideo: true,
+          resolution: '640x480', // 해상도 설정
+          frameRate: 30, // 프레임 속도 설정
+          insertMode: 'APPEND',
+          mirror: false, // 비디오 미러링 설정
+        });
+
+        session.publish(publisher); // 퍼블리셔를 세션에 퍼블리시
+        setMainStreamManager(publisher); // 메인 스트림 관리자 설정
+        setPublisher(publisher);
+        setSession(session);
+      } catch (error) {
+        console.error('Error initializing OpenVidu:', error);
+      }
+    };
+
+    initOpenVidu(); // OpenVidu 초기화 함수 호출
+
+    return () => {
+      if (sessionRef.current) {
+        sessionRef.current.disconnect(); // 컴포넌트 언마운트 시 세션 연결 해제
+      }
+    };
+  }, []);
+
+  return (
+    <div className="video-chat-page">
+      <div className="header">
+        <h1>멍톡</h1>
+      </div>
+      <div className="content">
+        <div className="video-container">
+          {mainStreamManager && (
+            <div className="stream-container">
+              <video autoPlay={true} ref={(video) => mainStreamManager.addVideoElement(video)} />
+              <div className="stream-label">나</div>
+            </div>
+          )}
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="stream-container">
+              {subscribers[index] ? (
+                <>
+                  <video autoPlay={true} ref={(video) => subscribers[index].addVideoElement(video)} />
+                  <div className="stream-label">상대방 {index + 1}</div>
+                </>
+              ) : (
+                <div className="stream-label">상대방 {index + 1}</div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className="chat-container">
+          <div className="chat-box">
+            {/* 채팅 메시지들 */}
+          </div>
+          <input type="text" placeholder="메시지를 입력하세요..." className="chat-input" />
+        </div>
+      </div>
+      <div className="bottom-section">
+        <div className="dog-container">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <img key={index} src={dogImage} alt={`Dog ${index + 1}`} className="dog-image" />
+          ))}
+        </div>
+        <div className="mission">
+          <h2>미션!</h2>
+          <p>통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이 인식되어야 본격적인 통화가 시작됩니다. 멍멍!</p>
+        </div>
+        <div className="dog-house-container">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <img key={index} src={dogHouseImage} alt={`Dog House ${index + 1}`} className="dog-house-image" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default VideoChatPage;

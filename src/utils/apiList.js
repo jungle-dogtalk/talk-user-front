@@ -20,7 +20,18 @@ const API_LIST = {
         method: GET,
         path: `/test/greeting`,
         desc: '테스트용 이름 기반의 환영 인사'
-    }
+    },
+    USER_LOGIN: {
+        method: POST,
+        path: '/api/auth/login',
+        desc: '사용자 로그인'
+    },
+    USER_SIGNUP: {
+        method: POST,
+        path: '/api/auth/signup',
+        desc: '사용자 회원가입'
+    },
+    
 }
 
 // OPEN API 목록
