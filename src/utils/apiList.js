@@ -1,8 +1,10 @@
+// HTTP methods
 const POST = 'POST';
 const GET = 'GET';
 const DELETE = 'DELETE';
 const PATCH = 'PATCH';
 
+// 백엔드 서버 API 목록
 const API_LIST = {
     TEST_MULTIPLE_DATA: {
         method: GET,
@@ -26,6 +28,7 @@ const API_LIST = {
     },
 };
 
+// open api 엔드포인트 목록
 const OPEN_API_LIST = {
     GET_POKEMON_PICTURE: (id) => ({
         method: GET,

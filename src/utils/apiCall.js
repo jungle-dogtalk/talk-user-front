@@ -66,6 +66,16 @@ const handleErrorByCode = (code) => {
     }
 };
 
+/**
+ * apiCall - 백엔드 서버 API 호출을 위한 유틸리티 함수
+ * 
+ * @param {Object} apiSpec - apiList.js에서 가져온 API 명세
+ * @param {Object} [parameters] - API 호출에 필요한 파라미터 (선택적)
+ * @param {Object} [customHeaders] - 사용자 정의 헤더 (선택적)
+ * 
+ * @returns {Promise} API 호출 결과
+ * 
+ */
 const apiCall = (apiSpec, parameters, customHeaders) => {    
     const headers = generateHeaders(customHeaders);
     const config = createAxiosConfig(apiSpec, headers, parameters);    

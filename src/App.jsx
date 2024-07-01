@@ -1,4 +1,3 @@
-// src/App.js
 import { useState, useEffect } from 'react';
 import './App.css';
 import { apiCall } from '../src/utils/apiCall';
@@ -13,15 +12,10 @@ function App() {
     const [name, setName] = useState('');
     const [responseText, setResponseText] = useState(''); // AI 응답 텍스트 저장 상태
 
-    const {
-        recognizedText,
-        startRecognition,
-        stopRecognition,
-    } =
-        useSpeechRecognition(
-            (text) => console.log('Recognized:', text),
-            (error) => console.error('Recognition Error:', error)
-        );
+    const { recognizedText, startRecognition, stopRecognition } = useSpeechRecognition(
+        (text) => console.log('Recognized:', text),
+        (error) => console.error('Recognition Error:', error)
+    );
 
     useEffect(() => {
         fetchTestData();
@@ -45,7 +39,10 @@ function App() {
             return;
         }
 
-        const parameters = { name };
+        const parameters = {
+            name: name,
+        };
+
         const response = await apiCall(API_LIST.TEST_GREETING, parameters);
         if (response.status) {
             setGreeting(response.data);
