@@ -21,10 +21,20 @@ const API_LIST = {
         path: `/test/greeting`,
         desc: '테스트용 이름 기반의 환영 인사',
     },
-    ASK_AI: {
+    ASK_AI_INTER: {
         method: POST,
-        path: `/ask-ai`,
-        desc: 'OpenAI를 통해 질문에 답변 받기',
+        path: `/ask-ai/interest`,
+        desc: 'OpenAI를 통해 주제 추천받기',
+    },
+    ASK_AI_TITLE: {
+        method: POST,
+        path: `/ask-ai/title`,
+        desc: 'OpenAI를 통해 관심사 특정하기',
+    },
+    SEND_TEXT: {
+        method: POST,
+        path: `/send-text`,
+        desc: '음성인식된 텍스트 서버에 전송',
     },
 };
 

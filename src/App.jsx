@@ -10,11 +10,12 @@ function App() {
     const [greeting, setGreeting] = useState('');
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
-    const [responseText, setResponseText] = useState(''); // AI 응답 텍스트 저장 상태
+    const [responseTitle, setTitle] = useState(''); // AI 응답 텍스트 저장 상태 (주제)
+    const [responseInterest, setInterest] = useState(''); // AI 응답 텍스트 저장 상태 (관심사)
 
     const { recognizedText, startRecognition, stopRecognition } = useSpeechRecognition(
-        (text) => console.log('Recognized:', text),
-        (error) => console.error('Recognition Error:', error)
+        (text) => console.log('인식된 텍스트:', text),
+        (error) => console.error('음성인식 오류:', error)
     );
 
     useEffect(() => {
@@ -53,23 +54,33 @@ function App() {
         setName(e.target.value);
     };
 
-    const sendTextToBackend = async (text) => {
-        const parameters = { query: text };
-        const response = await apiCall(API_LIST.ASK_AI, parameters);
+    const askAIgetTitle = async () => {
+        const response = await apiCall(API_LIST.ASK_AI_TITLE, {});
         if (response.status) {
-            setResponseText(response.data);
+            setTitle(response.data);
         } else {
             alert('AI 응답 에러 발생');
         }
     };
 
-    const handleStopRecognition = () => {
+    const askAIgetInterest = async (text) => {
+        const parameters = { query: text };
+        const response = await apiCall(API_LIST.ASK_AI_INTER, parameters);
+        if (response.status) {
+            setInterest(response.data);
+        } else {
+            alert('AI 응답 에러 발생');
+        }
+    };
+
+    const handleStopRecognition = async () => {
         stopRecognition();
         if (recognizedText.length > 0) {
             const combinedText = recognizedText.join('. ');
-            console.log('합쳐진 스크립트: ' + combinedText);
-            sendTextToBackend(combinedText);
+            console.log('합쳐진 스크립트(개인 스크립트): ' + combinedText);
+            await askAIgetInterest(combinedText);
         }
+        await askAIgetTitle();
     };
 
     return (
@@ -107,7 +118,8 @@ function App() {
                 <p>
                     인식된 텍스트: {recognizedText.length > 0 ? recognizedText.join('. ') : '없음'}
                 </p>
-                <p>AI 응답: {responseText}</p>
+                <p>AI 응답 - 주제: {responseTitle}</p>
+                <p>AI 응답 - 관심사: {responseInterest}</p>
             </div>
         </>
     );
