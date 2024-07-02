@@ -7,6 +7,7 @@ import MainPage from './components/pages/MainPage/MainPage';
 import ProfilePage from './components/pages/ProfilePage/ProfilePage'; // 추가된 부분
 import ReportPage from './components/pages/ReportPage/ReportPage'; // 추가된 부분
 import ReviewPage from './components/pages/ReviewPage/ReviewPage';
+import MatchingPage from './components/pages/MatchingPage/MatchingPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} /> {/* 추가된 부분 */}
       <Route path="/report" element={<ReportPage />} /> {/* 추가된 부분 */}
       <Route path="/review" element={<ReviewPage />} />
+      <Route path="/matching" element={<MatchingPage />} />
     </Routes>
   );
 }
