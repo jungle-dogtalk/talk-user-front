@@ -1,3 +1,4 @@
+# 자동배포 설정
 name: client
 on:
   push:
