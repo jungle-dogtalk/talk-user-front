@@ -3,7 +3,7 @@ name: client
 on:
   push:
     branches:
-      - master
+      - master  # master 브랜치에 변경 있을 시 자동 배포
 jobs:
   build:
     runs-on: ubuntu-latest #배포 실행될 환경
@@ -17,7 +17,7 @@ jobs:
         node-version: '20'
 
     - name: Install dependencies
-      run: npm install --legacy-peer-deps
+      run: npm install --legacy-peer-deps # redux 라이브러리 호환성 때문에 인스톨 명령어 변경 (원래는 npm ci)
 
     - name: Build
       run: npm run build
@@ -25,11 +25,11 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}         
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
         
     - name: Deploy to S3
       run: |
-        aws s3 sync dist/ s3://talk-user-front-web-hosting --delete
+        aws s3 sync dist/ s3://barking-talk.com --delete
 
