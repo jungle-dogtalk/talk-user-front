@@ -109,3 +109,48 @@
   flex: 1;
   text-align: center;
 }
+
+.settings-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.settings-menu {
+  position: absolute;
+  top: 40px;
+  right: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.audio-status {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+.audio-status.active {
+  background-color: green;
+}
+
+.audio-status.inactive {
+  background-color: red;
+}
+
+.mirrored video {
+  transform: scaleX(-1);
+}

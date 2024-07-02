@@ -4,13 +4,19 @@ import { createSession, createToken } from '../../services/openviduService';
 import './VideoChatPage.css';
 import dogImage from '../../../assets/dog.jpg'; // 강아지 이미지
 import dogHouseImage from '../../../assets/doghouse.jpg'; // 강아지 집 이미지
+import settingsIcon from '../../../assets/settings-icon.jpg'; // 설정 아이콘
 
 const VideoChatPage = () => {
   const [session, setSession] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(null); // 메인 스트림 관리자 상태를 관리
   const [publisher, setPublisher] = useState(null);
   const [subscribers, setSubscribers] = useState([]); // 구독자 목록 상태 관리
+  const [isVideoActive, setIsVideoActive] = useState(true);
+  const [isAudioActive, setIsAudioActive] = useState(true);
+  const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
+  const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
   const sessionRef = useRef(); // 세션 참조 관리
+  const videoRef = useRef(null); // 비디오 요소 참조
 
   useEffect(() => {
     const initOpenVidu = async () => {
@@ -76,6 +82,42 @@ const VideoChatPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (mainStreamManager && videoRef.current) {
+      mainStreamManager.addVideoElement(videoRef.current);
+    }
+  }, [mainStreamManager]);
+
+  const toggleVideo = () => {
+    if (publisher) {
+      if (isVideoActive) {
+        publisher.publishVideo(false);
+      } else {
+        publisher.publishVideo(true);
+      }
+      setIsVideoActive(!isVideoActive);
+    }
+  };
+
+  const toggleAudio = () => {
+    if (publisher) {
+      if (isAudioActive) {
+        publisher.publishAudio(false);
+      } else {
+        publisher.publishAudio(true);
+      }
+      setIsAudioActive(!isAudioActive);
+    }
+  };
+
+  const toggleMirror = () => {
+    setIsMirrored(!isMirrored);
+  };
+
+  const toggleSettings = () => {
+    setShowSettings(!showSettings);
+  };
+
   return (
     <div className="video-chat-page">
       <div className="header">
@@ -84,9 +126,26 @@ const VideoChatPage = () => {
       <div className="content">
         <div className="video-container">
           {mainStreamManager && (
-            <div className="stream-container">
-              <video autoPlay={true} ref={(video) => mainStreamManager.addVideoElement(video)} />
+            <div className={`stream-container ${isMirrored ? 'mirrored' : ''}`}>
+              <video autoPlay={true} ref={videoRef} />
               <div className="stream-label">나</div>
+              <img src={settingsIcon} alt="설정" className="settings-icon" onClick={toggleSettings} />
+              {showSettings && (
+                <div className="settings-menu">
+                  <button onClick={toggleVideo}>
+                    {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
+                  </button>
+                  <button onClick={toggleAudio}>
+                    {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
+                  </button>
+                  <button onClick={toggleMirror}>
+                    {isMirrored ? '반전 해제' : '반전 적용'}
+                  </button>
+                </div>
+              )}
+              <div className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}>
+                {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
+              </div>
             </div>
           )}
           {Array.from({ length: 3 }).map((_, index) => (
