@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/actions/userActions';
+import { loginUser } from '../../../redux/actions/userActions';
 import './LoginPage.css';
 import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../redux/actions/userActions'; // 로그아웃 액션 임포트
+import { logoutUser } from '../../../redux/actions/userActions'; // 로그아웃 액션 임포트
 import './MainPage.css';
 import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
 import profileImage from '../../../assets/profile.jpg'; // 프로필 이미지 경로

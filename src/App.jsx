@@ -9,7 +9,7 @@ import ProfilePage from './components/pages/ProfilePage/ProfilePage'; // 추가�
 import ReportPage from './components/pages/ReportPage/ReportPage'; // 추가된 부분
 import ReviewPage from './components/pages/ReviewPage/ReviewPage';
 import MatchingPage from './components/pages/MatchingPage/MatchingPage';
-import { setUserFromLocalStorage } from './components/redux/actions/userActions';
+import { setUserFromLocalStorage } from './redux/actions/userActions';
 
 function App() {
   const dispatch = useDispatch();

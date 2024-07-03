@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // useNavaviate 훅을 import 하여 페이지 이동 기능 사용
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/actions/userActions';
+import { loginUser } from '../../../redux/actions/userActions';
 import './HomePage.css';
 import logo from '../../../assets/logo.png'; // 로고 이미지 경로
 
