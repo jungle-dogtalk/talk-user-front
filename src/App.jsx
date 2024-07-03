@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage/LoginPage';
 import SignUpPage from './components/pages/SignUpPage/SignUpPage';
@@ -8,8 +9,19 @@ import ProfilePage from './components/pages/ProfilePage/ProfilePage'; // 추가�
 import ReportPage from './components/pages/ReportPage/ReportPage'; // 추가된 부분
 import ReviewPage from './components/pages/ReviewPage/ReviewPage';
 import MatchingPage from './components/pages/MatchingPage/MatchingPage';
+import { setUserFromLocalStorage } from './components/redux/actions/userActions';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      dispatch(setUserFromLocalStorage(JSON.parse(user), token));
+    }
+  }, [dispatch]);
+
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />

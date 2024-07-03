@@ -13,6 +13,7 @@ export const loginUser = (credentials) => async (dispatch) => {
 
     // 로컬 스토리지에 토큰 저장
     localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
 
     // 로그인 성공 액션 디스패치
     dispatch({
@@ -32,6 +33,13 @@ export const loginUser = (credentials) => async (dispatch) => {
   }
 };
 
+export const setUserFromLocalStorage = (user, token) => (dispatch) => {
+  dispatch({
+    type: LOGIN_SUCCESS,
+    payload: { user, token },
+  });
+};
+
 // 회원가입 액션 생성 함수
 export const signUpUser = (userData) => async (dispatch) => {
   try {
@@ -42,6 +50,8 @@ export const signUpUser = (userData) => async (dispatch) => {
 
     // 로컬 스토리지에 토큰 저장
     localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
 
     dispatch({
       type: SIGNUP_SUCCESS,
