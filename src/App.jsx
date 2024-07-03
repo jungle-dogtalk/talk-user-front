@@ -18,7 +18,12 @@ function App() {
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
-      dispatch(setUserFromLocalStorage(JSON.parse(user), token));
+      try {
+        const parsedUser = JSON.parse(user);
+        dispatch(setUserFromLocalStorage(parsedUser, token));
+      } catch (error) {
+        console.error('Failed to parse user from localStorage:', error);
+      }
     }
   }, [dispatch]);
 

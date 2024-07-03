@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { LOGIN_SUCCESS, LOGIN_FAIL, SIGNUP_SUCCESS, SIGNUP_FAIL, LOGOUT  } from '../../constants/userConstants';
 import {apiCall} from '../../../utils/apiCall'
 import { API_LIST } from '../../../utils/apiList';
@@ -67,6 +68,7 @@ export const signUpUser = (userData) => async (dispatch) => {
 
     return true;
   } catch (error) {
+    console.error('Signup error:', error); // 에러 로그 추가
     dispatch({
       type: SIGNUP_FAIL,
       payload: error.response.data.message,
