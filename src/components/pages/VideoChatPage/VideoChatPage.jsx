@@ -7,6 +7,8 @@ import dogHouseImage from '../../../assets/doghouse.jpg'; // 강아지 집 이�
 import settingsIcon from '../../../assets/settings-icon.jpg'; // 설정 아이콘
 
 const VideoChatPage = () => {
+
+  // 여러 상태 관리
   const [session, setSession] = useState(null);
   const [mainStreamManager, setMainStreamManager] = useState(null); // 메인 스트림 관리자 상태를 관리
   const [publisher, setPublisher] = useState(null);
@@ -15,22 +17,26 @@ const VideoChatPage = () => {
   const [isAudioActive, setIsAudioActive] = useState(true);
   const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
   const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
+
+  // 요소 참조
   const sessionRef = useRef(); // 세션 참조 관리
   const videoRef = useRef(null); // 비디오 요소 참조
 
+  // OpenVidu 세션 초기화 + createSession + createToken을 호출하여 세션 + 토큰 생성. 
   useEffect(() => {
     const initOpenVidu = async () => {
+      // try - catch 문으로 OpenVidu 초기화 과정에서 발생하는 오류 처리. 
       try {
         const OV = new OpenVidu(); // OpenVidu 인스턴스를 생성
         const session = OV.initSession(); // 세션을 초기화
 
-        // 새로운 스트림이 생성될 때 호출되는 이벤트 핸들러
+        // 새로운 스트림이 생성될 때 호출되는 이벤트 핸들러 - 새로운 구독자 추가
         session.on('streamCreated', (event) => {
           const subscriber = session.subscribe(event.stream, undefined);
           setSubscribers((prevSubscribers) => [...prevSubscribers, subscriber]);
         });
 
-        // 스트림이 파괴될 때 호출되는 이벤트 핸들러
+        // 스트림이 파괴될 때 호출되는 이벤트 핸들러 - 구독자들 목록에서 제거
         session.on('streamDestroyed', (event) => {
           setSubscribers((prevSubscribers) =>
             prevSubscribers.filter(
@@ -39,6 +45,7 @@ const VideoChatPage = () => {
           );
         });
 
+        // 예외가 발생시 호출
         session.on('exception', (exception) => {
           console.error(exception);
         });
@@ -83,11 +90,13 @@ const VideoChatPage = () => {
   }, []);
 
   useEffect(() => {
+    // mainStreamManager 가 변경될 때마다 videoRef 요소에 스트림 추가
     if (mainStreamManager && videoRef.current) {
       mainStreamManager.addVideoElement(videoRef.current);
     }
   }, [mainStreamManager]);
 
+  // publisher.publishVideo를 호출하여 비디오 제어.
   const toggleVideo = () => {
     if (publisher) {
       if (isVideoActive) {
@@ -99,6 +108,7 @@ const VideoChatPage = () => {
     }
   };
 
+  // publisher.publishAudio를 호출하여 오디오 제어.
   const toggleAudio = () => {
     if (publisher) {
       if (isAudioActive) {
@@ -110,10 +120,12 @@ const VideoChatPage = () => {
     }
   };
 
+  // 비디오 미러링 토글 함수
   const toggleMirror = () => {
     setIsMirrored(!isMirrored);
   };
 
+  // 설정 창 표시/숨기기 토글 함수
   const toggleSettings = () => {
     setShowSettings(!showSettings);
   };
