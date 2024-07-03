@@ -17,7 +17,7 @@ const MatchingPage = () => {
       <div className="header">
         <h1>명톡</h1>
       </div>
-      <div className="content">
+      <div className="content2">
         <div className="matching-box">
           <div className="matching-status">
             <h2>매칭 중...</h2>
