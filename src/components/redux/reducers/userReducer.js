@@ -1,4 +1,4 @@
-import { LOGIN_SUCCESS, LOGIN_FAIL, SIGNUP_SUCCESS, SIGNUP_FAIL } from '../../constants/userConstants';
+import { LOGIN_SUCCESS, LOGIN_FAIL, SIGNUP_SUCCESS, SIGNUP_FAIL, LOGOUT } from '../../constants/userConstants';
 
 const initialState = {
   token: localStorage.getItem('token'), // 초기 상태에서 토큰을 로컬 스토리지에서 가져옴
@@ -16,6 +16,8 @@ const userReducer = (state = initialState, action) => {
     case LOGIN_FAIL:
     case SIGNUP_FAIL:
       return { ...state, error: action.payload, loading: false };
+    case LOGOUT:
+      return { ...state, userInfo: null, token: null };  
     default:
       return state; // 기본 상태 반환
   }

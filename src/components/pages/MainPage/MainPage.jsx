@@ -1,6 +1,7 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../redux/actions/userActions'; // 로그아웃 액션 임포트
 import './MainPage.css';
 import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
 import profileImage from '../../../assets/profile.jpg'; // 프로필 이미지 경로
@@ -11,6 +12,12 @@ import settingsIcon from '../../../assets/settings-icon.jpg'; // 설정 아이�
 const MainPage = () => {
   const userInfo = useSelector((state) => state.user.userInfo);
   const navigate = useNavigate(); // useNavigate 훅 사용
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/');
+  };
 
   return (
     <div className="main-page">
@@ -19,12 +26,13 @@ const MainPage = () => {
         <div className="user-info">
           <span>{userInfo?.username}</span>
           <span>
-            설정 | 로그아웃
+          설정 |
+            <span className="logout-link" onClick={handleLogout}> 로그아웃 </span>
             <img
               src={settingsIcon}
               alt="설정 아이콘"
               className="settings-icon"
-              onClick={() => navigate('/profile')} // 설정 아이콘 클릭 시 프로필 페이지로 이동
+              onClick={() => navigate('/profile')}
             />
             <span className="mypage-link" onClick={() => navigate('/profile')}>
               마이페이지

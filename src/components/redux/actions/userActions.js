@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { LOGIN_SUCCESS, LOGIN_FAIL, SIGNUP_SUCCESS, SIGNUP_FAIL } from '../../constants/userConstants';
+import { LOGIN_SUCCESS, LOGIN_FAIL, SIGNUP_SUCCESS, SIGNUP_FAIL, LOGOUT  } from '../../constants/userConstants';
 import {apiCall} from '../../../utils/apiCall'
 import { API_LIST } from '../../../utils/apiList';
 
@@ -37,6 +36,14 @@ export const setUserFromLocalStorage = (user, token) => (dispatch) => {
   dispatch({
     type: LOGIN_SUCCESS,
     payload: { user, token },
+  });
+};
+
+export const logoutUser = () => (dispatch) => {
+  localStorage.removeItem('token');
+
+  dispatch({
+    type: LOGOUT,
   });
 };
 
