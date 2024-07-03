@@ -25,7 +25,74 @@ const VideoChatPage = () => {
   const sessionRef = useRef(); // 세션 참조 관리
   const videoRef = useRef(null); // 비디오 요소 참조
 
+  // 네트워크 상태를 모니터링하기 위한 상태
+  const [networkQuality, setNetworkQuality] = useState('good'); // 네트워크 품질 상태 관리 ('good', 'poor', 'bad')
 
+  // 네트워크 상태 모니터링 및 비디오 품질 조정
+  const monitorNetwork = () => {
+
+  // 브라우저에서 네트워크 연결 상태를 가져오는 API
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+
+    if (connection) {
+      const updateNetworkQuality = () => {
+        const effectiveType = connection.effectiveType;
+
+        // 네트워크 유형에 따른 품질 상태 설정
+        if (effectiveType === '4g') { 
+          setNetworkQuality('good');// 4G 네트워크 - 좋은 상태
+        } else if (effectiveType === '3g') {
+          setNetworkQuality('poor');// 3G 네트워크 - 중간 상태
+        } else {
+          setNetworkQuality('bad'); // 그 외 네트워크 - 나쁜 상태
+        }
+      };
+
+      updateNetworkQuality(); // 초기 네트워크 품질 업데이트
+
+       // 네트워크 상태가 변경될 때마다 품질 업데이트
+      connection.addEventListener('change', updateNetworkQuality);
+
+      // 컴포넌트 언마운트 시 이벤트 리스너 제거
+      return () => {
+        connection.removeEventListener('change', updateNetworkQuality);
+      };
+    } else {
+      // `navigator.connection` API를 지원하지 않는 경우 기본 네트워크 상태를 'good'으로 설정
+      setNetworkQuality('good');
+    }
+  };
+
+  // 네트워크 품질에 따라 비디오 품질 조정
+  useEffect(() => {
+    if (publisher) {
+
+      // 네트워크 품질이 'good'일 경우
+      if (networkQuality === 'good') {
+        // 비디오를 켜고 높은 품질로 설정
+        publisher.publishVideo(true);
+      } 
+      // 네트워크 품질이 'poor'일 경우
+      else if (networkQuality === 'poor') {
+        publisher.publishVideo(true);
+
+        // 중간 네트워크 상태에서는 중간 해상도 사용
+        publisher.stream.getMediaStream().getVideoTracks()[0].applyConstraints({
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          frameRate: { ideal: 15 }
+        });
+
+        // 네트워크 품질이 'bad'일 경우
+      } else {
+        // 나쁜 네트워크 상태에서는 비디오를 끄기
+        publisher.publishVideo(false);
+      }
+    }
+    // networkQuality 또는 publisher 상태가 변경될 때마다 실행
+  }, [networkQuality, publisher]);
+  
+  
    // 미디어 장치 목록 가져오기
    useEffect(() => {
     const getDevices = async () => {
@@ -49,6 +116,16 @@ const VideoChatPage = () => {
 
     // 컴포넌트가 마운트될 때 getDevices 함수를 호출하여 장치 목록을 가져옴
     getDevices();
+
+    // 네트워크 상태 모니터링 시작
+    const stopMonitoring = monitorNetwork();
+
+    // 컴포넌트 언마운트 시 네트워크 상태 모니터링 중지
+    return () => {
+      if (stopMonitoring) {
+        stopMonitoring();
+      }
+    };
   }, []);
 
   // OpenVidu 세션 초기화 + createSession + createToken을 호출하여 세션 + 토큰 생성. 
@@ -116,7 +193,7 @@ const VideoChatPage = () => {
         sessionRef.current.disconnect(); // 컴포넌트 언마운트 시 세션 연결 해제
       }
     };
-  }, []);
+  }, [selectedAudioDevice, selectedVideoDevice]);
 
   useEffect(() => {
     // mainStreamManager 가 변경될 때마다 videoRef 요소에 스트림 추가
