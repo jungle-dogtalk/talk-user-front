@@ -36,6 +36,11 @@ const API_LIST = {
         path: `/send-text`,
         desc: '음성인식된 텍스트 서버에 전송',
     },
+    UPLOAD_AUDIO: {
+        method: POST,
+        path: `/upload-audio`,
+        desc: '오디오 파일 업로드 및 STT 처리',
+    },
 };
 
 // open api 엔드포인트 목록

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { apiCall } from '../src/utils/apiCall';
+import { apiCall, apiCallWithFileData } from '../src/utils/apiCall';
 import { API_LIST } from '../src/utils/apiList';
 import { useSpeechRecognition } from './useSpeechRecognition';
 
@@ -12,6 +12,14 @@ function App() {
     const [name, setName] = useState('');
     const [responseTitle, setTitle] = useState(''); // AI 응답 텍스트 저장 상태 (주제)
     const [responseInterest, setInterest] = useState(''); // AI 응답 텍스트 저장 상태 (관심사)
+    const [whisperText, setWhisperText] = useState(''); // 오디오 데이터 기반 AI 요청 후 응답 상태
+    const [whisperInterest, setWhisperInterest] = useState(''); // 오디오 데이터 기반 AI 요청 후 응답 상태
+    const [isRecording, setIsRecording] = useState(false);
+    const [mediaBlobUrl, setMediaBlobUrl] = useState(null);
+
+    const mediaRecorderRef = useRef(null);
+    const mediaChunksRef = useRef([]);
+    const audioRef = useRef(null);
 
     const { recognizedText, startRecognition, stopRecognition } = useSpeechRecognition(
         (text) => console.log('인식된 텍스트:', text),
@@ -83,14 +91,65 @@ function App() {
         await askAIgetTitle();
     };
 
+    const handleAudioStop = async (blob) => {
+        console.log('Recorded blob:', blob);
+        console.log('Blob type:', blob.type);
+
+        const file = new File([blob], 'audio.webm', { type: 'audio/webm' });
+        console.log('File:', file);
+        console.log('File type:', file.type);
+
+        const parameters = {};
+        const response = await apiCallWithFileData(API_LIST.UPLOAD_AUDIO, parameters, file);
+
+        if (response.status) {
+            console.log('STT Result:', response.data.text); // 음성 데이터 기반 STT
+            console.log('AI answer: ', response.data.answer); // STT 기반 AI 응답
+            setWhisperText(response.data.text);
+            setWhisperInterest(response.data.answer);
+        } else {
+            alert('STT 에러 발생');
+        }
+        setIsRecording(false);
+    };
+
+    const startRecording = async () => {
+        if (!isRecording) {
+            setIsRecording(true);
+            mediaChunksRef.current = [];
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+            mediaRecorderRef.current.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    mediaChunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorderRef.current.onstop = async () => {
+                const blob = new Blob(mediaChunksRef.current, { type: 'audio/webm' });
+                const blobUrl = URL.createObjectURL(blob);
+                setMediaBlobUrl(blobUrl);
+                handleAudioStop(blob);
+            };
+
+            mediaRecorderRef.current.start();
+        }
+    };
+
+    const stopRecording = () => {
+        if (isRecording && mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
+            mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+            setIsRecording(false);
+        }
+    };
+
     return (
         <>
             <h1>Vite + React</h1>
-            <div className="card">
-                오른쪽 버튼을 눌러보세요 &nbsp;
-                <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-            </div>
-            <div>
+            {/* <div>
                 <h2>테스트 API 호출해보기</h2>
                 {loading ? (
                     <p>테스트 데이터를 가져오고 있습니다...</p>
@@ -107,12 +166,12 @@ function App() {
                     <p>데이터를 불러오지 못했습니다.</p>
                 )}
                 <button onClick={fetchTestData}>테스트 데이터 가져오기</button>
-            </div>
+            </div> */}
 
             <br />
 
             <div>
-                <h2>음성인식 테스트</h2>
+                <h2>음성인식 테스트 (Web Speech API + OpenAI API)</h2>
                 <button onClick={startRecognition}>음성인식 시작</button>
                 <button onClick={handleStopRecognition}>음성인식 종료</button>
                 <p>
@@ -120,6 +179,18 @@ function App() {
                 </p>
                 <p>AI 응답 - 주제: {responseTitle}</p>
                 <p>AI 응답 - 관심사: {responseInterest}</p>
+            </div>
+
+            <div>
+                <h2>음성녹음 테스트 (MediaRecorder + Whisper + OpenAI API)</h2>
+                <button onClick={startRecording}>녹음 시작</button>
+                <button onClick={stopRecording}>녹음 종료</button>
+            </div>
+            <br />
+            <div>
+                {mediaBlobUrl && <audio ref={audioRef} src={mediaBlobUrl} controls />}
+                <p>음성 녹음 STT 결과: {whisperText}</p>
+                <p>STT 기반 AI 응답 - 관심사: {whisperInterest}</p>
             </div>
         </>
     );

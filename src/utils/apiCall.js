@@ -3,7 +3,7 @@ import axios from 'axios';
 const SERVER_URL_LOCAL = 'http://localhost:3000';
 
 const generateHeaders = (customHeaders) => {
-    let headers = customHeaders ? {...customHeaders} : {'Content-Type': 'application/json'};
+    let headers = customHeaders ? { ...customHeaders } : { 'Content-Type': 'application/json' };
     const userToken = localStorage.getItem('accessToken');
     if (userToken) {
         headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
@@ -21,28 +21,38 @@ const createAxiosConfig = (apiSpec, headers, parameters, file) => {
     };
 
     if (file) {
-        axiosConfig.data = createFomrData(parameters, file);
+        axiosConfig.data = createFormData(parameters, file);
         return axiosConfig;
     }
 
     if (apiSpec.method.toUpperCase() === 'GET') {
         axiosConfig.params = parameters;
         return axiosConfig;
-    } 
+    }
 
     // POST, PATCH, DELETE, etc..
     axiosConfig.data = parameters;
     return axiosConfig;
 };
 
-const createFomrData = (parameters, file) => {
+// const createFormData = (parameters, file) => {
+//     const formData = new FormData();
+//     formData.append('file', file);
+//     formData.append('jsonData', new Blob([JSON.stringify(parameters)], {
+//         type: "application/json"
+//     }));
+//     return formData;
+// }
+
+const createFormData = (parameters, file) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('jsonData', new Blob([JSON.stringify(parameters)], {
-        type: "application/json"
-    }));
+    formData.append('file', file); // 'file' 필드명으로 파일 추가
+    // parameters 객체의 키-값 쌍을 FormData에 추가
+    Object.keys(parameters).forEach((key) => {
+        formData.append(key, parameters[key]);
+    });
     return formData;
-}
+};
 
 const requestWithAxios = async (config) => {
     try {
@@ -62,32 +72,32 @@ const requestWithAxios = async (config) => {
 
 const handleErrorByCode = (code) => {
     if (code === 500) {
-        alert('알 수 없는 에러가 발생하였습니다.');            
+        alert('알 수 없는 에러가 발생하였습니다.');
     }
 };
 
 /**
  * apiCall - 백엔드 서버 API 호출을 위한 유틸리티 함수
- * 
+ *
  * @param {Object} apiSpec - apiList.js에서 가져온 API 명세
  * @param {Object} [parameters] - API 호출에 필요한 파라미터 (선택적)
  * @param {Object} [customHeaders] - 사용자 정의 헤더 (선택적)
- * 
+ *
  * @returns {Promise} API 호출 결과
- * 
+ *
  */
-const apiCall = (apiSpec, parameters, customHeaders) => {    
+const apiCall = (apiSpec, parameters, customHeaders) => {
     const headers = generateHeaders(customHeaders);
-    const config = createAxiosConfig(apiSpec, headers, parameters);    
-    
+    const config = createAxiosConfig(apiSpec, headers, parameters);
+
     return requestWithAxios(config);
 };
 
-const apiCallWithFileData = (apiSpec, parameters, file) => {        
-    const headers = {'Content-Type': 'multipart/form-data'};
+const apiCallWithFileData = (apiSpec, parameters, file) => {
+    const headers = { 'Content-Type': 'multipart/form-data' };
     const config = createAxiosConfig(apiSpec, headers, parameters, file);
 
     return requestWithAxios(config);
-}
+};
 
-export {apiCall, apiCallWithFileData};
+export { apiCall, apiCallWithFileData };
