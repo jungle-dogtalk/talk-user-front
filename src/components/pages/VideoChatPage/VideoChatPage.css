@@ -39,6 +39,7 @@
   height: 0;
   padding-bottom: 50%; /* 1:1 비율을 위해 50%로 설정 */
   background-color: black;
+  overflow: hidden;
 }
 
 .stream-container video {
@@ -127,10 +128,38 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 10px;
+  padding: 5px; /* 패딩을 줄여 전체 크기를 줄임 */
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 5px; /* 간격을 줄여 전체 크기를 줄임 */
+  z-index: 10; /* 설정 메뉴가 다른 요소 위에 표시되도록 함 */
+  width: 180px; /* 설정 메뉴의 너비를 적절히 조정 */
+  max-height: 90px; /* 설정 메뉴의 최대 높이를 더 줄임 */
+  overflow-y: auto; /* 설정 메뉴의 세로 스크롤 추가 */
+}
+
+.settings-menu button {
+  padding: 5px; /* 버튼의 패딩을 줄여 크기 조정 */
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 0.8rem; /* 버튼의 폰트 크기 줄임 */
+}
+
+.settings-menu button:hover {
+  background-color: #45a049;
+}
+
+.settings-menu select {
+  padding: 5px; /* 선택 박스의 패딩을 줄여 크기 조정 */
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 0.8rem; /* 선택 박스의 폰트 크기 줄임 */
+  width: 100%; /* 선택 박스가 메뉴를 넘지 않도록 너비 설정 */
+  overflow-x: hidden; /* 선택 박스의 가로 스크롤 제거 */
 }
 
 .audio-status {

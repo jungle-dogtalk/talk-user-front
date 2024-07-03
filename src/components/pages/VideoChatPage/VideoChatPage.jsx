@@ -17,10 +17,39 @@ const VideoChatPage = () => {
   const [isAudioActive, setIsAudioActive] = useState(true);
   const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
   const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
+  const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
+  const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
+  const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
 
   // 요소 참조
   const sessionRef = useRef(); // 세션 참조 관리
   const videoRef = useRef(null); // 비디오 요소 참조
+
+
+   // 미디어 장치 목록 가져오기
+   useEffect(() => {
+    const getDevices = async () => {
+      try {
+        // 모든 미디어 장치 정보 가져옴
+        const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+
+        // 비디오 입력 장치만 필터링하여 배열에 저장
+        const videoDevices = deviceInfos.filter(device => device.kind === 'videoinput');
+        
+        // 오디오 입력 장치만 필터링하여 배열에 저장
+        const audioDevices = deviceInfos.filter(device => device.kind === 'audioinput');
+        setDevices({ videoDevices, audioDevices });
+
+        if (videoDevices.length > 0) setSelectedVideoDevice(videoDevices[0].deviceId);
+        if (audioDevices.length > 0) setSelectedAudioDevice(audioDevices[0].deviceId);
+      } catch (error) {
+        console.error('Error getting devices:', error);
+      }
+    };
+
+    // 컴포넌트가 마운트될 때 getDevices 함수를 호출하여 장치 목록을 가져옴
+    getDevices();
+  }, []);
 
   // OpenVidu 세션 초기화 + createSession + createToken을 호출하여 세션 + 토큰 생성. 
   useEffect(() => {
@@ -130,6 +159,16 @@ const VideoChatPage = () => {
     setShowSettings(!showSettings);
   };
 
+  // 선택된 비디오 장치 변경 함수
+  const handleVideoDeviceChange = (event) => {
+    setSelectedVideoDevice(event.target.value);
+  };
+
+  // 선택된 오디오 장치 변경 함수
+  const handleAudioDeviceChange = (event) => {
+    setSelectedAudioDevice(event.target.value);
+  };
+
   return (
     <div className="video-chat-page">
       <div className="header">
@@ -153,6 +192,28 @@ const VideoChatPage = () => {
                   <button onClick={toggleMirror}>
                     {isMirrored ? '반전 해제' : '반전 적용'}
                   </button>
+
+                  <div>
+                    <label>카메라 선택:</label>
+                    <select onChange={handleVideoDeviceChange} value={selectedVideoDevice}>
+                      {devices.videoDevices && devices.videoDevices.map((device) => (
+                        <option key={device.deviceId} value={device.deviceId}>
+                          {device.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label>마이크 선택:</label>
+                    <select onChange={handleAudioDeviceChange} value={selectedAudioDevice}>
+                      {devices.audioDevices && devices.audioDevices.map((device) => (
+                        <option key={device.deviceId} value={device.deviceId}>
+                          {device.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                 </div>
               )}
               <div className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}>
