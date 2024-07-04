@@ -22,7 +22,7 @@ const VideoChatPage = () => {
   const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
 
   // 요소 참조
-  const sessionRef = useRef(); // 세션 참조 관리
+  const sessionRef = useRef(null); // 세션 참조 관리
   const videoRef = useRef(null); // 비디오 요소 참조
 
   // 네트워크 상태를 모니터링하기 위한 상태
@@ -131,6 +131,10 @@ const VideoChatPage = () => {
   // OpenVidu 세션 초기화 + createSession + createToken을 호출하여 세션 + 토큰 생성. 
   useEffect(() => {
     const initOpenVidu = async () => {
+
+      if (sessionRef.current) {
+        return; // 이미 세션이 생성된 경우 중복 생성 방지
+      }
       // try - catch 문으로 OpenVidu 초기화 과정에서 발생하는 오류 처리. 
       try {
         const OV = new OpenVidu(); // OpenVidu 인스턴스를 생성
@@ -186,14 +190,14 @@ const VideoChatPage = () => {
       }
     };
 
-    initOpenVidu(); // OpenVidu 초기화 함수 호출
+    initOpenVidu();
 
     return () => {
       if (sessionRef.current) {
         sessionRef.current.disconnect(); // 컴포넌트 언마운트 시 세션 연결 해제
       }
     };
-  }, [selectedAudioDevice, selectedVideoDevice]);
+  }, []); // 의존성 배열을 빈 배열로 설정하여 마운트될 때만 실행
 
   useEffect(() => {
     // mainStreamManager 가 변경될 때마다 videoRef 요소에 스트림 추가
