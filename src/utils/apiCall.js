@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const SERVER_URL_LOCAL = 'http://localhost:5000';
+// const SERVER_URL_LOCAL = 'http://localhost:5000';
+const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
 
 const generateHeaders = (customHeaders) => {
     let headers = customHeaders ? {...customHeaders} : {'Content-Type': 'application/json'};
