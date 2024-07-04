@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './ReportPage.css';
-import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 
 const ReportPage = () => {
     const [selectedReason, setSelectedReason] = useState('');

@@ -1,7 +1,7 @@
 import React from 'react';
 import './MatchingPage.css';
-import waitingDogImage from '../../../assets/dog.jpg'; // 강아지 이미지
-import waitingHouseImage from '../../../assets/doghouse.jpg'; // 강아지 집 이미지
+import waitingDogImage from '../../assets/dog.jpg'; // 강아지 이미지
+import waitingHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 
 const MatchingPage = () => {
     const handleStopClick = () => {

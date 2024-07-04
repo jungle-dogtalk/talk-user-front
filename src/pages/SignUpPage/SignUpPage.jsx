@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { signUpUser } from '../../../redux/actions/userActions';
+import { signUpUser } from '../../redux/actions/userActions';
 import './SignUpPage.css';
-import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
-import profileImage from '../../../assets/profile.jpg'; // 프로필 이미지 경로
+import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 
 const SignUpPage = () => {
     const [username, setUsername] = useState('');
@@ -25,7 +25,7 @@ const SignUpPage = () => {
             return;
         }
         const success = await dispatch(
-            signUpUser({ username, password, name, email, interests }),
+            signUpUser({ username, password, name, email, interests })
         );
         if (success) {
             navigate('/'); // 회원가입 성공 시 로그인 페이지로 이동

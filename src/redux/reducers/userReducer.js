@@ -4,7 +4,7 @@ import {
     SIGNUP_SUCCESS,
     SIGNUP_FAIL,
     LOGOUT,
-} from '../../components/constants/userConstants';
+} from '../../constants/userConstants';
 const initialState = {
     token: localStorage.getItem('token'), // 초기 상태에서 토큰을 로컬 스토리지에서 가져옴
     userInfo: null, // 사용자 정보 초기값

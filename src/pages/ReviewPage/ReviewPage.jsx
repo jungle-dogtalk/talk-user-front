@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import './ReviewPage.css';
-import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
-import profile1 from '../../../assets/profile.jpg'; // 사용자 1 이미지 경로
-import profile2 from '../../../assets/profile.jpg'; // 사용자 2 이미지 경로
-import profile3 from '../../../assets/profile.jpg'; // 사용자 3 이미지 경로
+import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import profile1 from '../../assets/profile.jpg'; // 사용자 1 이미지 경로
+import profile2 from '../../assets/profile.jpg'; // 사용자 2 이미지 경로
+import profile3 from '../../assets/profile.jpg'; // 사용자 3 이미지 경로
 
 const ReviewPage = () => {
     const [ratings, setRatings] = useState([0, 0, 0]); // 세 명의 사용자 리뷰를 관리
@@ -52,7 +52,11 @@ const ReviewPage = () => {
                                     {[1, 2, 3, 4, 5].map((star) => (
                                         <span
                                             key={star}
-                                            className={`star ${ratings[index] >= star ? 'selected' : ''}`}
+                                            className={`star ${
+                                                ratings[index] >= star
+                                                    ? 'selected'
+                                                    : ''
+                                            }`}
                                             onClick={() =>
                                                 handleRatingChange(index, star)
                                             }

@@ -5,7 +5,7 @@ import {
     SIGNUP_SUCCESS,
     SIGNUP_FAIL,
     LOGOUT,
-} from '../../components/constants/userConstants';
+} from '../../constants/userConstants';
 import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 

@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { OpenVidu } from 'openvidu-browser';
 import { createSession, createToken } from '../../services/openviduService';
 import './VideoChatPage.css';
-import dogImage from '../../../assets/dog.jpg'; // 강아지 이미지
-import dogHouseImage from '../../../assets/doghouse.jpg'; // 강아지 집 이미지
-import settingsIcon from '../../../assets/settings-icon.jpg'; // 설정 아이콘
+import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
+import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
+import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 
 const VideoChatPage = () => {
     // 여러 상태 관리
@@ -105,12 +105,12 @@ const VideoChatPage = () => {
 
                 // 비디오 입력 장치만 필터링하여 배열에 저장
                 const videoDevices = deviceInfos.filter(
-                    (device) => device.kind === 'videoinput',
+                    (device) => device.kind === 'videoinput'
                 );
 
                 // 오디오 입력 장치만 필터링하여 배열에 저장
                 const audioDevices = deviceInfos.filter(
-                    (device) => device.kind === 'audioinput',
+                    (device) => device.kind === 'audioinput'
                 );
                 setDevices({ videoDevices, audioDevices });
 
@@ -152,7 +152,7 @@ const VideoChatPage = () => {
                 session.on('streamCreated', (event) => {
                     const subscriber = session.subscribe(
                         event.stream,
-                        undefined,
+                        undefined
                     );
                     setSubscribers((prevSubscribers) => [
                         ...prevSubscribers,
@@ -165,8 +165,8 @@ const VideoChatPage = () => {
                     setSubscribers((prevSubscribers) =>
                         prevSubscribers.filter(
                             (subscriber) =>
-                                subscriber !== event.stream.streamManager,
-                        ),
+                                subscriber !== event.stream.streamManager
+                        )
                     );
                 });
 
@@ -274,7 +274,9 @@ const VideoChatPage = () => {
                 <div className="video-container">
                     {mainStreamManager && (
                         <div
-                            className={`stream-container ${isMirrored ? 'mirrored' : ''}`}
+                            className={`stream-container ${
+                                isMirrored ? 'mirrored' : ''
+                            }`}
                         >
                             <video autoPlay={true} ref={videoRef} />
                             <div className="stream-label">나</div>
@@ -319,7 +321,7 @@ const VideoChatPage = () => {
                                                         >
                                                             {device.label}
                                                         </option>
-                                                    ),
+                                                    )
                                                 )}
                                         </select>
                                     </div>
@@ -342,14 +344,16 @@ const VideoChatPage = () => {
                                                         >
                                                             {device.label}
                                                         </option>
-                                                    ),
+                                                    )
                                                 )}
                                         </select>
                                     </div>
                                 </div>
                             )}
                             <div
-                                className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}
+                                className={`audio-status ${
+                                    isAudioActive ? 'active' : 'inactive'
+                                }`}
                             >
                                 {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
                             </div>
@@ -363,7 +367,7 @@ const VideoChatPage = () => {
                                         autoPlay={true}
                                         ref={(video) =>
                                             subscribers[index].addVideoElement(
-                                                video,
+                                                video
                                             )
                                         }
                                     />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './ProfilePage.css';
-import profilePicture from '../../../assets/profile.jpg'; // 프로필 사진 경로
-import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import profilePicture from '../../assets/profile.jpg'; // 프로필 사진 경로
+import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 
 const ProfilePage = () => {
     const [user, setUser] = useState({

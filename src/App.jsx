@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
-import LoginPage from './components/pages/LoginPage/LoginPage';
-import SignUpPage from './components/pages/SignUpPage/SignUpPage';
-import VideoChatPage from './components/pages/VideoChatPage/VideoChatPage';
-import MainPage from './components/pages/MainPage/MainPage';
-import ProfilePage from './components/pages/ProfilePage/ProfilePage'; // 추가된 부분
-import ReportPage from './components/pages/ReportPage/ReportPage'; // 추가된 부분
-import ReviewPage from './components/pages/ReviewPage/ReviewPage';
-import MatchingPage from './components/pages/MatchingPage/MatchingPage';
+import LoginPage from './pages/LoginPage/LoginPage';
+import SignUpPage from './pages/SignUpPage/SignUpPage';
+import VideoChatPage from './pages/VideoChatPage/VideoChatPage';
+import MainPage from './pages/MainPage/MainPage';
+import ProfilePage from './pages/ProfilePage/ProfilePage'; // 추가된 부분
+import ReportPage from './pages/ReportPage/ReportPage'; // 추가된 부분
+import ReviewPage from './pages/ReviewPage/ReviewPage';
+import MatchingPage from './pages/MatchingPage/MatchingPage';
 import { setUserFromLocalStorage } from './redux/actions/userActions';
 
 function App() {

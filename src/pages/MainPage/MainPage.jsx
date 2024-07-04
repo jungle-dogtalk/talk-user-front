@@ -1,13 +1,13 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser } from '../../../redux/actions/userActions'; // 로그아웃 액션 임포트
+import { logoutUser } from '../../redux/actions/userActions'; // 로그아웃 액션 임포트
 import './MainPage.css';
-import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
-import profileImage from '../../../assets/profile.jpg'; // 프로필 이미지 경로
-import roomIcon from '../../../assets/room-icon.png'; // 방에서 통화하기 아이콘 경로
-import groupIcon from '../../../assets/room-icon.png'; // 넷이서 통화하기 아이콘 경로
-import settingsIcon from '../../../assets/settings-icon.jpg'; // 설정 아이콘 경로
+import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
+import roomIcon from '../../assets/room-icon.png'; // 방에서 통화하기 아이콘 경로
+import groupIcon from '../../assets/room-icon.png'; // 넷이서 통화하기 아이콘 경로
+import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘 경로
 
 const MainPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
