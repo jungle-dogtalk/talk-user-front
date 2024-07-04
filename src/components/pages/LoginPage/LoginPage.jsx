@@ -5,7 +5,7 @@ import { loginUser } from '../../../redux/actions/userActions';
 import './LoginPage.css';
 import logo from '../../../assets/cat_logo.jpg'; // 로고 이미지 경로
 
-const HomePage = () => {
+const LoginPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
@@ -65,4 +65,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default LoginPage;
