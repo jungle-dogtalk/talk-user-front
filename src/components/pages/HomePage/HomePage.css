@@ -1,75 +1,77 @@
 .home-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #F8F4E5; /* 배경 색상 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f4e5; /* 배경 색상 */
 }
 
 .login-box {
-  background-color: #FFF8DC; /* 박스 배경 색상 */
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 400px;
+    background-color: #fff8dc; /* 박스 배경 색상 */
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 400px;
 }
 
 .logo {
-  width: 150px;
-  margin-bottom: 20px;
+    width: 150px;
+    margin-bottom: 20px;
 }
 
 .login-form {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .input-group {
-  margin-bottom: 15px;
-  text-align: left;
+    margin-bottom: 15px;
+    text-align: left;
 }
 
 .input-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: #8B4513; /* 라벨 색상 */
+    display: block;
+    margin-bottom: 5px;
+    color: #8b4513; /* 라벨 색상 */
 }
 
 .input-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .login-button {
-  background-color: #D2691E; /* 버튼 배경 색상 */
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
+    background-color: #d2691e; /* 버튼 배경 색상 */
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 .login-button:hover {
-  background-color: #A0522D; /* 버튼 호버 색상 */
+    background-color: #a0522d; /* 버튼 호버 색상 */
 }
 
-.signup-link, .forgot-link {
-  display: block;
-  margin-top: 10px;
-  color: #8B4513; /* 링크 색상 */
-  text-decoration: none;
+.signup-link,
+.forgot-link {
+    display: block;
+    margin-top: 10px;
+    color: #8b4513; /* 링크 색상 */
+    text-decoration: none;
 }
 
-.signup-link:hover, .forgot-link:hover {
-  text-decoration: underline;
+.signup-link:hover,
+.forgot-link:hover {
+    text-decoration: underline;
 }
 
 .error {
-  color: red;
-  margin-top: 10px;
+    color: red;
+    margin-top: 10px;
 }

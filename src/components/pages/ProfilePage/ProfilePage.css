@@ -4,91 +4,90 @@
     align-items: center;
     background-color: #f5f5f5;
     height: 100vh;
-  }
-  
-  .header {
+}
+
+.header {
     width: 100%;
-    background-color: #A3D5D3;
+    background-color: #a3d5d3;
     padding: 10px;
     text-align: left; /* 로고를 왼쪽으로 정렬 */
-  }
-  
-  .logo {
+}
+
+.logo {
     width: 100px;
     height: auto; /* 비율이 깨지지 않도록 설정 */
-  }
-  
-  .profile-container {
-    background-color: #FFF8DC;
+}
+
+.profile-container {
+    background-color: #fff8dc;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     width: 400px;
     margin-top: 20px;
-  }
-  
-  .profile-picture {
+}
+
+.profile-picture {
     width: 150px;
     height: 150px;
     border-radius: 50%;
     margin-bottom: 20px;
-  }
-  
-  h2 {
+}
+
+h2 {
     margin-bottom: 10px;
-  }
-  
-  .progress-bars {
+}
+
+.progress-bars {
     margin: 20px 0;
-  }
-  
-  .progress-bar {
+}
+
+.progress-bar {
     display: flex;
     align-items: center;
     background-color: #e0e0e0;
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 10px;
-  }
-  
-  .progress-bar span {
+}
+
+.progress-bar span {
     padding: 5px;
     color: white;
     font-weight: bold;
-    background-color: #D2691E;
-  }
-  
-  .bar {
+    background-color: #d2691e;
+}
+
+.bar {
     height: 20px;
-    background-color: #D2691E;
-  }
-  
-  .interests {
+    background-color: #d2691e;
+}
+
+.interests {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     margin: 20px 0;
-  }
-  
-  .interest {
-    background-color: #A3D5D3;
+}
+
+.interest {
+    background-color: #a3d5d3;
     color: white;
     padding: 5px 10px;
     margin: 5px;
     border-radius: 20px;
-  }
-  
-  .update-button {
-    background-color: #D2691E;
+}
+
+.update-button {
+    background-color: #d2691e;
     color: white;
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-  }
-  
-  .update-button:hover {
-    background-color: #A0522D;
-  }
-  
+}
+
+.update-button:hover {
+    background-color: #a0522d;
+}
