@@ -249,6 +249,15 @@ const VideoChatPage = () => {
         }
     }, [mainStreamManager]);
 
+    useEffect(() => {
+        subscribers.forEach((subscriber, index) => {
+            const videoElement = document.getElementById(`subscriber-video-${index}`);
+            if (videoElement) {
+                subscriber.addVideoElement(videoElement);
+            }
+        });
+    }, [subscribers]);
+
     // publisher.publishVideo를 호출하여 비디오 제어.
     const toggleVideo = () => {
         if (publisher) {
@@ -305,120 +314,70 @@ const VideoChatPage = () => {
                 <button onClick={handleLogout}>Logout</button>
             </div>
             <div className="content">
-                <div className="video-container">
-                    {mainStreamManager && (
-                        <div
-                            className={`stream-container ${
-                                isMirrored ? 'mirrored' : ''
-                            }`}
-                        >
-                            <video autoPlay={true} ref={videoRef} />
-                            <div className="stream-label">
-                                {userInfo?.username || '나'}
-                            </div>
-                            <img
-                                src={settingsIcon}
-                                alt="설정"
-                                className="settings-icon"
-                                onClick={toggleSettings}
-                            />
-                            {showSettings && (
-                                <div className="settings-menu">
-                                    <button onClick={toggleVideo}>
-                                        {isVideoActive
-                                            ? '비디오 끄기'
-                                            : '비디오 켜기'}
-                                    </button>
-                                    <button onClick={toggleAudio}>
-                                        {isAudioActive
-                                            ? '오디오 끄기'
-                                            : '오디오 켜기'}
-                                    </button>
-                                    <button onClick={toggleMirror}>
-                                        {isMirrored ? '반전 해제' : '반전 적용'}
-                                    </button>
+            <div className="video-container">
+    {mainStreamManager && (
+        <div
+            className={`stream-container ${isMirrored ? 'mirrored' : ''}`}
+        >
+            <video autoPlay={true} ref={videoRef} />
+            <div className="stream-label">
+                {userInfo?.username || '나'}
+            </div>
+            <img
+                src={settingsIcon}
+                alt="설정"
+                className="settings-icon"
+                onClick={toggleSettings}
+            />
+            {showSettings && (
+                <div className="settings-menu">
+                    <button onClick={toggleVideo}>
+                        {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
+                    </button>
+                    <button onClick={toggleAudio}>
+                        {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
+                    </button>
+                    <button onClick={toggleMirror}>
+                        {isMirrored ? '반전 해제' : '반전 적용'}
+                    </button>
 
-                                    <div>
-                                        <label>카메라 선택:</label>
-                                        <select
-                                            onChange={handleVideoDeviceChange}
-                                            value={selectedVideoDevice}
-                                        >
-                                            {devices.videoDevices &&
-                                                devices.videoDevices.map(
-                                                    (device) => (
-                                                        <option
-                                                            key={
-                                                                device.deviceId
-                                                            }
-                                                            value={
-                                                                device.deviceId
-                                                            }
-                                                        >
-                                                            {device.label}
-                                                        </option>
-                                                    )
-                                                )}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label>마이크 선택:</label>
-                                        <select
-                                            onChange={handleAudioDeviceChange}
-                                            value={selectedAudioDevice}
-                                        >
-                                            {devices.audioDevices &&
-                                                devices.audioDevices.map(
-                                                    (device) => (
-                                                        <option
-                                                            key={
-                                                                device.deviceId
-                                                            }
-                                                            value={
-                                                                device.deviceId
-                                                            }
-                                                        >
-                                                            {device.label}
-                                                        </option>
-                                                    )
-                                                )}
-                                        </select>
-                                    </div>
-                                </div>
-                            )}
-                            <div
-                                className={`audio-status ${
-                                    isAudioActive ? 'active' : 'inactive'
-                                }`}
-                            >
-                                {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
-                            </div>
-                        </div>
-                    )}
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <div key={index} className="stream-container">
-                            {subscribers[index] ? (
-                                <>
-                                    <video
-                                        autoPlay={true}
-                                        ref={(video) =>
-                                            subscribers[index].addVideoElement(
-                                                video
-                                            )
-                                        }
-                                    />
-                                    <div className="stream-label">
-                                        상대방 {index + 1}
-                                    </div>
-                                </>
-                            ) : (
-                                <div className="stream-label">
-                                    상대방 {index + 1}
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                    <div>
+                        <label>카메라 선택:</label>
+                        <select onChange={handleVideoDeviceChange} value={selectedVideoDevice}>
+                            {devices.videoDevices &&
+                                devices.videoDevices.map((device) => (
+                                    <option key={device.deviceId} value={device.deviceId}>
+                                        {device.label}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label>마이크 선택:</label>
+                        <select onChange={handleAudioDeviceChange} value={selectedAudioDevice}>
+                            {devices.audioDevices &&
+                                devices.audioDevices.map((device) => (
+                                    <option key={device.deviceId} value={device.deviceId}>
+                                        {device.label}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
                 </div>
+            )}
+            <div className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}>
+                {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
+            </div>
+        </div>
+    )}
+    {subscribers.map((subscriber, index) => (
+        <div key={index} className="stream-container">
+            <video id={`subscriber-video-${index}`} autoPlay={true} />
+            <div className="stream-label">상대방 {index + 1}</div>
+        </div>
+    ))}
+</div>
+
                 <div className="chat-container">
                     <div className="chat-box">{/* 채팅 메시지들 */}</div>
                     <input
