@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate  } from 'react-router-dom';
-import { logoutUser, setUserFromLocalStorage  } from '../../redux/actions/userActions'; // 로그아웃 액션 가져오기
+import { useNavigate } from 'react-router-dom';
+import {
+    logoutUser,
+    setUserFromLocalStorage,
+} from '../../redux/slices/userSlice'; // 로그아웃 액션 가져오기
 import { OpenVidu } from 'openvidu-browser';
 import { createSession, createToken } from '../../services/openviduService';
 import './VideoChatPage.css';
@@ -30,7 +33,6 @@ const VideoChatPage = () => {
     // 네트워크 상태를 모니터링하기 위한 상태
     const [networkQuality, setNetworkQuality] = useState('good'); // 네트워크 품질 상태 관리 ('good', 'poor', 'bad')
 
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { userInfo, token } = useSelector((state) => state.user);
@@ -52,7 +54,6 @@ const VideoChatPage = () => {
             navigate('/'); // 로그인 페이지로 리다이렉트
         }
     }, [token, dispatch, navigate]);
-
 
     // 네트워크 상태 모니터링 및 비디오 품질 조정
     const monitorNetwork = () => {
@@ -180,7 +181,8 @@ const VideoChatPage = () => {
             session.on('streamDestroyed', (event) => {
                 setSubscribers((prevSubscribers) =>
                     prevSubscribers.filter(
-                        (subscriber) => subscriber !== event.stream.streamManager
+                        (subscriber) =>
+                            subscriber !== event.stream.streamManager
                     )
                 );
             });
@@ -191,7 +193,7 @@ const VideoChatPage = () => {
 
             // ICE 연결 상태 변경 이벤트 핸들러 추가
             session.on('iceConnectionStateChange', (event) => {
-            console.log(`ICE connection state change: ${event}`);
+                console.log(`ICE connection state change: ${event}`);
             });
 
             console.log('Requesting session ID and token from server');
@@ -296,7 +298,6 @@ const VideoChatPage = () => {
         navigate('/');
     };
 
-
     return (
         <div className="video-chat-page">
             <div className="header">
@@ -312,7 +313,9 @@ const VideoChatPage = () => {
                             }`}
                         >
                             <video autoPlay={true} ref={videoRef} />
-                            <div className="stream-label">{userInfo?.username || '나'}</div>
+                            <div className="stream-label">
+                                {userInfo?.username || '나'}
+                            </div>
                             <img
                                 src={settingsIcon}
                                 alt="설정"
