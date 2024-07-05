@@ -11,9 +11,12 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘 �
 
 const MainPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
+
     const navigate = useNavigate(); // useNavigate 훅 사용
     const dispatch = useDispatch();
+
     console.log(userInfo);
+
     const handleLogout = () => {
         dispatch(logoutUser());
         navigate('/');
