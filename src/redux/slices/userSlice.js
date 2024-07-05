@@ -42,7 +42,7 @@ export const signUpUser = createAsyncThunk(
 const userSlice = createSlice({
     name: 'user',
     initialState: {
-        token: localStorage.getItem('token'),
+        token: null,
         userInfo: JSON.parse(localStorage.getItem('user')),
         loading: false,
         error: null,
@@ -57,7 +57,7 @@ const userSlice = createSlice({
         },
         setUserFromLocalStorage: (state, action) => {
             state.token = action.payload.token;
-            state.userInfo = action.payload.user;
+            state.userInfo = action.payload.userInfo;
         },
     },
     //extraReducers를 통해 비동기 액션의 상태 처리

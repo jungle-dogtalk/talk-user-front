@@ -37,6 +37,8 @@ const VideoChatPage = () => {
     const navigate = useNavigate();
     const { userInfo, token } = useSelector((state) => state.user);
 
+    // console.log(userInfo, token);
+
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
         const storedUser = localStorage.getItem('user');
@@ -44,7 +46,12 @@ const VideoChatPage = () => {
         if (!token && storedToken && storedUser) {
             try {
                 const parsedUser = JSON.parse(storedUser);
-                dispatch(setUserFromLocalStorage(parsedUser, storedToken));
+                dispatch(
+                    setUserFromLocalStorage({
+                        userInfo: parsedUser,
+                        token: storedToken,
+                    })
+                );
             } catch (error) {
                 console.error('Failed to parse user from localStorage:', error);
             }
