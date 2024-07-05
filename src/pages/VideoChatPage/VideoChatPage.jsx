@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate  } from 'react-router-dom';
+import { logoutUser, setUserFromLocalStorage  } from '../../redux/actions/userActions'; // 로그아웃 액션 가져오기
 import { OpenVidu } from 'openvidu-browser';
 import { createSession, createToken } from '../../services/openviduService';
 import './VideoChatPage.css';
@@ -26,6 +29,30 @@ const VideoChatPage = () => {
 
     // 네트워크 상태를 모니터링하기 위한 상태
     const [networkQuality, setNetworkQuality] = useState('good'); // 네트워크 품질 상태 관리 ('good', 'poor', 'bad')
+
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { userInfo, token } = useSelector((state) => state.user);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+
+        if (!token && storedToken && storedUser) {
+            try {
+                const parsedUser = JSON.parse(storedUser);
+                dispatch(setUserFromLocalStorage(parsedUser, storedToken));
+            } catch (error) {
+                console.error('Failed to parse user from localStorage:', error);
+            }
+        }
+
+        if (!storedToken || !storedUser) {
+            navigate('/'); // 로그인 페이지로 리다이렉트
+        }
+    }, [token, dispatch, navigate]);
+
 
     // 네트워크 상태 모니터링 및 비디오 품질 조정
     const monitorNetwork = () => {
@@ -137,82 +164,81 @@ const VideoChatPage = () => {
         };
     }, []);
 
-    // OpenVidu 세션 초기화 + createSession + createToken을 호출하여 세션 + 토큰 생성.
+    const initOpenVidu = async () => {
+        try {
+            const OV = new OpenVidu();
+            const session = OV.initSession();
+
+            session.on('streamCreated', (event) => {
+                const subscriber = session.subscribe(event.stream, undefined);
+                setSubscribers((prevSubscribers) => [
+                    ...prevSubscribers,
+                    subscriber,
+                ]);
+            });
+
+            session.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter(
+                        (subscriber) => subscriber !== event.stream.streamManager
+                    )
+                );
+            });
+
+            session.on('exception', (exception) => {
+                console.error(exception);
+            });
+
+            // ICE 연결 상태 변경 이벤트 핸들러 추가
+            session.on('iceConnectionStateChange', (event) => {
+            console.log(`ICE connection state change: ${event}`);
+            });
+
+            console.log('Requesting session ID and token from server');
+            const sessionId = await createSession();
+            console.log('Received session ID:', sessionId);
+            const token = await createToken(sessionId);
+            console.log('Received token:', token);
+
+            sessionRef.current = session;
+            await session.connect(token, { clientData: 'Participant' });
+
+            const publisher = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: true,
+                resolution: '640x480',
+                frameRate: 30,
+                insertMode: 'APPEND',
+                mirror: false,
+            });
+
+            session.publish(publisher);
+            setMainStreamManager(publisher);
+            setPublisher(publisher);
+            setSession(session);
+        } catch (error) {
+            console.error('Error initializing OpenVidu:', error);
+        }
+    };
+
     useEffect(() => {
-        const initOpenVidu = async () => {
-            if (sessionRef.current) {
-                return; // 이미 세션이 생성된 경우 중복 생성 방지
-            }
-            // try - catch 문으로 OpenVidu 초기화 과정에서 발생하는 오류 처리.
-            try {
-                const OV = new OpenVidu(); // OpenVidu 인스턴스를 생성
-                const session = OV.initSession(); // 세션을 초기화
-
-                // 새로운 스트림이 생성될 때 호출되는 이벤트 핸들러 - 새로운 구독자 추가
-                session.on('streamCreated', (event) => {
-                    const subscriber = session.subscribe(
-                        event.stream,
-                        undefined
-                    );
-                    setSubscribers((prevSubscribers) => [
-                        ...prevSubscribers,
-                        subscriber,
-                    ]);
-                });
-
-                // 스트림이 파괴될 때 호출되는 이벤트 핸들러 - 구독자들 목록에서 제거
-                session.on('streamDestroyed', (event) => {
-                    setSubscribers((prevSubscribers) =>
-                        prevSubscribers.filter(
-                            (subscriber) =>
-                                subscriber !== event.stream.streamManager
-                        )
-                    );
-                });
-
-                // 예외가 발생시 호출
-                session.on('exception', (exception) => {
-                    console.error(exception);
-                });
-
-                // 세션 ID를 생성
-                const sessionId = await createSession();
-                // 세션에 연결할 토큰 생성
-                const token = await createToken(sessionId);
-
-                sessionRef.current = session;
-                // 세션에 연결
-                await session.connect(token, { clientData: 'Participant' });
-
-                // 퍼블리셔를 초기화하고 퍼블리셔 설정 작용
-                const publisher = OV.initPublisher(undefined, {
-                    audioSource: undefined, // 기본 마이크
-                    videoSource: undefined, // 기본 웹캠
-                    publishAudio: true, // 오디오를 퍼블리시
-                    publishVideo: true,
-                    resolution: '640x480', // 해상도 설정
-                    frameRate: 30, // 프레임 속도 설정
-                    insertMode: 'APPEND',
-                    mirror: false, // 비디오 미러링 설정
-                });
-
-                session.publish(publisher); // 퍼블리셔를 세션에 퍼블리시
-                setMainStreamManager(publisher); // 메인 스트림 관리자 설정
-                setPublisher(publisher);
-                setSession(session);
-            } catch (error) {
-                console.error('Error initializing OpenVidu:', error);
-            }
-        };
-
-        initOpenVidu();
+        if (token) {
+            initOpenVidu();
+        }
 
         return () => {
             if (sessionRef.current) {
-                sessionRef.current.disconnect(); // 컴포넌트 언마운트 시 세션 연결 해제
+                sessionRef.current.disconnect();
+                sessionRef.current = null;
+                setSession(null);
+                setMainStreamManager(null);
+                setPublisher(null);
+                setSubscribers([]);
             }
         };
-    }, []); // 의존성 배열을 빈 배열로 설정하여 마운트될 때만 실행
+    }, [token]);
 
     useEffect(() => {
         // mainStreamManager 가 변경될 때마다 videoRef 요소에 스트림 추가
@@ -265,10 +291,17 @@ const VideoChatPage = () => {
         setSelectedAudioDevice(event.target.value);
     };
 
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        navigate('/');
+    };
+
+
     return (
         <div className="video-chat-page">
             <div className="header">
                 <h1>멍톡</h1>
+                <button onClick={handleLogout}>Logout</button>
             </div>
             <div className="content">
                 <div className="video-container">
@@ -279,7 +312,7 @@ const VideoChatPage = () => {
                             }`}
                         >
                             <video autoPlay={true} ref={videoRef} />
-                            <div className="stream-label">나</div>
+                            <div className="stream-label">{userInfo?.username || '나'}</div>
                             <img
                                 src={settingsIcon}
                                 alt="설정"
