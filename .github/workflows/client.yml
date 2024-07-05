@@ -3,33 +3,32 @@ name: client
 on:
   push:
     branches:
-      - master  # master 브랜치에 변경 있을 시 자동 배포
+      - master # master 브랜치에 변경 있을 시 자동 배포
 jobs:
   build:
     runs-on: ubuntu-latest #배포 실행될 환경
     steps: #각 단계의 이름과 실행내용을 나열해서 작성한다.
-    - name: Checkout source code.
-      uses: actions/checkout@v2        
+      - name: Checkout source code.
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20"
 
-    - name: Install dependencies
-      run: npm install --legacy-peer-deps # redux 라이브러리 호환성 때문에 인스톨 명령어 변경 (원래는 npm ci)
+      - name: Install dependencies
+        run: npm ci # 라이브러리 의존성 충돌시 명령어 > npm install --legacy-peer-deps
 
-    - name: Build
-      run: npm run build
+      - name: Build
+        run: npm run build
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}         
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-northeast-2
-        
-    - name: Deploy to S3
-      run: |
-        aws s3 sync dist/ s3://barking-talk.com --delete
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
 
+      - name: Deploy to S3
+        run: |
+          aws s3 sync dist/ s3://user-talk-client --delete
