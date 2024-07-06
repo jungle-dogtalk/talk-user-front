@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
@@ -12,10 +12,17 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘 �
 const MainPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
 
+    const token = useSelector((state) => state.user.token);
     const navigate = useNavigate(); // useNavigate 훅 사용
     const dispatch = useDispatch();
 
     console.log(userInfo);
+
+    useEffect(() => {
+        if (!token) {
+            navigate('/'); // 로그인 상태가 아닌 경우 로그인 페이지로 리디렉션
+        }
+    }, [token, navigate]);
 
     const handleLogout = () => {
         dispatch(logoutUser());
