@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
@@ -16,7 +16,13 @@ const SignUpPage = () => {
     const [interests, setInterests] = useState([]);
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { error } = useSelector((state) => state.user);
+    const { token, error } = useSelector((state) => state.user);
+
+    useEffect(() => {
+        if (token) {
+            navigate('/main'); // 이미 로그인되어 있는 경우 홈 페이지로 리디렉션
+        }
+    }, [token, navigate]);
 
     const handleSignUp = async (e) => {
         e.preventDefault();
