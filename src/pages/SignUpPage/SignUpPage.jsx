@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
+import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
-import { signUpUser } from '../../redux/slices/userSlice';
 import './SignUpPage.css';
 import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
@@ -24,10 +25,8 @@ const SignUpPage = () => {
             alert('Passwords do not match');
             return;
         }
-        const success = await dispatch(
-            signUpUser({ username, password, name, email, interests })
-        );
-        if (success) {
+        const response = await apiCall(API_LIST.USER_SIGNUP, { username, password, name, email, interests });
+        if (response.data) {
             navigate('/'); // 회원가입 성공 시 로그인 페이지로 이동
         }
     };
