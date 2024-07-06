@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import './MatchingPage.css';
 import waitingDogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import waitingHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import axios from 'axios';
+import { io } from 'socket.io-client';
 
 const MatchingPage = () => {
-    const [userId, setUserId] = useState('');
+    const userInfo = useSelector((state) => state.user.userInfo);
+    console.log('유저인포 ->  ', userInfo);
+
+    // const socket = io('http://localhost:5000', {
+    //     query: { userId: userInfo._id },
+    // });
+
+    const socket = io('https://api.barking-talk.org', {
+        query: { userId: userInfo._id },
+    });
+
+    socket.on('matched', (data) => {
+        console.log('Matched! Session ID:', data.sessionId);
+        location.href = '/videochat?sessionId=' + data.sessionId;
+        // 매칭 성공 시 처리 로직
+    });
 
     const handleStopClick = () => {
         alert('중단하기 버튼이 클릭되었습니다.');
@@ -16,10 +33,9 @@ const MatchingPage = () => {
     };
 
     const handleAddUserToQueue = async () => {
-        console.log('대기큐');
         const result = await axios.post(
             'https://api.barking-talk.org/api/match/add/user',
-            { userId: userId }
+            { userId: userInfo._id }
         );
         console.log(result);
     };
@@ -29,17 +45,6 @@ const MatchingPage = () => {
             <div className="header">
                 <h1>멍톡</h1>
             </div>
-            <input
-                type="text"
-                id="userId"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                placeholder="유저아이디"
-            />
-
-            <button className="cancel-button" onClick={handleAddUserToQueue}>
-                대기큐 진입
-            </button>
 
             <div className="content2">
                 <div className="matching-box">
