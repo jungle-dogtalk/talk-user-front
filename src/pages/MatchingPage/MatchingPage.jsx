@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './MatchingPage.css';
 import waitingDogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import waitingHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
+import axios from 'axios';
 
 const MatchingPage = () => {
+    const [userId, setUserId] = useState('');
+
     const handleStopClick = () => {
         alert('중단하기 버튼이 클릭되었습니다.');
     };
@@ -12,11 +15,32 @@ const MatchingPage = () => {
         alert('취소하기 버튼이 클릭되었습니다.');
     };
 
+    const handleAddUserToQueue = async () => {
+        console.log('대기큐');
+        const result = await axios.post(
+            'https://api.barking-talk.org/api/match/add/user',
+            { userId: userId }
+        );
+        console.log(result);
+    };
+
     return (
         <div className="matching-page">
             <div className="header">
-                <h1>명톡</h1>
+                <h1>멍톡</h1>
             </div>
+            <input
+                type="text"
+                id="userId"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                placeholder="유저아이디"
+            />
+
+            <button className="cancel-button" onClick={handleAddUserToQueue}>
+                대기큐 진입
+            </button>
+
             <div className="content2">
                 <div className="matching-box">
                     <div className="matching-status">

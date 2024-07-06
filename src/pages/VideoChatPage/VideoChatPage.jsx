@@ -6,7 +6,11 @@ import {
     setUserFromLocalStorage,
 } from '../../redux/slices/userSlice'; // 로그아웃 액션 가져오기
 import { OpenVidu } from 'openvidu-browser';
-import { createSession, createToken } from '../../services/openviduService';
+import {
+    createSession,
+    createToken,
+    getSessionList,
+} from '../../services/openviduService';
 import './VideoChatPage.css';
 import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
@@ -175,18 +179,24 @@ const VideoChatPage = () => {
     const initOpenVidu = async () => {
         try {
             const OV = new OpenVidu();
-            OV.setAdvancedConfiguration({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    {
-                        urls: 'turn:turn.example.com',
-                        username: 'user',
-                        credential: 'pass'
-                    }
-                ]
-            });
+
+            // console.log('Requesting session ID and token from server');
+            // const sessionId = await createSession();
+
+            const sessions = await getSessionList();
+            console.log('세션리스트 -> ', sessions);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionIdParam = urlParams.get('sessionId');
+            const sessionId = sessionIdParam;
+
+            console.log('Received session ID:', sessionId);
+            const token = await createToken(sessionId);
+            console.log('Received token:', token);
+
             const session = OV.initSession();
-    
+            sessionRef.current = session;
+
             session.on('streamCreated', (event) => {
                 const subscriber = session.subscribe(event.stream, undefined);
                 setSubscribers((prevSubscribers) => [
@@ -194,7 +204,7 @@ const VideoChatPage = () => {
                     subscriber,
                 ]);
             });
-    
+
             session.on('streamDestroyed', (event) => {
                 setSubscribers((prevSubscribers) =>
                     prevSubscribers.filter(
@@ -203,21 +213,17 @@ const VideoChatPage = () => {
                     )
                 );
             });
-    
+
             session.on('exception', (exception) => {
                 console.error(exception);
             });
-    
+
             session.on('iceConnectionStateChange', (event) => {
                 console.log(`ICE connection state change: ${event}`);
             });
-    
-            const sessionId = await createSession();
-            const token = await createToken(sessionId);
-    
-            sessionRef.current = session;
+
             await session.connect(token, { clientData: 'Participant' });
-    
+
             const publisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
                 videoSource: undefined,
@@ -228,28 +234,26 @@ const VideoChatPage = () => {
                 insertMode: 'APPEND',
                 mirror: false,
             });
-    
-            session.publish(publisher);
+
+            await session.publish(publisher);
             setMainStreamManager(publisher);
             setPublisher(publisher);
             setSession(session);
-    
+
             const localStream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true,
             });
             document.getElementById('localVideo').srcObject = localStream;
-            localStream.getTracks().forEach(track => {
+            localStream.getTracks().forEach((track) => {
                 if (publisher) {
                     publisher.addTrack(track);
                 }
             });
-    
         } catch (error) {
             console.error('Error initializing OpenVidu:', error);
         }
     };
-    
 
     useEffect(() => {
         if (token) {
@@ -280,13 +284,14 @@ const VideoChatPage = () => {
 
     useEffect(() => {
         subscribers.forEach((subscriber, index) => {
-            const videoElement = document.getElementById(`subscriber-video-${index}`);
+            const videoElement = document.getElementById(
+                `subscriber-video-${index}`
+            );
             if (videoElement) {
                 subscriber.addVideoElement(videoElement);
             }
         });
     }, [subscribers]);
-
 
     // publisher.publishVideo를 호출하여 비디오 제어.
     const toggleVideo = () => {
@@ -345,7 +350,11 @@ const VideoChatPage = () => {
             </div>
             <div className="content">
                 <div className="video-container">
-                    <div className={`stream-container ${isMirrored ? 'mirrored' : ''}`}>
+                    <div
+                        className={`stream-container ${
+                            isMirrored ? 'mirrored' : ''
+                        }`}
+                    >
                         <video id="localVideo" autoPlay={true} ref={videoRef} />
                         <div className="stream-label">
                             {userInfo?.username || '나'}
@@ -359,10 +368,14 @@ const VideoChatPage = () => {
                         {showSettings && (
                             <div className="settings-menu">
                                 <button onClick={toggleVideo}>
-                                    {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
+                                    {isVideoActive
+                                        ? '비디오 끄기'
+                                        : '비디오 켜기'}
                                 </button>
                                 <button onClick={toggleAudio}>
-                                    {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
+                                    {isAudioActive
+                                        ? '오디오 끄기'
+                                        : '오디오 켜기'}
                                 </button>
                                 <button onClick={toggleMirror}>
                                     {isMirrored ? '반전 해제' : '반전 적용'}
@@ -370,36 +383,61 @@ const VideoChatPage = () => {
 
                                 <div>
                                     <label>카메라 선택:</label>
-                                    <select onChange={handleVideoDeviceChange} value={selectedVideoDevice}>
+                                    <select
+                                        onChange={handleVideoDeviceChange}
+                                        value={selectedVideoDevice}
+                                    >
                                         {devices.videoDevices &&
-                                            devices.videoDevices.map((device) => (
-                                                <option key={device.deviceId} value={device.deviceId}>
-                                                    {device.label}
-                                                </option>
-                                            ))}
+                                            devices.videoDevices.map(
+                                                (device) => (
+                                                    <option
+                                                        key={device.deviceId}
+                                                        value={device.deviceId}
+                                                    >
+                                                        {device.label}
+                                                    </option>
+                                                )
+                                            )}
                                     </select>
                                 </div>
                                 <div>
                                     <label>마이크 선택:</label>
-                                    <select onChange={handleAudioDeviceChange} value={selectedAudioDevice}>
+                                    <select
+                                        onChange={handleAudioDeviceChange}
+                                        value={selectedAudioDevice}
+                                    >
                                         {devices.audioDevices &&
-                                            devices.audioDevices.map((device) => (
-                                                <option key={device.deviceId} value={device.deviceId}>
-                                                    {device.label}
-                                                </option>
-                                            ))}
+                                            devices.audioDevices.map(
+                                                (device) => (
+                                                    <option
+                                                        key={device.deviceId}
+                                                        value={device.deviceId}
+                                                    >
+                                                        {device.label}
+                                                    </option>
+                                                )
+                                            )}
                                     </select>
                                 </div>
                             </div>
                         )}
-                        <div className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}>
+                        <div
+                            className={`audio-status ${
+                                isAudioActive ? 'active' : 'inactive'
+                            }`}
+                        >
                             {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
                         </div>
                     </div>
                     {subscribers.map((subscriber, index) => (
                         <div key={index} className="stream-container">
-                            <video id={`subscriber-video-${index}`} autoPlay={true} />
-                            <div className="stream-label">상대방 {index + 1}</div>
+                            <video
+                                id={`subscriber-video-${index}`}
+                                autoPlay={true}
+                            />
+                            <div className="stream-label">
+                                상대방 {index + 1}
+                            </div>
                         </div>
                     ))}
                 </div>
