@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import './VideoChatPage.css';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
@@ -9,17 +10,19 @@ const OPENVIDU_SERVER_SECRET = 'namanmu';
 
 const VideoChatPage = () => {
     const [session, setSession] = useState(undefined);
-    const [sessionId, setSessionId] = useState('SessionA');
+    const [sessionId, setSessionId] = useState('');
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
     const [OV, setOV] = useState(undefined);
+
+    const location = useLocation();
 
     const leaveSession = useCallback(() => {
         if (session) session.disconnect();
 
         setOV(undefined);
         setSession(undefined);
-        setSessionId('SessionA');
+        setSessionId('');
         setSubscribers([]);
         setPublisher(undefined);
     }, [session]);
@@ -31,14 +34,21 @@ const VideoChatPage = () => {
         };
     }, [leaveSession]);
 
-    const joinSession = () => {
-        let OV = new OpenVidu();
-        setOV(OV);
-        setSession(OV.initSession());
-    };
-
     useEffect(() => {
-        if (session === undefined) return;
+        // URL에서 sessionId 파라미터를 가져옵니다.
+        const params = new URLSearchParams(location.search);
+        const urlSessionId = params.get('sessionId');
+        if (urlSessionId) {
+            setSessionId(urlSessionId);
+            joinSession(urlSessionId);
+        }
+    }, [location]);
+
+    const joinSession = useCallback((sid) => {
+        const OV = new OpenVidu();
+        setOV(OV);
+        const session = OV.initSession();
+        setSession(session);
 
         session.on('streamCreated', (event) => {
             let subscriber = session.subscribe(event.stream, undefined);
@@ -56,7 +66,7 @@ const VideoChatPage = () => {
             );
         });
 
-        getToken(sessionId).then((token) => {
+        getToken(sid).then((token) => {
             session
                 .connect(token)
                 .then(() => {
@@ -72,7 +82,7 @@ const VideoChatPage = () => {
                     );
                 });
         });
-    }, [session, OV, sessionId]);
+    }, []);
 
     const getToken = (sessionId) => {
         return createSession(sessionId).then((sessionId) =>
@@ -156,12 +166,10 @@ const VideoChatPage = () => {
         <div className="video-chat-page">
             <div className="header">
                 <h1>멍톡</h1>
-                <button onClick={leaveSession}>Logout</button>
+                <button onClick={leaveSession}>Leave Session</button>
             </div>
             <div className="content">
-                {!session ? (
-                    <button onClick={joinSession}>Join Session</button>
-                ) : (
+                {session ? (
                     <div className="video-container">
                         <div className={`stream-container mirrored`}>
                             {publisher && (
@@ -178,6 +186,8 @@ const VideoChatPage = () => {
                             </div>
                         ))}
                     </div>
+                ) : (
+                    <p>Joining session...</p>
                 )}
             </div>
         </div>
