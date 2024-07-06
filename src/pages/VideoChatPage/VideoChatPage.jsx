@@ -18,17 +18,10 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 
 const VideoChatPage = () => {
     // 여러 상태 관리
-    const [session, setSession] = useState(null);
     const [mainStreamManager, setMainStreamManager] = useState(null); // 메인 스트림 관리자 상태를 관리
     const [publisher, setPublisher] = useState(null);
     const [subscribers, setSubscribers] = useState([]); // 구독자 목록 상태 관리
-    const [isVideoActive, setIsVideoActive] = useState(true);
-    const [isAudioActive, setIsAudioActive] = useState(true);
     const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
-    const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
-    const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
-    const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
-    const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
 
     // 요소 참조
     const sessionRef = useRef(null); // 세션 참조 관리
@@ -293,50 +286,6 @@ const VideoChatPage = () => {
         });
     }, [subscribers]);
 
-    // publisher.publishVideo를 호출하여 비디오 제어.
-    const toggleVideo = () => {
-        if (publisher) {
-            if (isVideoActive) {
-                publisher.publishVideo(false);
-            } else {
-                publisher.publishVideo(true);
-            }
-            setIsVideoActive(!isVideoActive);
-        }
-    };
-
-    // publisher.publishAudio를 호출하여 오디오 제어.
-    const toggleAudio = () => {
-        if (publisher) {
-            if (isAudioActive) {
-                publisher.publishAudio(false);
-            } else {
-                publisher.publishAudio(true);
-            }
-            setIsAudioActive(!isAudioActive);
-        }
-    };
-
-    // 비디오 미러링 토글 함수
-    const toggleMirror = () => {
-        setIsMirrored(!isMirrored);
-    };
-
-    // 설정 창 표시/숨기기 토글 함수
-    const toggleSettings = () => {
-        setShowSettings(!showSettings);
-    };
-
-    // 선택된 비디오 장치 변경 함수
-    const handleVideoDeviceChange = (event) => {
-        setSelectedVideoDevice(event.target.value);
-    };
-
-    // 선택된 오디오 장치 변경 함수
-    const handleAudioDeviceChange = (event) => {
-        setSelectedAudioDevice(event.target.value);
-    };
-
     const handleLogout = () => {
         dispatch(logoutUser());
         navigate('/');
@@ -359,75 +308,6 @@ const VideoChatPage = () => {
                         <div className="stream-label">
                             {userInfo?.username || '나'}
                         </div>
-                        <img
-                            src={settingsIcon}
-                            alt="설정"
-                            className="settings-icon"
-                            onClick={toggleSettings}
-                        />
-                        {showSettings && (
-                            <div className="settings-menu">
-                                <button onClick={toggleVideo}>
-                                    {isVideoActive
-                                        ? '비디오 끄기'
-                                        : '비디오 켜기'}
-                                </button>
-                                <button onClick={toggleAudio}>
-                                    {isAudioActive
-                                        ? '오디오 끄기'
-                                        : '오디오 켜기'}
-                                </button>
-                                <button onClick={toggleMirror}>
-                                    {isMirrored ? '반전 해제' : '반전 적용'}
-                                </button>
-
-                                <div>
-                                    <label>카메라 선택:</label>
-                                    <select
-                                        onChange={handleVideoDeviceChange}
-                                        value={selectedVideoDevice}
-                                    >
-                                        {devices.videoDevices &&
-                                            devices.videoDevices.map(
-                                                (device) => (
-                                                    <option
-                                                        key={device.deviceId}
-                                                        value={device.deviceId}
-                                                    >
-                                                        {device.label}
-                                                    </option>
-                                                )
-                                            )}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>마이크 선택:</label>
-                                    <select
-                                        onChange={handleAudioDeviceChange}
-                                        value={selectedAudioDevice}
-                                    >
-                                        {devices.audioDevices &&
-                                            devices.audioDevices.map(
-                                                (device) => (
-                                                    <option
-                                                        key={device.deviceId}
-                                                        value={device.deviceId}
-                                                    >
-                                                        {device.label}
-                                                    </option>
-                                                )
-                                            )}
-                                    </select>
-                                </div>
-                            </div>
-                        )}
-                        <div
-                            className={`audio-status ${
-                                isAudioActive ? 'active' : 'inactive'
-                            }`}
-                        >
-                            {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
-                        </div>
                     </div>
                     {subscribers.map((subscriber, index) => (
                         <div key={index} className="stream-container">
@@ -439,44 +319,6 @@ const VideoChatPage = () => {
                                 상대방 {index + 1}
                             </div>
                         </div>
-                    ))}
-                </div>
-
-                <div className="chat-container">
-                    <div className="chat-box">{/* 채팅 메시지들 */}</div>
-                    <input
-                        type="text"
-                        placeholder="메시지를 입력하세요..."
-                        className="chat-input"
-                    />
-                </div>
-            </div>
-            <div className="bottom-section">
-                <div className="dog-container">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <img
-                            key={index}
-                            src={dogImage}
-                            alt={`Dog ${index + 1}`}
-                            className="dog-image"
-                        />
-                    ))}
-                </div>
-                <div className="mission">
-                    <h2>미션!</h2>
-                    <p>
-                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이
-                        인식되어야 본격적인 통화가 시작됩니다. 멍멍!
-                    </p>
-                </div>
-                <div className="dog-house-container">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <img
-                            key={index}
-                            src={dogHouseImage}
-                            alt={`Dog House ${index + 1}`}
-                            className="dog-house-image"
-                        />
                     ))}
                 </div>
             </div>
