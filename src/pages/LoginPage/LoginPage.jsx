@@ -62,6 +62,7 @@ const LoginPage = () => {
                 </div>
             </div>
         </div>
+        
     );
 };
 
