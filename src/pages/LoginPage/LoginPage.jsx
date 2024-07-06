@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/userSlice';
@@ -10,7 +10,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { error } = useSelector((state) => state.user);
+    const { token, error } = useSelector((state) => state.user);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -19,6 +19,18 @@ const LoginPage = () => {
             navigate('/main'); // 로그인 성공 시 메인 페이지로 이동
         }
     };
+
+    useEffect(() => {
+        // 로컬 스토리지에서 로그인 값 삭제
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+    }, []);
+
+    useEffect(() => {
+        if (token) {
+            navigate('/main'); // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
+        }
+    }, [token, navigate]);
 
     return (
         <div className="home-page">
