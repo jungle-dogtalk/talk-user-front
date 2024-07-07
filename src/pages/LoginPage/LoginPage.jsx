@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../redux/slices/userSlice';
-import './LoginPage.css';
+import React, { useState, useEffect } from 'react'; // React와 React 훅스 가져오기
+import { useNavigate } from 'react-router-dom'; // 리디렉션을 위해 useNavigate 훅 가져오기
+import { useDispatch, useSelector } from 'react-redux'; // Redux 훅스 가져오기
+import { loginUser } from '../../redux/slices/userSlice'; // 로그인 액션 가져오기
+import './LoginPage.css'; // 로그인 페이지 스타일 시트 가져오기
 import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 
 const LoginPage = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(''); // 사용자 이름 상태 변수와 설정 함수
+    const [password, setPassword] = useState(''); // 비밀번호 상태 변수와 설정 함수
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { error } = useSelector((state) => state.user);
+    const { token, error,loading  } = useSelector((state) => state.user);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        const success = await dispatch(loginUser({ username, password }));
-        if (success) {
+        const resultAction = await dispatch(loginUser({ username, password }));
+        if (loginUser.fulfilled.match(resultAction)) {
             navigate('/main'); // 로그인 성공 시 메인 페이지로 이동
         }
+
     };
+
+    useEffect(() => {
+        if (token) {
+            navigate('/main'); // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
+        }
+    }, [token, navigate]);
 
     return (
         <div className="home-page">
@@ -47,6 +54,7 @@ const LoginPage = () => {
                             required
                         />
                     </div>
+                    {loading && <p>Loading...</p>}
                     {error && <p className="error">{error}</p>}
                     <button type="submit" className="login-button">
                         로그인

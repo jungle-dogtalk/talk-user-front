@@ -1,22 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios'; // axios 임포트
+import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
+import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
-import { signUpUser } from '../../redux/slices/userSlice';
 import './SignUpPage.css';
 import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 
+
 const SignUpPage = () => {
+    // 상태 변수들 정의
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [interests, setInterests] = useState([]);
+    const [nickname, setNickname] = useState('');
     const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { error } = useSelector((state) => state.user);
+    const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 함수 가져오기
+    const [profileImageFile, setProfileImageFile] = useState(null); // 프로필 이미지 파일 상태 추가
+    const { token, error } = useSelector((state) => state.user);
 
+    // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
+    useEffect(() => {
+        if (token) {
+            navigate('/main'); // 이미 로그인되어 있는 경우 홈 페이지로 리디렉션
+        }
+    }, [token, navigate]);
+
+     // 회원가입 처리 함수
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
@@ -24,14 +38,39 @@ const SignUpPage = () => {
             alert('Passwords do not match');
             return;
         }
-        const success = await dispatch(
-            signUpUser({ username, password, name, email, interests })
-        );
-        if (success) {
-            navigate('/'); // 회원가입 성공 시 로그인 페이지로 이동
+
+        if (!profileImageFile) {
+            alert('Please upload a profile image');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('confirmPassword', confirmPassword);
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('nickname', nickname);
+        interests.forEach(interest => formData.append('interests', interest));
+        formData.append('profileImage', profileImageFile);
+
+        try {
+            const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data) {
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error:', error.response ? error.response.data : error.message);
+            alert('An error occurred during sign up: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
+    // 관심사 변경 처리 함수
     const handleInterestChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
@@ -39,6 +78,33 @@ const SignUpPage = () => {
         } else {
             setInterests(interests.filter((interest) => interest !== value));
         }
+    };
+
+    // 아이디 중복 체크 함수
+    const handleUsernameCheck = async () => {
+        // 아이디 중복 검사 로직 추가
+        const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
+        if (response.data.exists) {
+            alert('Username already exists');
+        } else {
+            alert('Username is available');
+        }
+    };
+
+    // 닉네임 중복 체크 함수
+    const handleNicknameCheck = async () => {
+        // 닉네임 중복 검사 로직 추가
+        const response = await apiCall(API_LIST.CHECK_NICKNAME, { nickname });
+        if (response.data.exists) {
+            alert('Nickname already exists');
+        } else {
+            alert('Nickname is available');
+        }
+    };
+
+    // 프로필 이미지 파일 변경 처리 함수
+    const handleProfileImageChange = (e) => {
+        setProfileImageFile(e.target.files[0]);
     };
 
     return (
@@ -50,6 +116,11 @@ const SignUpPage = () => {
                     alt="프로필 이미지"
                     className="profile-image"
                 />
+                <input
+                        type="file"
+                        onChange={handleProfileImageChange}
+                        className="profile-image-upload"
+                    />
                 <form onSubmit={handleSignUp} className="signup-form">
                     <div className="input-group">
                         <label htmlFor="username">아이디</label>
@@ -61,6 +132,7 @@ const SignUpPage = () => {
                             placeholder="아이디를 입력하세요"
                             required
                         />
+                        <button type="button" onClick={handleUsernameCheck}>중복검사</button>
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">비밀번호</label>
@@ -96,6 +168,18 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="input-group">
+                        <label htmlFor="nickname">닉네임</label>
+                        <input
+                            type="text"
+                            id="nickname"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            placeholder="닉네임을 입력하세요"
+                            required
+                        />
+                        <button type="button" onClick={handleNicknameCheck}>중복검사</button>
+                    </div>
+                    <div className="input-group">
                         <label htmlFor="email">이메일</label>
                         <input
                             type="email"
@@ -109,31 +193,28 @@ const SignUpPage = () => {
                     <div className="interests-container">
                         <label>관심사</label>
                         <div className="interests">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="interest"
-                                    value="관심사1"
-                                    onChange={handleInterestChange}
-                                />
-                                관심사1
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="interest"
-                                    value="관심사2"
-                                    onChange={handleInterestChange}
-                                />
-                                관심사2
-                            </label>
-                            {/* 관심사 추가 */}
+                            {['독서', '영화 감상', '게임', '여행', '요리', '드라이브', 'KPOP', '메이크업', '인테리어', '그림', '애완동물', '부동산', '맛집 투어', '헬스', '산책', '수영', '사진 찍기', '주식'].map((interest) => (
+                                <label key={interest} className="interest-label">
+                                    <input
+                                        type="checkbox"
+                                        name="interest"
+                                        value={interest}
+                                        onChange={handleInterestChange}
+                                    />
+                                    {interest}
+                                </label>
+                            ))}
                         </div>
                     </div>
                     {error && <p className="error">{error}</p>}
-                    <button type="submit" className="signup-button">
-                        회원가입
-                    </button>
+                    <div className="buttons">
+                        <button type="button" className="back-button" onClick={() => navigate(-1)}>
+                            뒤로가기
+                        </button>
+                        <button type="submit" className="signup-button">
+                            회원가입
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

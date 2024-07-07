@@ -3,93 +3,107 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
     padding: 20px;
+    background-color: #f5f5dc;
+    height: 100vh;
 }
 
 .signup-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #fff8dc;
-    padding: 40px;
+    background-color: #fff;
     border-radius: 10px;
+    padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 400px;
+    text-align: center;
+    width: 500px;
 }
 
 .logo {
-    width: 120px;
+    height: 50px;
     margin-bottom: 20px;
 }
 
 .profile-image {
+    border-radius: 50%;
     width: 100px;
     height: 100px;
-    border-radius: 50%;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto; /* 가운데 정렬 */
 }
 
 .signup-form {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    align-items: center;
 }
 
 .input-group {
-    margin-bottom: 15px;
-    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #8b4513;
+    margin-right: 10px;
+    min-width: 80px;
+    text-align: left;
+    font-size: 12px;
 }
 
 .input-group input {
-    width: 100%;
-    padding: 10px;
+    flex: 1;
+    padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    box-sizing: border-box;
+    font-size: 12px;
 }
 
-.signup-button {
-    background-color: #d2691e;
-    color: white;
-    padding: 10px;
+.input-group button {
+    margin-left: 10px;
+    padding: 5px 10px;
     border: none;
+    background-color: #4caf50;
+    color: white;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
-    width: 100%;
-}
-
-.signup-button:hover {
-    background-color: #a0522d;
+    font-size: 12px;
 }
 
 .interests-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
+    margin: 15px 0;
 }
 
 .interests {
     display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
 }
 
 .interests label {
-    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
 }
 
-.error {
-    color: red;
-    margin-top: 10px;
+.interests input {
+    margin-right: 3px;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.signup-button, .back-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.back-button {
+    background-color: #808080; /* 회색 배경 */
 }
