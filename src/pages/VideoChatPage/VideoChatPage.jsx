@@ -8,13 +8,19 @@ import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken } from '../../services/openviduService';
-import SettingsMenu from './SettingMenu';
 
 const VideoChatPage = () => {
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
+
+    const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
     const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
+    const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
+    const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
+    const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
+    const [isVideoActive, setIsVideoActive] = useState(true);
+    const [isAudioActive, setIsAudioActive] = useState(true);
 
     const location = useLocation();
 
@@ -25,6 +31,37 @@ const VideoChatPage = () => {
         setSubscribers([]);
         setPublisher(undefined);
     }, [session]);
+
+    const getDevices = async () => {
+        try {
+            // 모든 미디어 장치 정보 가져옴
+            const deviceInfos = await navigator.mediaDevices.enumerateDevices();
+
+            // 비디오 입력 장치만 필터링하여 배열에 저장
+            const videoDevices = deviceInfos.filter(
+                (device) => device.kind === 'videoinput'
+            );
+
+            // 오디오 입력 장치만 필터링하여 배열에 저장
+            const audioDevices = deviceInfos.filter(
+                (device) => device.kind === 'audioinput'
+            );
+            setDevices({ videoDevices, audioDevices });
+
+            if (videoDevices.length > 0)
+                setSelectedVideoDevice(videoDevices[0].deviceId);
+            if (audioDevices.length > 0)
+                setSelectedAudioDevice(audioDevices[0].deviceId);
+        } catch (error) {
+            console.error('Error getting devices:', error);
+        }
+    };
+
+    // 미디어 장치 목록 가져오기
+    useEffect(() => {
+        // 컴포넌트가 마운트될 때 getDevices 함수를 호출하여 장치 목록을 가져옴
+        getDevices();
+    }, []);
 
     useEffect(() => {
         window.addEventListener('beforeunload', leaveSession);
@@ -86,7 +123,25 @@ const VideoChatPage = () => {
         setShowSettings(!showSettings);
     };
 
+    // 선택된 비디오 장치 변경 함수
+    const handleVideoDeviceChange = (event) => {
+        setSelectedVideoDevice(event.target.value);
+    };
+
+    // publisher.publishVideo를 호출하여 비디오 제어.
     const toggleVideo = () => {
+        if (publisher) {
+            if (isVideoActive) {
+                publisher.publishVideo(false);
+            } else {
+                publisher.publishVideo(true);
+            }
+            setIsVideoActive(!isVideoActive);
+        }
+    };
+
+    // publisher.publishAudio를 호출하여 오디오 제어.
+    const toggleAudio = () => {
         if (publisher) {
             if (isAudioActive) {
                 publisher.publishAudio(false);
@@ -96,26 +151,10 @@ const VideoChatPage = () => {
             setIsAudioActive(!isAudioActive);
         }
     };
-    const [isAudioActive, setIsAudioActive] = useState(true);
 
-    const toggleAudio = () => {
-        setIsAudioActive(!isAudioActive);
-        // 오디오 on/off 로직 구현
-    };
-
+    // 비디오 미러링 토글 함수
     const toggleMirror = () => {
         setIsMirrored(!isMirrored);
-        // 화면 반전 로직 구현
-    };
-
-    const handleVideoDeviceChange = (event) => {
-        setSelectedVideoDevice(event.target.value);
-        // 비디오 디바이스 변경 로직 구현
-    };
-
-    const handleAudioDeviceChange = (event) => {
-        setSelectedAudioDevice(event.target.value);
-        // 오디오 디바이스 변경 로직 구현
     };
 
     return (
@@ -126,7 +165,11 @@ const VideoChatPage = () => {
             </div>
             <div className="content">
                 <div className="video-container">
-                    <div className={`stream-container mirrored`}>
+                    <div
+                        className={`stream-container ${
+                            isMirrored ? 'mirrored' : ''
+                        }`}
+                    >
                         {publisher && (
                             <OpenViduVideo streamManager={publisher} />
                         )}
@@ -138,23 +181,41 @@ const VideoChatPage = () => {
                             onClick={toggleSettings}
                         />
                         {showSettings && (
-                            <SettingsMenu
-                                isVideoActive={isVideoActive}
-                                isAudioActive={isAudioActive}
-                                isMirrored={isMirrored}
-                                toggleVideo={toggleVideo}
-                                toggleAudio={toggleAudio}
-                                toggleMirror={toggleMirror}
-                                devices={devices}
-                                selectedVideoDevice={selectedVideoDevice}
-                                selectedAudioDevice={selectedAudioDevice}
-                                handleVideoDeviceChange={
-                                    handleVideoDeviceChange
-                                }
-                                handleAudioDeviceChange={
-                                    handleAudioDeviceChange
-                                }
-                            />
+                            <div className="settings-menu">
+                                <button onClick={toggleVideo}>
+                                    {isVideoActive
+                                        ? '비디오 끄기'
+                                        : '비디오 켜기'}
+                                </button>
+                                <button onClick={toggleAudio}>
+                                    {isAudioActive
+                                        ? '오디오 끄기'
+                                        : '오디오 켜기'}
+                                </button>
+                                <button onClick={toggleMirror}>
+                                    {isMirrored ? '반전 해제' : '반전 적용'}
+                                </button>
+
+                                <div>
+                                    <label>카메라 선택:</label>
+                                    <select
+                                        onChange={handleVideoDeviceChange}
+                                        value={selectedVideoDevice}
+                                    >
+                                        {devices.videoDevices &&
+                                            devices.videoDevices.map(
+                                                (device) => (
+                                                    <option
+                                                        key={device.deviceId}
+                                                        value={device.deviceId}
+                                                    >
+                                                        {device.label}
+                                                    </option>
+                                                )
+                                            )}
+                                    </select>
+                                </div>
+                            </div>
                         )}
                     </div>
                     {subscribers.map((subscriber, index) => (
