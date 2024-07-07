@@ -20,11 +20,11 @@ const LoginPage = () => {
         }
     };
 
-    useEffect(() => {
-        // 로컬 스토리지에서 로그인 값 삭제
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-    }, []);
+    // useEffect(() => {
+    //     // 로컬 스토리지에서 로그인 값 삭제
+    //     localStorage.removeItem('token');
+    //     localStorage.removeItem('user');
+    // }, []);
 
     useEffect(() => {
         if (token) {
