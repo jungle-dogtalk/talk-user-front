@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
+import Cookies from 'js-cookie'; // js-cookie 라이브러리 임포트
 
 //TODO)
 // 사용자의 모든 정보를 localStorage에 저장하지 말 것
@@ -14,8 +15,8 @@ export const loginUser = createAsyncThunk(
         try {
             const response = await apiCall(API_LIST.USER_LOGIN, credentials);
             const { token, user } = response.data;
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            Cookies.set('token', token);
+            Cookies.set('user', JSON.stringify(user));
             return { token, user };
         } catch (error) {
             return rejectWithValue(error.response.data.message);
@@ -26,15 +27,15 @@ export const loginUser = createAsyncThunk(
 const userSlice = createSlice({
     name: 'user',
     initialState: {
-        token: localStorage.getItem('token'),
-        userInfo: JSON.parse(localStorage.getItem('user')),
+        token: Cookies.get('token'),
+        userInfo: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null,
         loading: false,
         error: null,
     },
     reducers: {
         logoutUser: (state) => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            Cookies.remove('token');
+            Cookies.remove('user');
             state.token = null;
             state.userInfo = null;
             state.error = null;
