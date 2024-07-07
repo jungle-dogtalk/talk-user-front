@@ -48,6 +48,20 @@ const VideoChatPage = () => {
             );
         });
 
+        // 발화 시작 감지
+        session.on('publisherStartSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' start speaking'
+            );
+        });
+
+        // 발화 종료 감지
+        session.on('publisherStopSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' stop speaking'
+            );
+        });
+
         getToken(sid).then((token) => {
             session
                 .connect(token)
