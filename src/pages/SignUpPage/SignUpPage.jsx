@@ -14,6 +14,7 @@ const SignUpPage = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [interests, setInterests] = useState([]);
+    const [nickname, setNickname] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { token, error } = useSelector((state) => state.user);
@@ -46,6 +47,26 @@ const SignUpPage = () => {
         }
     };
 
+    const handleUsernameCheck = async () => {
+        // 아이디 중복 검사 로직 추가
+        const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
+        if (response.data.exists) {
+            alert('Username already exists');
+        } else {
+            alert('Username is available');
+        }
+    };
+
+    const handleNicknameCheck = async () => {
+        // 닉네임 중복 검사 로직 추가
+        const response = await apiCall(API_LIST.CHECK_NICKNAME, { nickname });
+        if (response.data.exists) {
+            alert('Nickname already exists');
+        } else {
+            alert('Nickname is available');
+        }
+    };
+
     return (
         <div className="signup-page">
             <div className="signup-container">
@@ -66,6 +87,7 @@ const SignUpPage = () => {
                             placeholder="아이디를 입력하세요"
                             required
                         />
+                        <button type="button" onClick={handleUsernameCheck}>중복검사</button>
                     </div>
                     <div className="input-group">
                         <label htmlFor="password">비밀번호</label>
@@ -101,6 +123,18 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="input-group">
+                        <label htmlFor="nickname">닉네임</label>
+                        <input
+                            type="text"
+                            id="nickname"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            placeholder="닉네임을 입력하세요"
+                            required
+                        />
+                        <button type="button" onClick={handleNicknameCheck}>중복검사</button>
+                    </div>
+                    <div className="input-group">
                         <label htmlFor="email">이메일</label>
                         <input
                             type="email"
@@ -114,31 +148,28 @@ const SignUpPage = () => {
                     <div className="interests-container">
                         <label>관심사</label>
                         <div className="interests">
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="interest"
-                                    value="관심사1"
-                                    onChange={handleInterestChange}
-                                />
-                                관심사1
-                            </label>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    name="interest"
-                                    value="관심사2"
-                                    onChange={handleInterestChange}
-                                />
-                                관심사2
-                            </label>
-                            {/* 관심사 추가 */}
+                            {['독서', '영화 감상', '게임', '여행', '요리', '드라이브', 'KPOP', '메이크업', '인테리어', '그림', '애완동물', '부동산', '맛집 투어', '헬스', '산책', '수영', '사진 찍기', '주식'].map((interest) => (
+                                <label key={interest} className="interest-label">
+                                    <input
+                                        type="checkbox"
+                                        name="interest"
+                                        value={interest}
+                                        onChange={handleInterestChange}
+                                    />
+                                    {interest}
+                                </label>
+                            ))}
                         </div>
                     </div>
                     {error && <p className="error">{error}</p>}
-                    <button type="submit" className="signup-button">
-                        회원가입
-                    </button>
+                    <div className="buttons">
+                        <button type="button" className="back-button" onClick={() => navigate(-1)}>
+                            뒤로가기
+                        </button>
+                        <button type="submit" className="signup-button">
+                            회원가입
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
