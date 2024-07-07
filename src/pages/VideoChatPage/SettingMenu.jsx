@@ -3,7 +3,10 @@ import React, { useState, useEffect } from 'react';
 const SettingMenu = ({ onMirroredChange, publisher }) => {
     const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
-    const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
+    const [selectedAudioInputDevice, setSelectedAudioInputDevice] =
+        useState(''); // 선택된 오디오 장치
+    const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] =
+        useState(''); // 선택된 오디오 장치
 
     const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
     const [isVideoActive, setIsVideoActive] = useState(true);
@@ -11,24 +14,35 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
 
     const getDevices = async () => {
         try {
-            // 모든 미디어 장치 정보 가져옴
+            // 모든 미디어 장치 정보
             const deviceInfos = await navigator.mediaDevices.enumerateDevices();
 
-            // 비디오 입력 장치만 필터링하여 배열에 저장
+            // 비디오 입력 장치
             const videoDevices = deviceInfos.filter(
                 (device) => device.kind === 'videoinput'
             );
 
-            // 오디오 입력 장치만 필터링하여 배열에 저장
-            const audioDevices = deviceInfos.filter(
+            // 오디오 입력 장치
+            const audioInputDevices = deviceInfos.filter(
                 (device) => device.kind === 'audioinput'
             );
-            setDevices({ videoDevices, audioDevices });
 
-            if (videoDevices.length > 0)
+            // 오디오 출력 장치
+            const audioOutputDevices = deviceInfos.filter(
+                (device) => device.kind === 'audiooutput'
+            );
+
+            setDevices({ videoDevices, audioInputDevices, audioOutputDevices });
+
+            if (videoDevices.length > 0) {
                 setSelectedVideoDevice(videoDevices[0].deviceId);
-            if (audioDevices.length > 0)
-                setSelectedAudioDevice(audioDevices[0].deviceId);
+            }
+            if (audioInputDevices.length > 0) {
+                setSelectedAudioInputDevice(audioInputDevices[0].deviceId);
+            }
+            if (audioOutputDevices.length > 0) {
+                setSelectedAudioOutputDevice(audioOutputDevices[0].deviceId);
+            }
         } catch (error) {
             console.error('Error getting devices:', error);
         }
@@ -70,8 +84,12 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
     };
 
     // 선택된 오디오 장치 변경 함수
-    const handleAudioDeviceChange = (event) => {
-        setSelectedAudioDevice(event.target.value);
+    const handleAudioInputDeviceChange = (event) => {
+        setSelectedAudioInputDevice(event.target.value);
+    };
+
+    const handleAudioOutputDeviceChange = (event) => {
+        setSelectedAudioOutputDevice(event.target.value);
     };
 
     useEffect(() => {
@@ -110,11 +128,28 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
             <div>
                 <label>마이크 선택:</label>
                 <select
-                    onChange={handleAudioDeviceChange}
-                    value={selectedAudioDevice}
+                    onChange={handleAudioInputDeviceChange}
+                    value={selectedAudioInputDevice}
                 >
-                    {devices.audioDevices &&
-                        devices.audioDevices.map((device) => (
+                    {devices.audioInputDevices &&
+                        devices.audioInputDevices.map((device) => (
+                            <option
+                                key={device.deviceId}
+                                value={device.deviceId}
+                            >
+                                {device.label}
+                            </option>
+                        ))}
+                </select>
+            </div>
+            <div>
+                <label>스피커 선택:</label>
+                <select
+                    onChange={handleAudioOutputDeviceChange}
+                    value={selectedAudioOutputDevice}
+                >
+                    {devices.audioOutputDevices &&
+                        devices.audioOutputDevices.map((device) => (
                             <option
                                 key={device.deviceId}
                                 value={device.deviceId}
