@@ -1,5 +1,6 @@
 import React, { useState, useEffect  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios'; // axios 임포트
 import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +8,9 @@ import './SignUpPage.css';
 import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
 import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 
+
 const SignUpPage = () => {
+    // 상태 변수들 정의
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,15 +19,18 @@ const SignUpPage = () => {
     const [interests, setInterests] = useState([]);
     const [nickname, setNickname] = useState('');
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 함수 가져오기
+    const [profileImageFile, setProfileImageFile] = useState(null); // 프로필 이미지 파일 상태 추가
     const { token, error } = useSelector((state) => state.user);
 
+    // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
     useEffect(() => {
         if (token) {
             navigate('/main'); // 이미 로그인되어 있는 경우 홈 페이지로 리디렉션
         }
     }, [token, navigate]);
 
+     // 회원가입 처리 함수
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
@@ -32,12 +38,39 @@ const SignUpPage = () => {
             alert('Passwords do not match');
             return;
         }
-        const response = await apiCall(API_LIST.USER_SIGNUP, { username, password, name, email, interests });
-        if (response.data) {
-            navigate('/'); // 회원가입 성공 시 로그인 페이지로 이동
+
+        if (!profileImageFile) {
+            alert('Please upload a profile image');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+        formData.append('confirmPassword', confirmPassword);
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('nickname', nickname);
+        interests.forEach(interest => formData.append('interests', interest));
+        formData.append('profileImage', profileImageFile);
+
+        try {
+            const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data) {
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error:', error.response ? error.response.data : error.message);
+            alert('An error occurred during sign up: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
+    // 관심사 변경 처리 함수
     const handleInterestChange = (e) => {
         const { value, checked } = e.target;
         if (checked) {
@@ -47,6 +80,7 @@ const SignUpPage = () => {
         }
     };
 
+    // 아이디 중복 체크 함수
     const handleUsernameCheck = async () => {
         // 아이디 중복 검사 로직 추가
         const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
@@ -57,6 +91,7 @@ const SignUpPage = () => {
         }
     };
 
+    // 닉네임 중복 체크 함수
     const handleNicknameCheck = async () => {
         // 닉네임 중복 검사 로직 추가
         const response = await apiCall(API_LIST.CHECK_NICKNAME, { nickname });
@@ -65,6 +100,11 @@ const SignUpPage = () => {
         } else {
             alert('Nickname is available');
         }
+    };
+
+    // 프로필 이미지 파일 변경 처리 함수
+    const handleProfileImageChange = (e) => {
+        setProfileImageFile(e.target.files[0]);
     };
 
     return (
@@ -76,6 +116,11 @@ const SignUpPage = () => {
                     alt="프로필 이미지"
                     className="profile-image"
                 />
+                <input
+                        type="file"
+                        onChange={handleProfileImageChange}
+                        className="profile-image-upload"
+                    />
                 <form onSubmit={handleSignUp} className="signup-form">
                     <div className="input-group">
                         <label htmlFor="username">아이디</label>
