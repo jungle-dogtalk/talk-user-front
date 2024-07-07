@@ -1,60 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logoutUser } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
 import './ProfilePage.css';
-import profilePicture from '../../assets/profile.jpg'; // 프로필 사진 경로
+
 import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 
 const ProfilePage = () => {
-    const [user, setUser] = useState({
-        name: '김사용자',
-        nickname: '커피타우린',
-        interest1: 74,
-        interest2: 80,
-        interests: ['게임', '음악', '여행', '독서'],
-    });
+    const userInfo = useSelector((state) => state.user.userInfo);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const handleUpdateProfile = () => {
-        // 프로필 업데이트 로직
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        navigate('/');
+    };
+
+    const handleDeleteAccount = () => {
+        // 계정 탈퇴 로직 추가
+        // 예: API 호출 후 로컬 스토리지 삭제 및 로그아웃
+        dispatch(logoutUser());
+        navigate('/');
     };
 
     return (
         <div className="profile-page">
             <div className="header">
                 <img src={logo} alt="명톡 로고" className="logo" />
+                <button className="delete-account" onClick={handleDeleteAccount}>
+                    탈퇴하기
+                </button>
             </div>
-            <div className="profile-container">
-                <img
-                    src={profilePicture}
-                    alt={user.name}
-                    className="profile-picture"
-                />
-                <h2>{user.name}</h2>
-                <p>닉네임: {user.nickname}</p>
+            <div className="profile-card">
+                <img src={profileImage} alt="프로필 사진" className="profile-picture" />
+                <h2>이름: {userInfo?.name}</h2>
+                <h3>닉네임: {userInfo?.username}</h3>
                 <div className="progress-bars">
                     <div className="progress-bar">
-                        <span>{user.interest1}%</span>
-                        <div
-                            className="bar"
-                            style={{ width: `${user.interest1}%` }}
-                        ></div>
+                        <div className="bar red" style={{ width: '74%' }}></div>
+                        <span>74%</span>
                     </div>
                     <div className="progress-bar">
-                        <span>{user.interest2}%</span>
-                        <div
-                            className="bar"
-                            style={{ width: `${user.interest2}%` }}
-                        ></div>
+                        <div className="bar blue" style={{ width: '80%' }}></div>
+                        <span>80%</span>
                     </div>
                 </div>
                 <div className="interests">
-                    {user.interests.map((interest, index) => (
-                        <span key={index} className="interest">
-                            {interest}
-                        </span>
+                    {userInfo?.interests.map((interest) => (
+                        <button key={interest} className="interest-tag">{interest}</button>
                     ))}
                 </div>
-                <button className="update-button" onClick={handleUpdateProfile}>
-                    수정하기
-                </button>
+                <div className="buttons">
+                    <button className="edit-button" onClick={() => navigate('/edit-profile')}>
+                        수정하기
+                    </button>
+                    <button className="back-button" onClick={() => navigate(-1)}>
+                        뒤로가기
+                    </button>
+                </div>
             </div>
         </div>
     );
