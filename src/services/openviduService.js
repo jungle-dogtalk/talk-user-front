@@ -88,10 +88,4 @@ const createToken = (sessionId) => {
 };
 
 
-const getSessionList = async () => {
-    const response = await axios.get(`${API_URL}/api/openvidu/sessions`);
-
-    return response.data;
-}
-
-export { getToken, getSessionList };
+export { getToken };

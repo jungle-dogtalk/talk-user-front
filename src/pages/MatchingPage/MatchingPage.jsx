@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './MatchingPage.css';
 import waitingDogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import waitingHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
-import axios from 'axios';
 import { io } from 'socket.io-client';
+import { apiCall } from '../../utils/apiCall';
+import { API_LIST } from '../../utils/apiList';
 
 const MatchingPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
@@ -32,13 +33,14 @@ const MatchingPage = () => {
         alert('취소하기 버튼이 클릭되었습니다.');
     };
 
-    const handleAddUserToQueue = async () => {
-        const result = await axios.post(
-            'https://api.barking-talk.org/api/match/add/user',
-            { userId: userInfo._id }
-        );
-        console.log(result);
+    // 백엔드 서버 콘솔로그에서 OpenVidu 가용 세션 확인하기 위한 API 호출
+    const getSessionList = async () => {
+        await apiCall(API_LIST.GET_SESSION_LIST);
     };
+
+    useEffect(() => {
+        getSessionList();
+    }, []);
 
     return (
         <div className="matching-page">
