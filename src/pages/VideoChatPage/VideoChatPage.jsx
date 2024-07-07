@@ -6,25 +6,22 @@ import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
-
-const OPENVIDU_SERVER_URL = 'https://video.barking-talk.org';
-const OPENVIDU_SERVER_SECRET = 'namanmu';
+import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
+import { getToken } from '../../services/openviduService';
+import SettingsMenu from './SettingMenu';
 
 const VideoChatPage = () => {
     const [session, setSession] = useState(undefined);
-    const [sessionId, setSessionId] = useState('');
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
-    const [OV, setOV] = useState(undefined);
+    const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
 
     const location = useLocation();
 
     const leaveSession = useCallback(() => {
         if (session) session.disconnect();
 
-        setOV(undefined);
         setSession(undefined);
-        setSessionId('');
         setSubscribers([]);
         setPublisher(undefined);
     }, [session]);
@@ -41,14 +38,12 @@ const VideoChatPage = () => {
         const params = new URLSearchParams(location.search);
         const urlSessionId = params.get('sessionId');
         if (urlSessionId) {
-            setSessionId(urlSessionId);
             joinSession(urlSessionId);
         }
     }, [location]);
 
     const joinSession = useCallback((sid) => {
         const OV = new OpenVidu();
-        setOV(OV);
         const session = OV.initSession();
         setSession(session);
 
@@ -86,89 +81,48 @@ const VideoChatPage = () => {
         });
     }, []);
 
-    const getToken = (sessionId) => {
-        return createSession(sessionId).then((sessionId) =>
-            createToken(sessionId)
-        );
+    // 설정 창 표시/숨기기 토글 함수
+    const toggleSettings = () => {
+        setShowSettings(!showSettings);
     };
 
-    const createSession = (sessionId) => {
-        return new Promise((resolve, reject) => {
-            var data = JSON.stringify({ customSessionId: sessionId });
-            axios
-                .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
-                    headers: {
-                        Authorization:
-                            'Basic ' +
-                            btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then((response) => {
-                    console.log('CREATE SESION', response);
-                    resolve(response.data.id);
-                })
-                .catch((response) => {
-                    var error = Object.assign({}, response);
-                    if (error?.response?.status === 409) {
-                        resolve(sessionId);
-                    } else {
-                        console.log(error);
-                        console.warn(
-                            'No connection to OpenVidu Server. This may be a certificate error at ' +
-                                OPENVIDU_SERVER_URL
-                        );
-                        if (
-                            window.confirm(
-                                'No connection to OpenVidu Server. This may be a certificate error at "' +
-                                    OPENVIDU_SERVER_URL +
-                                    '"\n\nClick OK to navigate and accept it. ' +
-                                    'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-                                    OPENVIDU_SERVER_URL +
-                                    '"'
-                            )
-                        ) {
-                            window.location.assign(
-                                OPENVIDU_SERVER_URL + '/accept-certificate'
-                            );
-                        }
-                    }
-                });
-        });
+    const toggleVideo = () => {
+        if (publisher) {
+            if (isAudioActive) {
+                publisher.publishAudio(false);
+            } else {
+                publisher.publishAudio(true);
+            }
+            setIsAudioActive(!isAudioActive);
+        }
+    };
+    const [isAudioActive, setIsAudioActive] = useState(true);
+
+    const toggleAudio = () => {
+        setIsAudioActive(!isAudioActive);
+        // 오디오 on/off 로직 구현
     };
 
-    const createToken = (sessionId) => {
-        return new Promise((resolve, reject) => {
-            var data = {};
-            axios
-                .post(
-                    OPENVIDU_SERVER_URL +
-                        '/openvidu/api/sessions/' +
-                        sessionId +
-                        '/connection',
-                    data,
-                    {
-                        headers: {
-                            Authorization:
-                                'Basic ' +
-                                btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-                            'Content-Type': 'application/json',
-                        },
-                    }
-                )
-                .then((response) => {
-                    console.log('TOKEN', response);
-                    resolve(response.data.token);
-                })
-                .catch((error) => reject(error));
-        });
+    const toggleMirror = () => {
+        setIsMirrored(!isMirrored);
+        // 화면 반전 로직 구현
+    };
+
+    const handleVideoDeviceChange = (event) => {
+        setSelectedVideoDevice(event.target.value);
+        // 비디오 디바이스 변경 로직 구현
+    };
+
+    const handleAudioDeviceChange = (event) => {
+        setSelectedAudioDevice(event.target.value);
+        // 오디오 디바이스 변경 로직 구현
     };
 
     return (
         <div className="video-chat-page">
             <div className="header">
                 <h1>멍톡</h1>
-                <button onClick={leaveSession}>Leave Session</button>
+                <button onClick={leaveSession}>중단하기</button>
             </div>
             <div className="content">
                 <div className="video-container">
@@ -177,6 +131,31 @@ const VideoChatPage = () => {
                             <OpenViduVideo streamManager={publisher} />
                         )}
                         <div className="stream-label">{'나'}</div>
+                        <img
+                            src={settingsIcon}
+                            alt="설정"
+                            className="settings-icon"
+                            onClick={toggleSettings}
+                        />
+                        {showSettings && (
+                            <SettingsMenu
+                                isVideoActive={isVideoActive}
+                                isAudioActive={isAudioActive}
+                                isMirrored={isMirrored}
+                                toggleVideo={toggleVideo}
+                                toggleAudio={toggleAudio}
+                                toggleMirror={toggleMirror}
+                                devices={devices}
+                                selectedVideoDevice={selectedVideoDevice}
+                                selectedAudioDevice={selectedAudioDevice}
+                                handleVideoDeviceChange={
+                                    handleVideoDeviceChange
+                                }
+                                handleAudioDeviceChange={
+                                    handleAudioDeviceChange
+                                }
+                            />
+                        )}
                     </div>
                     {subscribers.map((subscriber, index) => (
                         <div key={index} className="stream-container">
