@@ -1,355 +1,128 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import {
-    logoutUser,
-    setUserFromLocalStorage,
-} from '../../redux/slices/userSlice'; // 로그아웃 액션 가져오기
-import { OpenVidu } from 'openvidu-browser';
-import { createSession, createToken } from '../../services/openviduService';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import './VideoChatPage.css';
+import { OpenVidu } from 'openvidu-browser';
+import axios from 'axios';
+import OpenViduVideo from './OpenViduVideo';
 import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
+import { getToken } from '../../services/openviduService';
+import SettingMenu from './SettingMenu';
 
 const VideoChatPage = () => {
-    // 여러 상태 관리
-    const [session, setSession] = useState(null);
-    const [mainStreamManager, setMainStreamManager] = useState(null); // 메인 스트림 관리자 상태를 관리
-    const [publisher, setPublisher] = useState(null);
-    const [subscribers, setSubscribers] = useState([]); // 구독자 목록 상태 관리
-    const [isVideoActive, setIsVideoActive] = useState(true);
-    const [isAudioActive, setIsAudioActive] = useState(true);
-    const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
+    const [session, setSession] = useState(undefined);
+    const [subscribers, setSubscribers] = useState([]);
+    const [publisher, setPublisher] = useState(undefined);
     const [showSettings, setShowSettings] = useState(false); // 설정 창 상태 관리
-    const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
-    const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
-    const [selectedAudioDevice, setSelectedAudioDevice] = useState(''); // 선택된 오디오 장치
+    const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
 
-    // 요소 참조
-    const sessionRef = useRef(null); // 세션 참조 관리
-    const videoRef = useRef(null); // 비디오 요소 참조
+    const location = useLocation();
 
-    // 네트워크 상태를 모니터링하기 위한 상태
-    const [networkQuality, setNetworkQuality] = useState('good'); // 네트워크 품질 상태 관리 ('good', 'poor', 'bad')
+    const leaveSession = useCallback(() => {
+        if (session) session.disconnect();
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { userInfo, token } = useSelector((state) => state.user);
+        setSession(undefined);
+        setSubscribers([]);
+        setPublisher(undefined);
+    }, [session]);
 
-    // console.log(userInfo, token);
+    const joinSession = useCallback((sid) => {
+        const OV = new OpenVidu();
+        const session = OV.initSession();
+        setSession(session);
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-
-        if (!token && storedToken && storedUser) {
-            try {
-                const parsedUser = JSON.parse(storedUser);
-                dispatch(
-                    setUserFromLocalStorage({
-                        userInfo: parsedUser,
-                        token: storedToken,
-                    })
-                );
-            } catch (error) {
-                console.error('Failed to parse user from localStorage:', error);
-            }
-        }
-
-        if (!storedToken || !storedUser) {
-            navigate('/'); // 로그인 페이지로 리다이렉트
-        }
-    }, [token, dispatch, navigate]);
-
-    // 네트워크 상태 모니터링 및 비디오 품질 조정
-    const monitorNetwork = () => {
-        // 브라우저에서 네트워크 연결 상태를 가져오는 API
-        const connection =
-            navigator.connection ||
-            navigator.mozConnection ||
-            navigator.webkitConnection;
-
-        if (connection) {
-            const updateNetworkQuality = () => {
-                const effectiveType = connection.effectiveType;
-
-                // 네트워크 유형에 따른 품질 상태 설정
-                if (effectiveType === '4g') {
-                    setNetworkQuality('good'); // 4G 네트워크 - 좋은 상태
-                } else if (effectiveType === '3g') {
-                    setNetworkQuality('poor'); // 3G 네트워크 - 중간 상태
-                } else {
-                    setNetworkQuality('bad'); // 그 외 네트워크 - 나쁜 상태
-                }
-            };
-
-            updateNetworkQuality(); // 초기 네트워크 품질 업데이트
-
-            // 네트워크 상태가 변경될 때마다 품질 업데이트
-            connection.addEventListener('change', updateNetworkQuality);
-
-            // 컴포넌트 언마운트 시 이벤트 리스너 제거
-            return () => {
-                connection.removeEventListener('change', updateNetworkQuality);
-            };
-        } else {
-            // `navigator.connection` API를 지원하지 않는 경우 기본 네트워크 상태를 'good'으로 설정
-            setNetworkQuality('good');
-        }
-    };
-
-    // 네트워크 품질에 따라 비디오 품질 조정
-    useEffect(() => {
-        if (publisher) {
-            // 네트워크 품질이 'good'일 경우
-            if (networkQuality === 'good') {
-                // 비디오를 켜고 높은 품질로 설정
-                publisher.publishVideo(true);
-            }
-            // 네트워크 품질이 'poor'일 경우
-            else if (networkQuality === 'poor') {
-                publisher.publishVideo(true);
-
-                // 중간 네트워크 상태에서는 중간 해상도 사용
-                publisher.stream
-                    .getMediaStream()
-                    .getVideoTracks()[0]
-                    .applyConstraints({
-                        width: { ideal: 640 },
-                        height: { ideal: 480 },
-                        frameRate: { ideal: 15 },
-                    });
-
-                // 네트워크 품질이 'bad'일 경우
-            } else {
-                // 나쁜 네트워크 상태에서는 비디오를 끄기
-                publisher.publishVideo(false);
-            }
-        }
-        // networkQuality 또는 publisher 상태가 변경될 때마다 실행
-    }, [networkQuality, publisher]);
-
-    // 미디어 장치 목록 가져오기
-    useEffect(() => {
-        const getDevices = async () => {
-            try {
-                // 모든 미디어 장치 정보 가져옴
-                const deviceInfos =
-                    await navigator.mediaDevices.enumerateDevices();
-
-                // 비디오 입력 장치만 필터링하여 배열에 저장
-                const videoDevices = deviceInfos.filter(
-                    (device) => device.kind === 'videoinput'
-                );
-
-                // 오디오 입력 장치만 필터링하여 배열에 저장
-                const audioDevices = deviceInfos.filter(
-                    (device) => device.kind === 'audioinput'
-                );
-                setDevices({ videoDevices, audioDevices });
-
-                if (videoDevices.length > 0)
-                    setSelectedVideoDevice(videoDevices[0].deviceId);
-                if (audioDevices.length > 0)
-                    setSelectedAudioDevice(audioDevices[0].deviceId);
-            } catch (error) {
-                console.error('Error getting devices:', error);
-            }
-        };
-
-        // 컴포넌트가 마운트될 때 getDevices 함수를 호출하여 장치 목록을 가져옴
-        getDevices();
-
-        // 네트워크 상태 모니터링 시작
-        const stopMonitoring = monitorNetwork();
-
-        // 컴포넌트 언마운트 시 네트워크 상태 모니터링 중지
-        return () => {
-            if (stopMonitoring) {
-                stopMonitoring();
-            }
-        };
-    }, []);
-
-    const initOpenVidu = async () => {
-        try {
-            const OV = new OpenVidu();
-            OV.setAdvancedConfiguration({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    {
-                        urls: 'turn:turn.example.com',
-                        username: 'user',
-                        credential: 'pass'
-                    }
-                ]
-            });
-            const session = OV.initSession();
-    
-            session.on('streamCreated', (event) => {
-                const subscriber = session.subscribe(event.stream, undefined);
-                setSubscribers((prevSubscribers) => [
-                    ...prevSubscribers,
-                    subscriber,
-                ]);
-            });
-    
-            session.on('streamDestroyed', (event) => {
-                setSubscribers((prevSubscribers) =>
-                    prevSubscribers.filter(
-                        (subscriber) =>
-                            subscriber !== event.stream.streamManager
-                    )
-                );
-            });
-    
-            session.on('exception', (exception) => {
-                console.error(exception);
-            });
-    
-            session.on('iceConnectionStateChange', (event) => {
-                console.log(`ICE connection state change: ${event}`);
-            });
-    
-            const sessionId = await createSession();
-            const token = await createToken(sessionId);
-    
-            sessionRef.current = session;
-            await session.connect(token, { clientData: 'Participant' });
-    
-            const publisher = OV.initPublisher(undefined, {
-                audioSource: undefined,
-                videoSource: undefined,
-                publishAudio: true,
-                publishVideo: true,
-                resolution: '640x480',
-                frameRate: 30,
-                insertMode: 'APPEND',
-                mirror: false,
-            });
-    
-            session.publish(publisher);
-            setMainStreamManager(publisher);
-            setPublisher(publisher);
-            setSession(session);
-    
-            const localStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            });
-            document.getElementById('localVideo').srcObject = localStream;
-            localStream.getTracks().forEach(track => {
-                if (publisher) {
-                    publisher.addTrack(track);
-                }
-            });
-    
-        } catch (error) {
-            console.error('Error initializing OpenVidu:', error);
-        }
-    };
-    
-
-    useEffect(() => {
-        if (token) {
-            initOpenVidu();
-        }
-
-        return () => {
-            if (sessionRef.current) {
-                sessionRef.current.disconnect();
-                sessionRef.current = null;
-                setSession(null);
-                setMainStreamManager(null);
-                setPublisher(null);
-                setSubscribers([]);
-            }
-        };
-    }, [token]);
-
-    useEffect(() => {
-        if (mainStreamManager && videoRef.current) {
-            mainStreamManager.addVideoElement(videoRef.current);
-            // 추가 확인: 비디오가 실제로 재생되고 있는지 확인하는 이벤트 핸들러 추가
-            videoRef.current.addEventListener('playing', () => {
-                console.log('Video is playing');
-            });
-        }
-    }, [mainStreamManager]);
-
-    useEffect(() => {
-        subscribers.forEach((subscriber, index) => {
-            const videoElement = document.getElementById(`subscriber-video-${index}`);
-            if (videoElement) {
-                subscriber.addVideoElement(videoElement);
-            }
+        session.on('streamCreated', (event) => {
+            let subscriber = session.subscribe(event.stream, undefined);
+            setSubscribers((prevSubscribers) => [
+                ...prevSubscribers,
+                subscriber,
+            ]);
         });
-    }, [subscribers]);
 
+        session.on('streamDestroyed', (event) => {
+            setSubscribers((prevSubscribers) =>
+                prevSubscribers.filter(
+                    (sub) => sub !== event.stream.streamManager
+                )
+            );
+        });
 
-    // publisher.publishVideo를 호출하여 비디오 제어.
-    const toggleVideo = () => {
-        if (publisher) {
-            if (isVideoActive) {
-                publisher.publishVideo(false);
-            } else {
-                publisher.publishVideo(true);
-            }
-            setIsVideoActive(!isVideoActive);
-        }
-    };
+        // 발화 시작 감지
+        session.on('publisherStartSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' start speaking'
+            );
+        });
 
-    // publisher.publishAudio를 호출하여 오디오 제어.
-    const toggleAudio = () => {
-        if (publisher) {
-            if (isAudioActive) {
-                publisher.publishAudio(false);
-            } else {
-                publisher.publishAudio(true);
-            }
-            setIsAudioActive(!isAudioActive);
-        }
-    };
+        // 발화 종료 감지
+        session.on('publisherStopSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' stop speaking'
+            );
+        });
 
-    // 비디오 미러링 토글 함수
-    const toggleMirror = () => {
-        setIsMirrored(!isMirrored);
-    };
+        getToken(sid).then((token) => {
+            session
+                .connect(token)
+                .then(() => {
+                    let publisher = OV.initPublisher(undefined);
+                    setPublisher(publisher);
+                    session.publish(publisher);
+                })
+                .catch((error) => {
+                    console.log(
+                        'There was an error connecting to the session:',
+                        error.code,
+                        error.message
+                    );
+                });
+        });
+    }, []);
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
         setShowSettings(!showSettings);
     };
 
-    // 선택된 비디오 장치 변경 함수
-    const handleVideoDeviceChange = (event) => {
-        setSelectedVideoDevice(event.target.value);
+    // 비디오 좌우반전 처리 (SettingMenu 자식 컴포넌트 핸들러)
+    const handleMirrorChange = (mirrorState) => {
+        setIsMirrored(mirrorState);
     };
 
-    // 선택된 오디오 장치 변경 함수
-    const handleAudioDeviceChange = (event) => {
-        setSelectedAudioDevice(event.target.value);
-    };
+    useEffect(() => {
+        window.addEventListener('beforeunload', leaveSession);
+        return () => {
+            window.removeEventListener('beforeunload', leaveSession);
+        };
+    }, [leaveSession]);
 
-    const handleLogout = () => {
-        dispatch(logoutUser());
-        navigate('/');
-    };
+    useEffect(() => {
+        // URL에서 sessionId 파라미터를 가져옵니다.
+        const params = new URLSearchParams(location.search);
+        const urlSessionId = params.get('sessionId');
+        if (urlSessionId) {
+            joinSession(urlSessionId);
+        }
+    }, [location]);
 
     return (
         <div className="video-chat-page">
             <div className="header">
                 <h1>멍톡</h1>
-                <button onClick={handleLogout}>Logout</button>
+                <button onClick={leaveSession}>중단하기</button>
             </div>
             <div className="content">
                 <div className="video-container">
-                    <div className={`stream-container ${isMirrored ? 'mirrored' : ''}`}>
-                        <video id="localVideo" autoPlay={true} ref={videoRef} />
-                        <div className="stream-label">
-                            {userInfo?.username || '나'}
-                        </div>
+                    <div
+                        className={`stream-container ${
+                            isMirrored ? 'mirrored' : ''
+                        }`}
+                    >
+                        {publisher && (
+                            <OpenViduVideo streamManager={publisher} />
+                        )}
+                        <div className="stream-label">{'나'}</div>
                         <img
                             src={settingsIcon}
                             alt="설정"
@@ -357,53 +130,21 @@ const VideoChatPage = () => {
                             onClick={toggleSettings}
                         />
                         {showSettings && (
-                            <div className="settings-menu">
-                                <button onClick={toggleVideo}>
-                                    {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
-                                </button>
-                                <button onClick={toggleAudio}>
-                                    {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
-                                </button>
-                                <button onClick={toggleMirror}>
-                                    {isMirrored ? '반전 해제' : '반전 적용'}
-                                </button>
-
-                                <div>
-                                    <label>카메라 선택:</label>
-                                    <select onChange={handleVideoDeviceChange} value={selectedVideoDevice}>
-                                        {devices.videoDevices &&
-                                            devices.videoDevices.map((device) => (
-                                                <option key={device.deviceId} value={device.deviceId}>
-                                                    {device.label}
-                                                </option>
-                                            ))}
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>마이크 선택:</label>
-                                    <select onChange={handleAudioDeviceChange} value={selectedAudioDevice}>
-                                        {devices.audioDevices &&
-                                            devices.audioDevices.map((device) => (
-                                                <option key={device.deviceId} value={device.deviceId}>
-                                                    {device.label}
-                                                </option>
-                                            ))}
-                                    </select>
-                                </div>
-                            </div>
+                            <SettingMenu
+                                publisher={publisher}
+                                onMirroredChange={handleMirrorChange}
+                            />
                         )}
-                        <div className={`audio-status ${isAudioActive ? 'active' : 'inactive'}`}>
-                            {isAudioActive ? '오디오 켜짐' : '오디오 꺼짐'}
-                        </div>
                     </div>
                     {subscribers.map((subscriber, index) => (
                         <div key={index} className="stream-container">
-                            <video id={`subscriber-video-${index}`} autoPlay={true} />
-                            <div className="stream-label">상대방 {index + 1}</div>
+                            <OpenViduVideo streamManager={subscriber} />
+                            <div className="stream-label">
+                                상대방 {index + 1}
+                            </div>
                         </div>
                     ))}
                 </div>
-
                 <div className="chat-container">
                     <div className="chat-box">{/* 채팅 메시지들 */}</div>
                     <input

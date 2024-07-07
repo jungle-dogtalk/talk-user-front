@@ -31,6 +31,11 @@ const API_LIST = {
         path: '/api/auth/signup',
         desc: '사용자 회원가입',
     },
+    GET_SESSION_LIST: {
+        method: GET,
+        path: '/api/openvidu/sessions',
+        desc: 'OpenVidu 현재 가용한 세션 조회'
+    }
 };
 
 // OPEN API 목록
