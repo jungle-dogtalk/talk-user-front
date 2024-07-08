@@ -10,15 +10,19 @@ import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
 
+// 관심사 목록을 배열로 정의
 const interestsList = [
     '독서', '영화 감상', '게임', '여행', '요리', '드라이브', 'KPOP', '메이크업', '인테리어', '그림', '애완동물', '부동산', '맛집 투어', '헬스', '산책', '수영', '사진 찍기', '주식'
 ];
 
 const ProfilePage = () => {
+
+    // Redux 상태와 훅 초기화
     const userInfo = useSelector((state) => state.user.userInfo);
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    // 로컬 상태 정의
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
     const [clickedInterests, setClickedInterests] = useState([]); // 클릭된 관심사 상태
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
@@ -32,58 +36,69 @@ const ProfilePage = () => {
     }, [userInfo]);
 
 
+    // 계정 삭제 핸들러
     const handleDeleteAccount = async () => {
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
             const response = await axios.delete('http://localhost:5000/api/auth/account-deletion', {
                 headers: {
-                    Authorization: `Bearer ${token}`, // 토큰 추가
+                    Authorization: `Bearer ${token}`, // 토큰을 요청 헤더에 추가
                 },
             });
             
             if (response.status === 200) {
-                dispatch(logoutUser());
-                navigate('/');
+                dispatch(logoutUser()); // 로그아웃 액션 디스패치
+                navigate('/'); // 홈으로 리다이렉트
             }
         } catch (error) {
-            console.error('Error deleting account:', error);
+            console.error('Error deleting account:', error); // 오류 로그 출력
             alert('계정 삭제 중 오류가 발생했습니다.');
         }
     };
 
+    // 관심사 클릭 핸들러
     const handleInterestClick = (interest) => {
         setClickedInterests((prevState) =>
             prevState.includes(interest) ? prevState.filter((i) => i !== interest) : [...prevState, interest]
-        );
+        ); // 관심사 선택/해제 토글
     };
 
+    // 파일 선택 핸들러
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfileImage(reader.result);
+                setProfileImage(reader.result); // 파일 읽기가 완료되면 프로필 이미지 설정
             };
             reader.readAsDataURL(file);
-            setSelectedFile(file);
+            setSelectedFile(file); // 선택된 파일 상태 업데이트
         }
     };
 
-    const handleFileUpload = async () => {
-        if (!selectedFile) return;
+    // 프로필 업데이트 핸들러
+    const handleProfileUpdate = async () => {
         const formData = new FormData();
-        formData.append('file', selectedFile);
+    if (selectedFile) {
+        formData.append('profileImage', selectedFile); // 선택된 파일이 있으면 FormData에 추가
+    }
+    formData.append('interests', JSON.stringify(clickedInterests)); // 관심사 목록을 JSON 문자열로 변환하여 추가
 
         try {
-            const response = await axios.post('your_upload_endpoint', formData, {
+            const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
+            const response = await axios.patch('http://localhost:5000/api/user/profile', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`, // 토큰을 요청 헤더에 추가
+                    'Content-Type': 'multipart/form-data', // FormData 전송을 위해 Content-Type 설정
                 },
             });
-            console.log(response.data);
-            // 업로드 후 추가 처리 로직
+
+            if (response.status === 200) {
+                alert('프로필 업데이가 잘 되었습니다.');
+            }
         } catch (error) {
-            console.error('Error uploading file:', error);
+            console.error('Error updating profile:', error);
+            alert('프로필 업데이트 중 오류가 발생했습니다.');
         }
     };
 
@@ -136,7 +151,7 @@ const ProfilePage = () => {
                     <button className="back-button" onClick={() => navigate(-1)}>
                         뒤로가기
                     </button>
-                    <button className="edit-button" onClick={() => navigate('/edit-profile')}>
+                    <button className="edit-button" onClick={handleProfileUpdate}>
                         수정하기
                     </button>
                 </div>
