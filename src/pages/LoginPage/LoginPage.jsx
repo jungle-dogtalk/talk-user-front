@@ -10,11 +10,13 @@ const LoginPage = () => {
     const [password, setPassword] = useState(''); // 비밀번호 상태 변수와 설정 함수
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { token, error,loading  } = useSelector((state) => state.user);
+    const { token, error,loading  } = useSelector((state) => state.user); // Redux store의 상태를 읽어오는 데 사용.
 
     const handleLogin = async (e) => {
-        e.preventDefault();
-        const resultAction = await dispatch(loginUser({ username, password }));
+        e.preventDefault(); // 폼 제출시 페이지가 새로고침 되는 것 방지
+        const resultAction = await dispatch(loginUser({ username, password })); // 비동기 액션을 디스패치하여 로그인 요청 보내기
+
+        // resultAction이 성공적으로 완료되었는지
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/main'); // 로그인 성공 시 메인 페이지로 이동
         }
