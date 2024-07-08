@@ -46,6 +46,11 @@ const API_LIST = {
         path: `/api/audio/recommend-topics`,
         desc: '주제 추천 요청',
     },
+    CHECK_USERNAME: {
+        method: POST,
+        path: '/api/auth/check-username',
+        desc: '회원가입 유저네임 중복 검사',
+    },
 };
 
 // OPEN API 목록

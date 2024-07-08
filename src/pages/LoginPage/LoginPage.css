@@ -1,81 +1,106 @@
+/* LoginPage.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+}
+
 .home-page {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f8f4e5; /* 배경 색상 */
+    background-color: #f7f3e9; /* 배경색 수정 */
 }
 
 .login-box {
-    background-color: #fff8dc; /* 박스 배경 색상 */
+    background-color: #ffffff;
     padding: 40px;
-    border-radius: 10px;
+    border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 400px;
+    width: 400px; /* 너비 설정 */
+}
+
+.logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
 }
 
 .logo {
-    width: 150px;
-    margin-bottom: 20px;
+    width: 150px; /* 로고 크기 조정 */
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
+    align-items: center;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%; /* 너비를 100%로 설정 */
 }
 
 .input-group {
-    margin-bottom: 15px;
-    text-align: left;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%; /* 너비를 100%로 설정 */
+    margin-bottom: 10px;
 }
 
 .input-group label {
-    display: block;
-    margin-bottom: 5px;
-    color: #8b4513; /* 라벨 색상 */
+    width: 50px; /* 라벨 너비 설정 */
+    margin-right: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #a16e47; /* 라벨 색상 수정 */
 }
 
 .input-group input {
-    width: 100%;
+    width: 250px; /* 입력 필드의 고정 너비 설정 */
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: 1px solid #ddd;
+    border-radius: 25px; /* 입력 필드의 둥근 모서리 설정 */
     box-sizing: border-box;
+    margin-bottom: 10px;
 }
 
 .login-button {
-    background-color: #d2691e; /* 버튼 배경 색상 */
+    width: 100px; /* 버튼 너비 설정 */
+    height: 60px; /* 버튼 높이 설정 */
+    background-color: #a16e47; /* 로그인 버튼 색상 수정 */
     color: white;
-    padding: 10px;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px; /* 버튼의 둥근 모서리 설정 */
     cursor: pointer;
-    margin-top: 10px;
 }
 
 .login-button:hover {
-    background-color: #a0522d; /* 버튼 호버 색상 */
+    background-color: #8f5f38; /* 로그인 버튼 호버 색상 수정 */
 }
 
 .links {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
-.signup-link,
-.forgot-link {
-    display: block;
-    color: #8b4513; /* 링크 색상 */
+.links a {
+    color: #a16e47;
     text-decoration: none;
-    margin-bottom: 5px;
+    margin: 0 5px;
 }
 
-.signup-link:hover,
-.forgot-link:hover {
+.links a:hover {
     text-decoration: underline;
 }
 
 .error {
     color: red;
-    margin-top: 10px;
+    margin-bottom: 15px;
 }
