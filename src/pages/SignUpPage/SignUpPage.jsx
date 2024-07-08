@@ -5,7 +5,7 @@ import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
 import './SignUpPage.css';
-import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 
 
@@ -82,23 +82,16 @@ const SignUpPage = () => {
 
     // 아이디 중복 체크 함수
     const handleUsernameCheck = async () => {
-        // 아이디 중복 검사 로직 추가
-        const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
-        if (response.data.exists) {
-            alert('Username already exists');
-        } else {
-            alert('Username is available');
-        }
-    };
-
-    // 닉네임 중복 체크 함수
-    const handleNicknameCheck = async () => {
-        // 닉네임 중복 검사 로직 추가
-        const response = await apiCall(API_LIST.CHECK_NICKNAME, { nickname });
-        if (response.data.exists) {
-            alert('Nickname already exists');
-        } else {
-            alert('Nickname is available');
+        try {
+            const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
+            if (response.data) {
+                alert(response.message);
+            } else {
+                alert('ID를 사용하실 수 있습니다.');
+            }
+        } catch (error) {
+            console.error('Error checking username:', error.response ? error.response.data : error.message);
+            alert('An error occurred while checking the username: ' + (error.response ? error.response.data.message : error.message));
         }
     };
 
@@ -177,7 +170,6 @@ const SignUpPage = () => {
                             placeholder="닉네임을 입력하세요"
                             required
                         />
-                        <button type="button" onClick={handleNicknameCheck}>중복검사</button>
                     </div>
                     <div className="input-group">
                         <label htmlFor="email">이메일</label>
