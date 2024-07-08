@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import './VideoChatPage.css';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
@@ -20,76 +21,118 @@ const VideoChatPage = () => {
     const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
     const [sttResults, setSttResults] = useState([]); // STT 결과 저장
     const [recommendedTopics, setRecommendedTopics] = useState([]); // 주제 추천 결과 저장
+    const [interests, setInterests] = useState([]); // 관심사 결과 저장
 
     const recognitionRef = useRef(null);
+    const userInfo = useSelector((state) => state.user.userInfo);
 
     const location = useLocation();
 
     const leaveSession = useCallback(() => {
         if (session) session.disconnect();
 
+        // 음성인식 종료
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+            recognitionRef.current = null;
+        }
+
+        // 사용자 카메라 & 마이크 비활성화
+        if (publisher) {
+            const mediaStream = publisher.stream.getMediaStream();
+            if (mediaStream && mediaStream.getTracks) {
+                mediaStream.getTracks().forEach((track) => track.stop());
+            }
+        }
+
+        const username = userInfo.username;
+
+        apiCall(API_LIST.END_CALL, { username })
+            .then((response) => {
+                console.log('API 응답:', response); // 응답 데이터 로그 출력
+
+                const interestsData = {
+                    username: response.data.username,
+                    interests: response.data.interests,
+                };
+                console.log('로컬 스토리지에 저장할 데이터:', interestsData);
+                setInterests(response.data.interests);
+                // 관심사 데이터를 로컬 스토리지에 저장
+                localStorage.setItem(
+                    'interestsData',
+                    JSON.stringify(interestsData)
+                );
+                window.location.href = '/review';
+            })
+            .catch((error) => {
+                console.error('Error ending call:', error);
+            });
+
         setSession(undefined);
         setSubscribers([]);
         setPublisher(undefined);
-    }, [session]);
+    }, [session, publisher, userInfo.username]);
 
-    const joinSession = useCallback((sid) => {
-        const OV = new OpenVidu();
-        const session = OV.initSession();
-        setSession(session);
+    const joinSession = useCallback(
+        (sid) => {
+            const OV = new OpenVidu();
+            const session = OV.initSession();
+            setSession(session);
 
-        session.on('streamCreated', (event) => {
-            let subscriber = session.subscribe(event.stream, undefined);
-            setSubscribers((prevSubscribers) => [
-                ...prevSubscribers,
-                subscriber,
-            ]);
-        });
+            session.on('streamCreated', (event) => {
+                let subscriber = session.subscribe(event.stream, undefined);
+                setSubscribers((prevSubscribers) => [
+                    ...prevSubscribers,
+                    subscriber,
+                ]);
+            });
 
-        session.on('streamDestroyed', (event) => {
-            setSubscribers((prevSubscribers) =>
-                prevSubscribers.filter(
-                    (sub) => sub !== event.stream.streamManager
-                )
-            );
-        });
+            session.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter(
+                        (sub) => sub !== event.stream.streamManager
+                    )
+                );
+            });
 
-        // 발화 시작 감지
-        session.on('publisherStartSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' start speaking'
-            );
-        });
+            // 발화 시작 감지
+            session.on('publisherStartSpeaking', (event) => {
+                console.log(
+                    'User ' + event.connection.connectionId + ' start speaking'
+                );
+            });
 
-        // 발화 종료 감지
-        session.on('publisherStopSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' stop speaking'
-            );
-        });
+            // 발화 종료 감지
+            session.on('publisherStopSpeaking', (event) => {
+                console.log(
+                    'User ' + event.connection.connectionId + ' stop speaking'
+                );
+            });
 
-        getToken(sid).then((token) => {
-            session
-                .connect(token)
-                .then(() => {
-                    let publisher = OV.initPublisher(undefined);
-                    setPublisher(publisher);
-                    session.publish(publisher);
-                    // 음성인식
-                    startSpeechRecognition(
-                        publisher.stream.getMediaStream(),
-                        session.connection.connectionId
-                    );
-                })
-                .catch((error) => {
-                    console.log(
-                        'There was an error connecting to the session:',
-                        error.code,
-                        error.message
-                    );
-                });
-        });
-    }, []);
+            getToken(sid).then((token) => {
+                session
+                    .connect(token)
+                    .then(() => {
+                        let publisher = OV.initPublisher(undefined);
+                        setPublisher(publisher);
+                        session.publish(publisher);
+                        // 음성인식
+                        startSpeechRecognition(
+                            publisher.stream.getMediaStream(),
+                            userInfo.username
+                        );
+                    })
+                    .catch((error) => {
+                        console.log(
+                            'There was an error connecting to the session:',
+                            error.code,
+                            error.message
+                        );
+                    });
+            });
+        },
+        [userInfo.username]
+    );
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
@@ -115,12 +158,17 @@ const VideoChatPage = () => {
         if (urlSessionId) {
             joinSession(urlSessionId);
         }
-    }, [location]);
+    }, [location, joinSession]);
 
     // 텍스트 데이터를 서버로 전송하는 함수
-    const sendTranscription = (connectionId, transcript) => {
-        console.log('서버로 전송: ', { connectionId, transcript });
-        apiCall(API_LIST.RECEIVE_TRANSCRIPT, { connectionId, transcript })
+    const sendTranscription = (username, transcript) => {
+        // 인식된 게 없으면 전송 x
+        if (!transcript) {
+            console.error('Transcript is empty or null:', transcript);
+            return;
+        }
+        console.log('서버로 전송: ', { username, transcript });
+        apiCall(API_LIST.RECEIVE_TRANSCRIPT, { username, transcript })
             .then((data) => {
                 console.log('Transcript received:', data);
             })
@@ -145,7 +193,7 @@ const VideoChatPage = () => {
     };
 
     // 음성인식 시작
-    const startSpeechRecognition = (stream, connectionId) => {
+    const startSpeechRecognition = (stream, username) => {
         // 브라우저 지원 확인
         if (!('webkitSpeechRecognition' in window)) {
             console.error('SpeechRecognition not supported in this browser.');
@@ -167,10 +215,10 @@ const VideoChatPage = () => {
                 if (event.results[i].isFinal) {
                     const transcript = event.results[i][0].transcript;
                     console.log('Mozilla result:', {
-                        connectionId,
+                        username,
                         transcript,
                     });
-                    sendTranscription(connectionId, transcript);
+                    sendTranscription(username, transcript);
                     setSttResults((prevResults) => [
                         ...prevResults,
                         transcript,
