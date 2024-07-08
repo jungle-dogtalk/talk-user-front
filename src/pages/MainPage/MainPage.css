@@ -1,9 +1,18 @@
+/* MainPage.css */
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background-color: #f7f3e9; /* 배경색 수정 */
+}
+
 .main-page {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #f5f5f5;
-    height: 100vh;
+    height: 100%;
 }
 
 .header {
@@ -11,37 +20,27 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    background-color: #a3d5d3;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+    background-color: #d2691e; /* 헤더 배경색 수정 */
 }
 
 .logo {
-    width: 100px;
+    width: 120px;
 }
 
-.user-info {
+.header-links {
     display: flex;
     align-items: center;
 }
 
-.user-info span {
-    margin-left: 10px;
-    cursor: pointer;
+.header-links span, .header-links a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
 }
 
-.settings-icon {
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
+.header-links .logout-link {
     cursor: pointer;
-}
-
-.mypage-link {
-    display: block;
-    margin-top: 5px;
-    cursor: pointer;
-    color: #8b4513;
 }
 
 .profile-section {
@@ -52,64 +51,73 @@
 }
 
 .profile-picture {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     margin-bottom: 10px;
+}
+
+h2 {
+    margin: 10px 0;
 }
 
 .progress-bars {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 10px;
+    margin-bottom: 20px;
 }
 
 .progress-bar {
     display: flex;
     align-items: center;
-    width: 200px;
-    background-color: #e0e0e0;
-    border-radius: 10px;
-    margin-top: 5px;
-    overflow: hidden;
-}
-
-.progress-bar span {
-    padding: 5px;
-    color: white;
-    font-weight: bold;
+    width: 200px; /* 프로그레스 바 너비 설정 */
+    margin-bottom: 10px;
+    background-color: #ddd; /* 배경색 설정 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    position: relative;
 }
 
 .bar {
-    height: 20px;
-    background-color: #007bff;
+    height: 10px;
+    border-radius: 10px;
+}
+
+.red {
+    background-color: red;
+}
+
+.blue {
+    background-color: blue;
 }
 
 .actions {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .action-button {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: white;
+    background-color: #f0f0f0;
     border: none;
     border-radius: 10px;
     padding: 20px;
     margin: 0 10px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 150px; /* 버튼의 너비 */
+    height: 200px; /* 버튼의 높이 */
 }
 
 .action-button img {
-    width: 50px;
-    height: 50px;
+    width: 80px; /* 아이콘의 크기 */
+    height: 80px; /* 아이콘의 크기 */
+    margin-bottom: 10px;
 }
 
 .action-button span {
-    margin-top: 10px;
+    font-size: 18px; /* 텍스트 크기 */
 }
