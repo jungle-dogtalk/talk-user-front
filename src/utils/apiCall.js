@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const SERVER_URL_LOCAL = 'http://localhost:5000';
-const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
+const SERVER_URL_LOCAL = 'http://localhost:5000';
+// const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
 
 const generateHeaders = (customHeaders) => {
     let headers = customHeaders
@@ -26,7 +26,7 @@ const createAxiosConfig = (apiSpec, headers, parameters, file) => {
     };
 
     if (file) {
-        axiosConfig.data = createFomrData(parameters, file);
+        axiosConfig.data = createFormData(parameters, file);
         return axiosConfig;
     }
 
@@ -40,15 +40,24 @@ const createAxiosConfig = (apiSpec, headers, parameters, file) => {
     return axiosConfig;
 };
 
-const createFomrData = (parameters, file) => {
+// const createFomrData = (parameters, file) => {
+//     const formData = new FormData();
+//     formData.append('file', file);
+//     formData.append(
+//         'jsonData',
+//         new Blob([JSON.stringify(parameters)], {
+//             type: 'application/json',
+//         }),
+//     );
+//     return formData;
+// };
+
+const createFormData = (parameters, file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append(
-        'jsonData',
-        new Blob([JSON.stringify(parameters)], {
-            type: 'application/json',
-        }),
-    );
+    Object.keys(parameters).forEach((key) => {
+        formData.append(key, parameters[key]);
+    });
     return formData;
 };
 

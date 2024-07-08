@@ -34,8 +34,18 @@ const API_LIST = {
     GET_SESSION_LIST: {
         method: GET,
         path: '/api/openvidu/sessions',
-        desc: 'OpenVidu 현재 가용한 세션 조회'
-    }
+        desc: 'OpenVidu 현재 가용한 세션 조회',
+    },
+    RECEIVE_TRANSCRIPT: {
+        method: POST,
+        path: `/api/audio/receive-transcript`,
+        desc: '사용자 텍스트 전송',
+    },
+    RECOMMEND_TOPICS: {
+        method: POST,
+        path: `/api/audio/recommend-topics`,
+        desc: '주제 추천 요청',
+    },
 };
 
 // OPEN API 목록
