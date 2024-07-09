@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import './VideoChatPage.css';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
@@ -30,6 +29,11 @@ const VideoChatPage = () => {
 
     const recognitionRef = useRef(null);
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
+    // userInfo가 null인 경우 처리
+    if (!userInfo) {
+        return <div>Loading...</div>;
+    }
+
     const location = useLocation();
     const socket = useRef(null);
 
@@ -377,78 +381,72 @@ const VideoChatPage = () => {
     };
 
     return (
-        <div className="video-chat-page">
-            <div className="header">
-                <h1>멍톡</h1>
-                <button onClick={leaveSession}>중단하기</button>
-            </div>
-            <div className="content">
-                <div className="video-container">
-                    <AvatarApp></AvatarApp>
-                    <div
-                        className={`stream-container ${
-                            isMirrored ? 'mirrored' : ''
-                        }`}
-                    >
-                        {publisher && (
+        <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
+            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
+                <h1 className="text-white text-4xl">멍톡</h1>
+                <button onClick={leaveSession} className="text-white text-lg bg-red-600 px-4 py-2 rounded-md">중단하기</button>
+            </header>
+            <div className="flex flex-1">
+                <div className="w-3/4 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
+                    {publisher ? (
+                        <div className="relative border-2 border-gray-300 h-64">
                             <OpenViduVideo streamManager={publisher} />
-                        )}
-                        <div className="stream-label">{'나'}</div>
-                        <img
-                            src={settingsIcon}
-                            alt="설정"
-                            className="settings-icon"
-                            onClick={toggleSettings}
-                        />
-                        {showSettings && (
-                            <SettingMenu
-                                publisher={publisher}
-                                onMirroredChange={handleMirrorChange}
-                            />
-                        )}
-                    </div>
+                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">나</div>
+                        </div>
+                    ) : (
+                        <div className="relative border-2 border-gray-300 h-64 flex items-center justify-center">
+                            <div className="text-gray-500">화면이 나올 공간</div>
+                        </div>
+                    )}
                     {subscribers.map((subscriber, index) => (
-                        <div key={index} className="stream-container">
+                        <div key={index} className="relative border-2 border-gray-300 h-64">
                             <OpenViduVideo streamManager={subscriber} />
-                            <div className="stream-label">
+                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                 상대방 {index + 1}
                             </div>
                         </div>
                     ))}
+                    {Array.from({ length: 4 - subscribers.length - 1 }).map((_, index) => (
+                        <div key={index} className="relative border-2 border-gray-300 h-64 flex items-center justify-center">
+                            <div className="text-gray-500">화면이 나올 공간</div>
+                        </div>
+                    ))}
                 </div>
-                <div className="chat-container">
-                    <div className="chat-box">{/* 채팅 메시지들 */}</div>
+                <div className="w-1/4 flex flex-col bg-[#f0e8d9] p-4">
+                    <h2 className="text-lg font-bold mb-2">채팅방</h2>
+                    <div className="flex-1 bg-white p-4 rounded-md shadow-md h-full">
+                        {/* 채팅 메시지들 */}
+                    </div>
                     <input
                         type="text"
                         placeholder="메시지를 입력하세요..."
-                        className="chat-input"
+                        className="mt-4 p-2 border rounded-md bg-[#fcf8ef]"
                     />
                 </div>
             </div>
-            <div className="bottom-section">
-                <div className="dog-container">
+            <div className="bg-[#d1c4b2] py-4 flex justify-between items-start w-full">
+                <div className="flex flex-col items-center">
                     {Array.from({ length: 4 }).map((_, index) => (
                         <img
                             key={index}
                             src={dogImage}
                             alt={`Dog ${index + 1}`}
-                            className="dog-image"
+                            className="w-16 h-16 mb-2"
                         />
                     ))}
                 </div>
-                <div className="mission">
-                    <h2>미션!</h2>
-                    <p>
-                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이
-                        인식되어야 본격적인 통화가 시작됩니다. 멍멍!
+                <div className="bg-white p-12 rounded-md shadow-md text-center mx-4">
+                    <h2 className="text-2xl font-bold">미션!</h2>
+                    <p className="text-lg mt-2">
+                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이 인식되어야 본격적인 통화가 시작됩니다. 멍멍!
                     </p>
-                    <button onClick={requestTopicRecommendations}>
+                    <button onClick={requestTopicRecommendations} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">
                         주제 추천
                     </button>
                     {recommendedTopics.length > 0 && (
-                        <div className="recommended-topics">
-                            <h3>추천 주제</h3>
-                            <ul>
+                        <div className="recommended-topics mt-4">
+                            <h3 className="text-lg font-semibold">추천 주제</h3>
+                            <ul className="list-disc list-inside">
                                 {recommendedTopics.map((topic, index) => (
                                     <li key={index}>{topic}</li>
                                 ))}
@@ -456,19 +454,23 @@ const VideoChatPage = () => {
                         </div>
                     )}
                 </div>
-                <div className="dog-house-container">
+                <div className="flex flex-col items-center">
                     {Array.from({ length: 4 }).map((_, index) => (
                         <img
                             key={index}
                             src={dogHouseImage}
                             alt={`Dog House ${index + 1}`}
-                            className="dog-house-image"
+                            className="w-16 h-16 mb-2"
                         />
                     ))}
                 </div>
             </div>
         </div>
     );
+    
+    
+    
+    
 };
-
-export default VideoChatPage;
+export default VideoChatPage; 
+    
