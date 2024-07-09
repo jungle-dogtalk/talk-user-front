@@ -147,8 +147,8 @@ h2, h3 {
 }
 
 .interest-tag.clicked {
-    background-color: #333333;
-    color: #a16e47;
+    background-color: #a16e47;
+    color: white;
     border: none;
 }
 

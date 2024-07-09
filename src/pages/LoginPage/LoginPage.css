@@ -16,22 +16,22 @@ body, html {
 }
 
 .login-box {
-    background-color: #ffffff;
+    background-color: #f7f3e9;
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     text-align: center;
-    width: 400px; /* 너비 설정 */
+    width: 500px; /* 너비 설정 */
 }
 
 .logo-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .logo {
-    width: 150px; /* 로고 크기 조정 */
+    width: 190px; /* 로고 크기 조정 */
 }
 
 .login-form {
@@ -52,11 +52,11 @@ body, html {
     flex-direction: row;
     align-items: center;
     width: 100%; /* 너비를 100%로 설정 */
-    margin-bottom: 10px;
+    margin-bottom: 30px;
 }
 
 .input-group label {
-    width: 50px; /* 라벨 너비 설정 */
+    width: 56px; /* 라벨 너비 설정 */
     margin-right: 10px;
     font-size: 14px;
     font-weight: bold;
@@ -64,22 +64,25 @@ body, html {
 }
 
 .input-group input {
-    width: 250px; /* 입력 필드의 고정 너비 설정 */
+    width: 280px; /* 입력 필드의 고정 너비 설정 */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 25px; /* 입력 필드의 둥근 모서리 설정 */
     box-sizing: border-box;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
+    font-size: 16px; /* 입력 필드의 폰트 크기를 더 크게 설정 */
 }
 
 .login-button {
-    width: 100px; /* 버튼 너비 설정 */
-    height: 60px; /* 버튼 높이 설정 */
+    width: 130px; /* 버튼 너비 설정 */
+    height: 50px; /* 버튼 높이 설정 */
     background-color: #a16e47; /* 로그인 버튼 색상 수정 */
     color: white;
     border: none;
     border-radius: 25px; /* 버튼의 둥근 모서리 설정 */
     cursor: pointer;
+    font-size: 16px; /* 버튼 폰트 크기 설정 */
+    margin-top: 30px;
 }
 
 .login-button:hover {
@@ -87,13 +90,14 @@ body, html {
 }
 
 .links {
-    margin-top: 20px;
+    margin-top: 45px;
 }
 
 .links a {
     color: #a16e47;
     text-decoration: none;
-    margin: 0 5px;
+    margin: 0 14px;
+    
 }
 
 .links a:hover {

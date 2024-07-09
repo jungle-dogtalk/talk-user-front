@@ -33,6 +33,9 @@ const ProfilePage = () => {
         if (userInfo && userInfo.profileImage) {
             setProfileImage(userInfo.profileImage);
         }
+        if (userInfo && userInfo.interests) {
+            setClickedInterests(userInfo.interests);
+        }
     }, [userInfo]);
 
 
@@ -96,6 +99,7 @@ const ProfilePage = () => {
 
             if (response.status === 200) {
                 alert('프로필 업데이가 잘 되었습니다.');
+                navigate('/main'); // 홈으로 리다이렉트
             }
         } catch (error) {
             console.error('Error updating profile:', error);

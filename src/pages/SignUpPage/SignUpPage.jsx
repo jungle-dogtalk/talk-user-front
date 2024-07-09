@@ -6,7 +6,8 @@ import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
 import './SignUpPage.css';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
-import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
+import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
+import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
 
 
 const SignUpPage = () => {
@@ -20,7 +21,9 @@ const SignUpPage = () => {
     const [nickname, setNickname] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 함수 가져오기
-    const [profileImageFile, setProfileImageFile] = useState(null); // 프로필 이미지 파일 상태 추가
+    const [profileImage, setProfileImage] = useState(defaultProfileImage);
+    const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
+
     const { token, error } = useSelector((state) => state.user);
 
     // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
@@ -39,8 +42,8 @@ const SignUpPage = () => {
             return;
         }
 
-        if (!profileImageFile) {
-            alert('Please upload a profile image');
+        if (!selectedFile) {
+            alert('프로필 이미지 업로드 해주세요');
             return;
         }
 
@@ -52,7 +55,7 @@ const SignUpPage = () => {
         formData.append('email', email);
         formData.append('nickname', nickname);
         interests.forEach(interest => formData.append('interests', interest));
-        formData.append('profileImage', profileImageFile);
+        formData.append('profileImage', selectedFile);
 
         try {
             const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {
@@ -95,25 +98,30 @@ const SignUpPage = () => {
         }
     };
 
-    // 프로필 이미지 파일 변경 처리 함수
-    const handleProfileImageChange = (e) => {
-        setProfileImageFile(e.target.files[0]);
+    // 파일 선택 핸들러
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfileImage(reader.result); // 파일 읽기가 완료되면 프로필 이미지 설정
+            };
+            reader.readAsDataURL(file);
+            setSelectedFile(file); // 선택된 파일 상태 업데이트
+        }
     };
-
+    
     return (
         <div className="signup-page">
             <div className="signup-container">
                 <img src={logo} alt="명톡 로고" className="logo" />
-                <img
-                    src={profileImage}
-                    alt="프로필 이미지"
-                    className="profile-image"
-                />
-                <input
-                        type="file"
-                        onChange={handleProfileImageChange}
-                        className="profile-image-upload"
-                    />
+                <div className="profile-picture-container">
+                    <img src={profileImage} alt="프로필 사진" className="profile-picture" />
+                    <label htmlFor="file-input" className="file-input-label">
+                        <img src={editIcon} alt="수정 아이콘" className="additional-image" />
+                    </label>
+                    <input type="file" id="file-input" className="file-input" onChange={handleFileChange} />
+                </div>
                 <form onSubmit={handleSignUp} className="signup-form">
                     <div className="input-group">
                         <label htmlFor="username">아이디</label>
