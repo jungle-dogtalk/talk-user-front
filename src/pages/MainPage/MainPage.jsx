@@ -76,7 +76,7 @@ const MainPage = () => {
                 </button>
                 <button
                     className="action-button"
-                    onClick={() => navigate('/videochat')}
+                    onClick={() => navigate('/choose-avatar')}
                 >
                     <img src={groupIcon} alt="넷이서 통화하기" />
                     <span>넷이서 통화하기</span>
