@@ -265,10 +265,10 @@ const VideoChatPage = () => {
             return;
         }
 
-        if (recognitionRef.current) {
-            console.warn('음성인식이 이미 시작됨');
-            return;
-        }
+        // if (recognitionRef.current) {
+        //     console.warn('음성인식이 이미 시작됨');
+        //     return;
+        // }
 
         //SpeechRecognition 객체 생성 및 옵션 설정
         const recognition = new window.webkitSpeechRecognition();
@@ -280,6 +280,7 @@ const VideoChatPage = () => {
         };
 
         recognition.onresult = (event) => {
+            console.log('in onresult');
             // 음성인식 결과가 도출될 때마다 인식된 음성 처리(stt)
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
@@ -299,7 +300,7 @@ const VideoChatPage = () => {
 
         recognition.onend = () => {
             console.log('Speech recognition ended');
-            if (recognitionRef.current != null) {
+            if (recognitionRef.current) {
                 recognition.onstart();
             }
         };
