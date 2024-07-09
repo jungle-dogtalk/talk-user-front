@@ -65,6 +65,7 @@ const SignUpPage = () => {
             });
 
             if (response.data) {
+                alert('회원가입이 성공적으로 성공하셨습니다.')
                 navigate('/');
             }
         } catch (error) {
