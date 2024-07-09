@@ -16,7 +16,7 @@ import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 
 const VideoChatPage = () => {
-    const FRAME_RATE = 10;
+    const FRAME_RATE = 60;
 
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
@@ -212,7 +212,7 @@ const VideoChatPage = () => {
                                     .captureStream(FRAME_RATE)
                                     .getVideoTracks()[0];
                                 var publisher = OV.initPublisher(undefined, {
-                                    audioSource: false,
+                                    audioSource: undefined,
                                     videoSource: grayVideoTrack,
                                 });
 
