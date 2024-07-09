@@ -18,5 +18,7 @@ html {
 }
 
 .avartar_video {
-    width: 480px;
+    width: 100%;
+    background-color: rgb(222, 147, 49);
+    height: 100%;
 }
