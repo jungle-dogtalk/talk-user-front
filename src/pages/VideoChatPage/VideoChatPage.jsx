@@ -13,8 +13,11 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
+import AvatarApp from '../../components/common/AvatarApp';
 
 const VideoChatPage = () => {
+    const FRAME_RATE = 10;
+
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
@@ -32,7 +35,7 @@ const VideoChatPage = () => {
 
     // socket 연결 처리
     useEffect(() => {
-        socket.current = io('http://localhost:5000');
+        socket.current = io('https://api.barking-talk.org');
 
         socket.current.on('connect', () => {
             console.log('WebSocket connection opened');
@@ -171,15 +174,58 @@ const VideoChatPage = () => {
                 session
                     .connect(token)
                     .then(() => {
-                        let publisher = OV.initPublisher(undefined);
-                        setPublisher(publisher);
-                        session.publish(publisher);
-                        // 음성인식 시작
-                        startSpeechRecognition(
-                            publisher.stream.getMediaStream(),
-                            userInfo.username
-                        );
-                        socket.current.emit('joinSession', sid);
+                        OV.getUserMedia({
+                            audioSource: false,
+                            videoSource: undefined,
+                            resolution: '1280x720',
+                            frameRate: FRAME_RATE,
+                        }).then((mediaStream) => {
+                            setTimeout(() => {
+                                var videoTrack =
+                                    mediaStream.getVideoTracks()[0];
+                                var video = document.createElement('video');
+                                video.srcObject = new MediaStream([videoTrack]);
+
+                                // var canvas = document.createElement('canvas');
+
+                                var canvas = document
+                                    .getElementById('avatar_canvas')
+                                    .querySelector('div')
+                                    .querySelector('canvas');
+
+                                console.log('캔버스 -> ', canvas);
+                                // var ctx = canvas.getContext('3d');
+                                // console.log('ctx -> ', ctx);
+                                // ctx.filter = 'grayscale(100%)';
+
+                                // video.addEventListener('play', () => {
+                                //     var loop = () => {
+                                //         if (!video.paused && !video.ended) {
+                                //             ctx.drawImage(video, 0, 0, 300, 170);
+                                //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+                                //         }
+                                //     };
+                                //     loop();
+                                // });
+                                video.play();
+                                var grayVideoTrack = canvas
+                                    .captureStream(FRAME_RATE)
+                                    .getVideoTracks()[0];
+                                var publisher = OV.initPublisher(undefined, {
+                                    audioSource: false,
+                                    videoSource: grayVideoTrack,
+                                });
+
+                                setPublisher(publisher);
+                                session.publish(publisher);
+                                // 음성인식 시작
+                                startSpeechRecognition(
+                                    publisher.stream.getMediaStream(),
+                                    userInfo.username
+                                );
+                                socket.current.emit('joinSession', sid);
+                            }, 5000);
+                        });
                     })
                     .catch((error) => {
                         console.log(
@@ -337,6 +383,7 @@ const VideoChatPage = () => {
             </div>
             <div className="content">
                 <div className="video-container">
+                    <AvatarApp></AvatarApp>
                     <div
                         className={`stream-container ${
                             isMirrored ? 'mirrored' : ''
