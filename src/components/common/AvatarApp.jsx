@@ -15,20 +15,22 @@ let blendshapes = [];
 
 /* App 컴포넌트 */
 function AvatarApp() {
-    const randomUrl = [
+    const availableAvatars = [
+        'https://models.readyplayer.me/668293698a5ecca99f9b06c1.glb',
         'https://models.readyplayer.me/6682c315649e11cdd6dd8a8a.glb',
         'https://models.readyplayer.me/66857649a6014cc4b10e8f73.glb',
+        'https://models.readyplayer.me/668d1456878f8e58dc12d758.glb',
+        'https://models.readyplayer.me/668d14b51847c40762af418e.glb',
+        'https://models.readyplayer.me/668d14d83369b0756b9c487c.glb',
+        'https://models.readyplayer.me/668d14e93369b0756b9c48b0.glb',
+        'https://models.readyplayer.me/668d14f634432ca7edca24af.glb',
+        'https://models.readyplayer.me/668d150a7a0772243cddc4af.glb',
+        'https://models.readyplayer.me/668d152063703fb7530e8a0d.glb',
     ];
-    const num = Math.floor(Math.random() * 2);
-
-    const [url, setUrl] = useState(
-        // 'https://models.readyplayer.me/6682c315649e11cdd6dd8a8a.glb'
-        // 'https://models.readyplayer.me/66857649a6014cc4b10e8f73.glb'
-        randomUrl[num]
-    );
     const handleOnChange = (event) => {
         setUrl(event.target.value);
     };
+    const [url, setUrl] = useState('');
 
     /* 비디오 설정 */
     const setup = async () => {
@@ -78,6 +80,8 @@ function AvatarApp() {
     };
 
     useEffect(() => {
+        const randomNumber = Math.floor(Math.random() * 9);
+        setUrl(availableAvatars[randomNumber]);
         setup();
     }, []);
 
