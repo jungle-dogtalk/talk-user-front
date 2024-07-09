@@ -4,23 +4,45 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background-color: #f5f5dc;
-    height: 120vh;
+    background-color: #f7f3e9; /* 배경색 수정 */
+    height: 125vh;
 }
 
 .signup-container {
     background-color: #fff;
     border-radius: 10px;
-    padding: 20px;
+    padding: 40px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 500px;
+    width: 700px;
 }
 
 .logo {
-    height: 50px;
+    height: 150px;
     margin-bottom: 20px;
 }
+
+.profile-picture-container {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.profile-picture {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+
+.additional-image {
+    width: 20px;
+    height: 20px;
+}
+
+
 
 .profile-image {
     border-radius: 50%;
