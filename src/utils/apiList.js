@@ -56,6 +56,11 @@ const API_LIST = {
         path: '/api/auth/account-deletion',
         desc: '유저 계정 탈퇴',
     },
+    END_CALL: {
+        method: POST,
+        path: `/api/audio/end-call`,
+        desc: '통화 종료 및 관심사 도출',
+    },
 };
 
 // OPEN API 목록
