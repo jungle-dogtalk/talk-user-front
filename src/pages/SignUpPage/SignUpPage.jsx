@@ -4,7 +4,6 @@ import axios from 'axios'; // axios 임포트
 import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
-import './SignUpPage.css';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
@@ -75,12 +74,11 @@ const SignUpPage = () => {
     };
 
     // 관심사 변경 처리 함수
-    const handleInterestChange = (e) => {
-        const { value, checked } = e.target;
-        if (checked) {
-            setInterests([...interests, value]);
+    const handleInterestChange = (interestName) => {
+        if (interests.includes(interestName)) {
+            setInterests(interests.filter((interest) => interest !== interestName));
         } else {
-            setInterests(interests.filter((interest) => interest !== value));
+            setInterests([...interests, interestName]);
         }
     };
 
@@ -113,19 +111,30 @@ const SignUpPage = () => {
     };
     
     return (
-        <div className="signup-page">
-            <div className="signup-container">
-                <img src={logo} alt="명톡 로고" className="logo" />
-                <div className="profile-picture-container">
-                    <img src={profileImage} alt="프로필 사진" className="profile-picture" />
-                    <label htmlFor="file-input" className="file-input-label">
-                        <img src={editIcon} alt="수정 아이콘" className="additional-image" />
+        <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
+            <header className="w-full bg-[#89644C] p-4 flex items-center justify-between">
+                <img src={logo} alt="명톡 로고" className="w-16 h-16" />
+            </header>
+            <div className="flex flex-col items-center py-8 flex-1 w-full">
+                <div className="relative mb-8">
+                    <img
+                        src={profileImage}
+                        alt="프로필 사진"
+                        className="w-56 h-56 rounded-full border-2 border-gray-300"
+                    />
+                    <label htmlFor="file-input" className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer">
+                        <img src={editIcon} alt="수정 아이콘" className="w-6 h-6" />
                     </label>
-                    <input type="file" id="file-input" className="file-input" onChange={handleFileChange} />
+                    <input
+                        type="file"
+                        id="file-input"
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
                 </div>
-                <form onSubmit={handleSignUp} className="signup-form">
-                    <div className="input-group">
-                        <label htmlFor="username">아이디</label>
+                <form onSubmit={handleSignUp} className="w-full max-w-lg space-y-6">
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="username" className="w-24 text-right">아이디</label>
                         <input
                             type="text"
                             id="username"
@@ -133,11 +142,18 @@ const SignUpPage = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="아이디를 입력하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
-                        <button type="button" onClick={handleUsernameCheck}>중복검사</button>
+                        <button
+                            type="button"
+                            onClick={handleUsernameCheck}
+                            className="bg-gray-200 px-4 py-2 rounded-md"
+                        >
+                            중복검사
+                        </button>
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="password">비밀번호</label>
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="password" className="w-24 text-right">비밀번호</label>
                         <input
                             type="password"
                             id="password"
@@ -145,10 +161,11 @@ const SignUpPage = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="비밀번호를 입력하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="confirm-password">비밀번호 확인</label>
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="confirm-password" className="w-24 text-right">비밀번호 확인</label>
                         <input
                             type="password"
                             id="confirm-password"
@@ -156,10 +173,11 @@ const SignUpPage = () => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="비밀번호를 확인하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="name">이름</label>
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="name" className="w-24 text-right">이름</label>
                         <input
                             type="text"
                             id="name"
@@ -167,10 +185,11 @@ const SignUpPage = () => {
                             onChange={(e) => setName(e.target.value)}
                             placeholder="이름을 입력하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="nickname">닉네임</label>
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="nickname" className="w-24 text-right">닉네임</label>
                         <input
                             type="text"
                             id="nickname"
@@ -178,10 +197,11 @@ const SignUpPage = () => {
                             onChange={(e) => setNickname(e.target.value)}
                             placeholder="닉네임을 입력하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="email">이메일</label>
+                    <div className="flex items-center justify-center space-x-4 ml-16">
+                        <label htmlFor="email" className="w-24 text-right">이메일</label>
                         <input
                             type="email"
                             id="email"
@@ -189,30 +209,57 @@ const SignUpPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="이메일을 입력하세요"
                             required
+                            className="flex-1 px-4 py-2 border rounded-md"
                         />
                     </div>
-                    <div className="interests-container">
-                        <label>관심사</label>
-                        <div className="interests">
-                            {['독서', '영화 감상', '게임', '여행', '요리', '드라이브', 'KPOP', '메이크업', '인테리어', '그림', '애완동물', '부동산', '맛집 투어', '헬스', '산책', '수영', '사진 찍기', '주식'].map((interest) => (
-                                <label key={interest} className="interest-label">
-                                    <input
-                                        type="checkbox"
-                                        name="interest"
-                                        value={interest}
-                                        onChange={handleInterestChange}
-                                    />
-                                    {interest}
-                                </label>
+                    <hr className="w-full my-8 border-gray-400" />
+                    <div className="text-center mt-8">
+                        <h2 className="text-xl font-bold mb-4">관심사</h2>
+                        <div className="grid grid-cols-4 gap-4">
+                            {[
+                                { name: '독서', icon: '📚' },
+                                { name: '영화 감상', icon: '🎬' },
+                                { name: '게임', icon: '🎮' },
+                                { name: '여행', icon: '✈️' },
+                                { name: '요리', icon: '🍳' },
+                                { name: '드라이브', icon: '🚗' },
+                                { name: 'KPOP', icon: '💃' },
+                                { name: '메이크업', icon: '💄' },
+                                { name: '인테리어', icon: '🪑' },
+                                { name: '그림', icon: '🎨' },
+                                { name: '애완동물', icon: '🐶' },
+                                { name: '부동산', icon: '🏡' },
+                                { name: '맛집 투어', icon: '🍔' },
+                                { name: '헬스', icon: '💪🏻' },
+                                { name: '산책', icon: '🌳' },
+                                { name: '수영', icon: '🏊' },
+                                { name: '사진 찍기', icon: '📸' },
+                                { name: '주식', icon: '📈' },
+                            ].map((interest) => (
+                                <div
+                                    key={interest.name}
+                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${interests.includes(interest.name) ? 'bg-blue-100' : 'bg-white'}`}
+                                    onClick={() => handleInterestChange(interest.name)}
+                                >
+                                    <span className="block text-center text-2xl">{interest.icon}</span>
+                                    <span className="block text-center text-sm">{interest.name}</span>
+                                </div>
                             ))}
                         </div>
                     </div>
-                    {error && <p className="error">{error}</p>}
-                    <div className="buttons">
-                        <button type="button" className="back-button" onClick={() => navigate(-1)}>
+                    {error && <p className="text-red-500 text-center">{error}</p>}
+                    <div className="flex justify-center mt-8">
+                        <button
+                            type="button"
+                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            onClick={() => navigate(-1)}
+                        >
                             뒤로가기
                         </button>
-                        <button type="submit" className="signup-button">
+                        <button
+                            type="submit"
+                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                        >
                             회원가입
                         </button>
                     </div>
@@ -220,6 +267,15 @@ const SignUpPage = () => {
             </div>
         </div>
     );
+    
+    
+    
+    
+    
+    
+    
+    
+    
 };
 
 export default SignUpPage;
