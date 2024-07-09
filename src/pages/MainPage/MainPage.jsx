@@ -35,55 +35,65 @@ const MainPage = () => {
     }, [dispatch]);
 
     return (
-        <div className="main-page">
-            <div className="header">
-                <img src={logo} alt="명톡 로고" className="logo" />
-                <div className="header-links">
-                    <span>친구목록</span>
-                    <span> | </span>
-                    <a href="/profile">마이 페이지</a>
-                    <span> | </span>
-                    <span className="logout-link" onClick={handleLogout}>
+        <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
+            <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
+                <img src={logo} alt="명톡 로고" className="w-16 h-16" />
+                <div className="flex items-center space-x-4">
+                    <span className="text-white">친구목록</span>
+                    <span className="text-white">|</span>
+                    <a href="/profile" className="text-white">마이 페이지</a>
+                    <span className="text-white">|</span>
+                    <span className="text-white cursor-pointer" onClick={handleLogout}>
                         로그아웃
                     </span>
                 </div>
-            </div>
-            <div className="profile-section">
-                <img
-                    src={userInfo?.profileImage || profileImage}
-                    alt="프로필 사진"
-                    className="profile-picture"
-                />
-                <h2>{userInfo?.name}</h2>
-                <div className="progress-bars">
-                    <div className="progress-bar">
-                        <div className="bar red" style={{ width: '74%' }}></div>
-                        <span>74%</span>
-                    </div>
-                    <div className="progress-bar">
-                        <div
-                            className="bar blue"
-                            style={{ width: '88%' }}
-                        ></div>
-                        <span>88%</span>
+            </header>
+            <div className="flex flex-col items-center py-8 flex-1 w-full">
+                <div className="flex flex-col items-center w-full mb-8">
+                    <img
+                        src={userInfo?.profileImage || profileImage}
+                        alt="프로필 사진"
+                        className="w-48 h-48 rounded-full mb-4"
+                    />
+                    <h2 className="text-2xl font-bold mb-4">{userInfo?.name}</h2>
+                    <div className="w-1/3 mb-8">
+                        <div className="flex items-center mb-4">
+                            <div className="w-full bg-red-200 h-6 rounded-full overflow-hidden">
+                                <div className="bg-red-600 h-full rounded-full" style={{ width: '74%' }}></div>
+                            </div>
+                            <span className="ml-2 text-gray-700">74%</span>
+                        </div>
+                        <div className="flex items-center">
+                            <div className="w-full bg-blue-200 h-6 rounded-full overflow-hidden">
+                                <div className="bg-blue-600 h-full rounded-full" style={{ width: '88%' }}></div>
+                            </div>
+                            <span className="ml-2 text-gray-700">88%</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className="actions">
-                <button className="action-button" onClick={() => navigate('/room')}>
-                    <img src={roomIcon} alt="방에서 통화하기" />
-                    <span>둘이서 통화하기</span>
-                </button>
-                <button
-                    className="action-button"
-                    onClick={() => navigate('/videochat')}
-                >
-                    <img src={groupIcon} alt="넷이서 통화하기" />
-                    <span>넷이서 통화하기</span>
-                </button>
+                <div className="flex space-x-8 w-full justify-center">
+                    <button className="flex flex-col items-center justify-center bg-green-100 p-8 rounded-2xl shadow-lg hover:bg-green-200 w-72 h-72 mb-2">
+                        <img src={roomIcon} alt="방에서 통화하기" className="w-32 h-32 mb-4" />
+                        <span className="text-lg font-semibold">둘이서 통화하기</span>
+                    </button>
+                    <button className="flex flex-col items-center justify-center bg-pink-100 p-8 rounded-2xl shadow-lg hover:bg-pink-200 w-72 h-72 mb-2">
+                        <img src={groupIcon} alt="넷이서 통화하기" className="w-32 h-32 mb-4" />
+                        <span className="text-lg font-semibold">넷이서 통화하기</span>
+                    </button>
+                </div>
             </div>
         </div>
     );
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 };
 
 export default MainPage;
