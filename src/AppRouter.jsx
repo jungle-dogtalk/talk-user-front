@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage/ProfilePage';
 import ReportPage from './pages/ReportPage/ReportPage';
 import ReviewPage from './pages/ReviewPage/ReviewPage';
 import MatchingPage from './pages/MatchingPage/MatchingPage';
+import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
 
 function AppRouter() {
     return (
@@ -20,6 +21,7 @@ function AppRouter() {
             <Route path="/report" element={<ReportPage />} />
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/matching" element={<MatchingPage />} />
+            <Route path="/choose-avatar" element={<ChooseAvatarPage />} />
         </Routes>
     );
 }
