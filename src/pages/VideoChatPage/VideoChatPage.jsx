@@ -42,13 +42,23 @@ const VideoChatPage = () => {
             console.log('WebSocket connection closed');
         });
 
+        // 주제 추천 결과 이벤트 수신
+        // 결과 데이터 수신 받아와 변수에 저장 후 상태 업데이트
+        socket.current.on('topicRecommendations', (data) => {
+            console.log('Received topic recommendations:', data);
+            const topics = Array.isArray(data.data.topics)
+                ? data.data.topics
+                : [];
+            setRecommendedTopics(topics);
+        });
+
         return () => {
             if (socket.current) {
                 socket.current.emit('leaveSession', sessionId);
                 socket.current.disconnect();
             }
         };
-    }, []);
+    }, [location]);
 
     // 세션 떠남
     const leaveSession = useCallback(() => {
@@ -241,20 +251,11 @@ const VideoChatPage = () => {
             });
     };
 
-    // 주제 추천 요청을 서버로 보내는 함수
+    // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
         const sessionId = new URLSearchParams(location.search).get('sessionId');
-        apiCall(API_LIST.RECOMMEND_TOPICS, { sessionId })
-            .then((data) => {
-                console.log(data);
-                const topics = Array.isArray(data.data.topics)
-                    ? data.data.topics
-                    : [];
-                setRecommendedTopics(topics);
-            })
-            .catch((error) => {
-                console.error('Error fetching topic recommendations:', error);
-            });
+        console.log(`${sessionId}에서 주제추천 요청`);
+        socket.current.emit('requestTopicRecommendations', { sessionId });
     };
 
     // 음성인식 시작
