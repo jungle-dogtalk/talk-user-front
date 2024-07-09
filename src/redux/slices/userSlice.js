@@ -21,20 +21,20 @@ export const loginUser = createAsyncThunk(
 
 // 사용자 프로필 정보 가져오기
 export const fetchUserProfile = createAsyncThunk(
-    'user/fetchProfile',
+    'user/fetchProfile', // 이 비동기 액션의 이름을 지정
     async (_, { getState, rejectWithValue }) => {
-        const token = getState().user.token;
+        const token = getState().user.token; // Redux state에서 사용자 토큰을 가져옴
         try {
             const response = await fetch('http://localhost:5000/api/user/profile', {
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`, // 요청 헤더에 인증 토큰을 포함
                 },
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch user profile');
             }
             const data = await response.json();
-            Cookies.set('user', JSON.stringify(data.user));
+            Cookies.set('user', JSON.stringify(data.user)); // 사용자 정보를 쿠키에 저장
             return data.user;
         } catch (error) {
             return rejectWithValue(error.message);
