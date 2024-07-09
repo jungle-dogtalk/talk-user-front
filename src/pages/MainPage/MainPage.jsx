@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser, fetchUserProfile  } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
-import './MainPage.css';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
 import roomIcon from '../../assets/room-icon.png'; // 방에서 통화하기 아이콘 경로
@@ -72,11 +71,13 @@ const MainPage = () => {
                     </div>
                 </div>
                 <div className="flex space-x-8 w-full justify-center">
-                    <button className="flex flex-col items-center justify-center bg-green-100 p-8 rounded-2xl shadow-lg hover:bg-green-200 w-72 h-72 mb-2">
+                    <button className="flex flex-col items-center justify-center bg-green-100 p-8 rounded-2xl shadow-lg hover:bg-green-200 w-72 h-72 mb-2" 
+                    onClick={() => navigate('/room')}>
                         <img src={roomIcon} alt="방에서 통화하기" className="w-32 h-32 mb-4" />
                         <span className="text-lg font-semibold">둘이서 통화하기</span>
                     </button>
-                    <button className="flex flex-col items-center justify-center bg-pink-100 p-8 rounded-2xl shadow-lg hover:bg-pink-200 w-72 h-72 mb-2">
+                    <button className="flex flex-col items-center justify-center bg-pink-100 p-8 rounded-2xl shadow-lg hover:bg-pink-200 w-72 h-72 mb-2"
+                    onClick={() => navigate('/choose-avatar')}>
                         <img src={groupIcon} alt="넷이서 통화하기" className="w-32 h-32 mb-4" />
                         <span className="text-lg font-semibold">넷이서 통화하기</span>
                     </button>

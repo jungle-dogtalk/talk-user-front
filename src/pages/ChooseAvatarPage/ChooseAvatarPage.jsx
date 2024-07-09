@@ -5,6 +5,7 @@ import { Canvas, useFrame, useGraph } from '@react-three/fiber';
 import { Color, Euler, Matrix4 } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
+import { useNavigate } from 'react-router-dom';
 
 let video;
 let faceLandmarker;
@@ -16,6 +17,7 @@ let blendshapes = [];
 const ChooseAvatarPage = () => {
     const webcamRef = useRef(null);
     const [url, setUrl] = useState("https://models.readyplayer.me/6682c315649e11cdd6dd8a8a.glb");
+    const navigate = useNavigate(); // useNavigate 훅 사용
 
     const handleOnChange = (event) => {
         setUrl(event.target.value);
@@ -95,6 +97,7 @@ const ChooseAvatarPage = () => {
     const handleSelect = () => {
         // 아바타 선택 후 처리 로직
         console.log("Selected avatar url:", url);
+        navigate('/videochat');
     };
 
     return (
