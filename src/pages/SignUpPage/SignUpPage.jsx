@@ -42,7 +42,7 @@ const SignUpPage = () => {
             return;
         }
 
-        if (!profileImageFile) {
+        if (!selectedFile) {
             alert('프로필 이미지 업로드 해주세요');
             return;
         }
