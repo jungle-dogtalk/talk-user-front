@@ -19,8 +19,34 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+// 사용자 프로필 정보 가져오기
+export const fetchUserProfile = createAsyncThunk(
+    'user/fetchProfile',
+    async (_, { getState, rejectWithValue }) => {
+        const token = getState().user.token;
+        try {
+            const response = await fetch('http://localhost:5000/api/user/profile', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch user profile');
+            }
+            const data = await response.json();
+            Cookies.set('user', JSON.stringify(data.user));
+            return data.user;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+
+
 const userSlice = createSlice({
     name: 'user',
+
     initialState: {
         token: Cookies.get('token'), // 쿠키에서 가져온 토큰
         userInfo: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : null, // 쿠키에서 가져온 사용자 정보(JSON 문자열을 객체로 파싱)
@@ -62,7 +88,20 @@ const userSlice = createSlice({
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(fetchUserProfile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUserProfile.fulfilled, (state, action) => {
+                state.loading = false;
+                state.userInfo = action.payload;
+            })
+            .addCase(fetchUserProfile.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
+            
     },
 });
 
