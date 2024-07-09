@@ -15,15 +15,30 @@ const MatchingPage = () => {
     //     query: { userId: userInfo._id },
     // });
 
-    const socket = io('https://api.barking-talk.org', {
-        query: { userId: userInfo._id },
-    });
+    // const socket = io('http://localhost:5000');
 
-    socket.on('matched', (data) => {
-        console.log('Matched! Session ID:', data.sessionId);
-        location.href = '/videochat?sessionId=' + data.sessionId;
-        // 매칭 성공 시 처리 로직
-    });
+    //사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
+    useEffect(() => {
+        socket.emit('userDetails', {
+            userId: userInfo._id,
+            interests: userInfo.interests,
+        });
+
+        socket.on('matched', (data) => {
+            console.log('Matched event received:', data);
+            if (data.sessionId) {
+                location.href = '/videochat?sessionId=' + data.sessionId;
+            } else {
+                console.error('No sessionId in matched event data');
+            }
+        });
+
+        getSessionList();
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [userInfo]);
 
     const handleStopClick = () => {
         alert('중단하기 버튼이 클릭되었습니다.');
@@ -53,6 +68,8 @@ const MatchingPage = () => {
                     <div className="matching-status">
                         <h2>매칭 중...</h2>
                         <p>예상시간: 8분</p>
+                        <p>{userInfo.interests}</p>
+                        {/* 관심사 데이터 체크용*/}
                     </div>
                     <p className="instruction">
                         화면 아래 집 아이콘을 누르면 통화를 중단할 수 있어요!
