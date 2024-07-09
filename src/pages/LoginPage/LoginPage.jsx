@@ -40,7 +40,7 @@ const LoginPage = () => {
                         <div className="input-group">
                             <label htmlFor="username">ID</label>
                             <input
-                                type="text"
+                                type="text" 
                                 id="username"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}

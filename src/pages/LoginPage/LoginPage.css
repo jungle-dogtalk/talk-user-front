@@ -5,6 +5,7 @@ body, html {
     padding: 0;
     height: 100%;
     font-family: Arial, sans-serif;
+    font-size: 26px; /* 전체 폰트 크기 증가 */
 }
 
 .home-page {
@@ -17,21 +18,22 @@ body, html {
 
 .login-box {
     background-color: #f7f3e9;
-    padding: 40px;
+    padding: 100px;
     border-radius: 15px;
     /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     text-align: center;
-    width: 500px; /* 너비 설정 */
+    width: 900px; /* 너비 설정 */
 }
 
 .logo-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
 }
 
 .logo {
-    width: 190px; /* 로고 크기 조정 */
+    width: 350px; /* 로고 크기 조정 */
+    height: auto; /* 비율을 유지하면서 높이 자동 조정 */
 }
 
 .login-form {
@@ -52,37 +54,45 @@ body, html {
     flex-direction: row;
     align-items: center;
     width: 100%; /* 너비를 100%로 설정 */
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
 
 .input-group label {
-    width: 56px; /* 라벨 너비 설정 */
-    margin-right: 10px;
-    font-size: 14px;
+    width: 150px; /* 라벨 너비 설정 */
+    margin-right: 20px;
     font-weight: bold;
     color: #a16e47; /* 라벨 색상 수정 */
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 1.5; /* 라벨의 높이를 더 크게 설정 */
 }
 
 .input-group input {
-    width: 280px; /* 입력 필드의 고정 너비 설정 */
-    padding: 10px;
+    width: 500px; /* 입력 필드의 고정 너비 설정 */
+    height: 80px; /* 입력 필드의 높이 설정 */
+    padding: 20px;
     border: 1px solid #ddd;
     border-radius: 25px; /* 입력 필드의 둥근 모서리 설정 */
     box-sizing: border-box;
-    margin-bottom: 16px;
-    font-size: 16px; /* 입력 필드의 폰트 크기를 더 크게 설정 */
+    margin-bottom: 20px;
+    font-size: 32px; /* 입력 필드의 폰트 크기를 더 크게 설정 */
+}
+
+/* Placeholder 텍스트의 폰트 크기를 증가시키기 위한 CSS */
+.input-group input::placeholder {
+    font-size: 28px; /* Placeholder 폰트 크기 증가 */
 }
 
 .login-button {
-    width: 130px; /* 버튼 너비 설정 */
-    height: 50px; /* 버튼 높이 설정 */
+    width: 200px; /* 버튼 너비 설정 */
+    height: 70px; /* 버튼 높이 설정 */
     background-color: #a16e47; /* 로그인 버튼 색상 수정 */
     color: white;
     border: none;
     border-radius: 25px; /* 버튼의 둥근 모서리 설정 */
     cursor: pointer;
-    font-size: 16px; /* 버튼 폰트 크기 설정 */
-    margin-top: 30px;
+    font-size: 24px; /* 버튼 폰트 크기 설정 */
+    margin-top: 40px;
 }
 
 .login-button:hover {
@@ -90,13 +100,14 @@ body, html {
 }
 
 .links {
-    margin-top: 45px;
+    margin-top: 50px;
 }
 
 .links a {
     color: #a16e47;
     text-decoration: none;
     margin: 0 14px;
+    font-size: 24px; /* 링크 폰트 크기 증가 */
     
 }
 
@@ -107,4 +118,5 @@ body, html {
 .error {
     color: red;
     margin-bottom: 15px;
+    font-size: 24px; /* 에러 메시지 폰트 크기 증가 */
 }

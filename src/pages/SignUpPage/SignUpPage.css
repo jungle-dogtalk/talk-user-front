@@ -5,7 +5,7 @@
     justify-content: center;
     padding: 20px;
     background-color: #f7f3e9; /* 배경색 수정 */
-    height: 125vh;
+    height: 180vh;
 }
 
 .signup-container {
@@ -62,6 +62,7 @@
     flex-direction: row;
     align-items: center;
     margin-bottom: 10px;
+    font-size: 60px;
 }
 
 .input-group label {
@@ -76,7 +77,7 @@
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 30px;
 }
 
 .input-group button {
