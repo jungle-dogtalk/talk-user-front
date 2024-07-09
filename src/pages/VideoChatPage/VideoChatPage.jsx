@@ -12,6 +12,7 @@ import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미�
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
+import io from 'socket.io-client';
 
 const VideoChatPage = () => {
     const [session, setSession] = useState(undefined);
@@ -22,18 +23,55 @@ const VideoChatPage = () => {
     const [sttResults, setSttResults] = useState([]); // STT 결과 저장
     const [recommendedTopics, setRecommendedTopics] = useState([]); // 주제 추천 결과 저장
     const [interests, setInterests] = useState([]); // 관심사 결과 저장
+    const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
 
     const recognitionRef = useRef(null);
-    const userInfo = useSelector((state) => state.user.userInfo);
-
+    const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     const location = useLocation();
+    const socket = useRef(null);
 
+    // socket 연결 처리
+    useEffect(() => {
+        socket.current = io('http://localhost:5000');
+
+        socket.current.on('connect', () => {
+            console.log('WebSocket connection opened');
+        });
+
+        socket.current.on('disconnect', () => {
+            console.log('WebSocket connection closed');
+        });
+
+        return () => {
+            if (socket.current) {
+                socket.current.emit('leaveSession', sessionId);
+                socket.current.disconnect();
+            }
+        };
+    }, []);
+
+    // 세션 떠남
     const leaveSession = useCallback(() => {
-        if (session) session.disconnect();
+        if (isLeaving) {
+            // 중복 중단 막기
+            return;
+        }
+        setIsLeaving(true);
+
+        // openVidu 세션에서 연결 해제
+        if (session) {
+            session.disconnect();
+        }
 
         // 음성인식 종료
         if (recognitionRef.current) {
-            recognitionRef.current.stop();
+            try {
+                recognitionRef.current.abort(); // 인식 중지
+                recognitionRef.current.stop();
+            } catch (error) {
+                console.error('음성인식 종료 오류:', error);
+            }
+            recognitionRef.current.onend = null;
             recognitionRef.current = null;
         }
 
@@ -41,38 +79,58 @@ const VideoChatPage = () => {
         if (publisher) {
             const mediaStream = publisher.stream.getMediaStream();
             if (mediaStream && mediaStream.getTracks) {
+                // 모든 미디어 트랙 중지
                 mediaStream.getTracks().forEach((track) => track.stop());
             }
         }
 
         const username = userInfo.username;
+        const sessionId = new URLSearchParams(location.search).get('sessionId');
 
-        apiCall(API_LIST.END_CALL, { username })
+        console.log('중단하기 요청 전송:', { username, sessionId });
+
+        apiCall(API_LIST.END_CALL, { username, sessionId })
             .then((response) => {
-                console.log('API 응답:', response); // 응답 데이터 로그 출력
+                console.log('API 응답:', response);
 
-                const interestsData = {
-                    username: response.data.username,
-                    interests: response.data.interests,
-                };
-                console.log('로컬 스토리지에 저장할 데이터:', interestsData);
-                setInterests(response.data.interests);
-                // 관심사 데이터를 로컬 스토리지에 저장
-                localStorage.setItem(
-                    'interestsData',
-                    JSON.stringify(interestsData)
-                );
-                window.location.href = '/review';
+                if (response.data) {
+                    const interestsData = {
+                        username: response.data.username,
+                        interests: response.data.interests,
+                    };
+                    console.log(
+                        '로컬 스토리지에 저장할 데이터:',
+                        interestsData
+                    );
+                    setInterests(response.data.interests);
+                    localStorage.setItem(
+                        'interestsData',
+                        JSON.stringify(interestsData)
+                    );
+                    window.location.href = '/review';
+                } else {
+                    console.error('응답 데이터가 null입니다:', response);
+                }
+
+                // 소켓 연결을 끊고 세션을 정리
+                if (socket.current) {
+                    socket.current.emit('leaveSession', sessionId);
+                    socket.current.disconnect();
+                }
+
+                setSession(undefined);
+                setSubscribers([]);
+                setPublisher(undefined);
             })
             .catch((error) => {
                 console.error('Error ending call:', error);
+            })
+            .finally(() => {
+                setIsLeaving(true);
             });
+    }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-        setSession(undefined);
-        setSubscribers([]);
-        setPublisher(undefined);
-    }, [session, publisher, userInfo.username]);
-
+    // 세션 참여
     const joinSession = useCallback(
         (sid) => {
             const OV = new OpenVidu();
@@ -116,11 +174,12 @@ const VideoChatPage = () => {
                         let publisher = OV.initPublisher(undefined);
                         setPublisher(publisher);
                         session.publish(publisher);
-                        // 음성인식
+                        // 음성인식 시작
                         startSpeechRecognition(
                             publisher.stream.getMediaStream(),
                             userInfo.username
                         );
+                        socket.current.emit('joinSession', sid);
                     })
                     .catch((error) => {
                         console.log(
@@ -162,13 +221,18 @@ const VideoChatPage = () => {
 
     // 텍스트 데이터를 서버로 전송하는 함수
     const sendTranscription = (username, transcript) => {
-        // 인식된 게 없으면 전송 x
+        const sessionId = new URLSearchParams(location.search).get('sessionId');
         if (!transcript) {
+            // 인식된 게 없으면 전송 x
             console.error('Transcript is empty or null:', transcript);
             return;
         }
-        console.log('서버로 전송: ', { username, transcript });
-        apiCall(API_LIST.RECEIVE_TRANSCRIPT, { username, transcript })
+        console.log('서버로 전송: ', { username, transcript, sessionId });
+        apiCall(API_LIST.RECEIVE_TRANSCRIPT, {
+            username,
+            transcript,
+            sessionId,
+        })
             .then((data) => {
                 console.log('Transcript received:', data);
             })
@@ -179,7 +243,8 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청을 서버로 보내는 함수
     const requestTopicRecommendations = () => {
-        apiCall(API_LIST.RECOMMEND_TOPICS)
+        const sessionId = new URLSearchParams(location.search).get('sessionId');
+        apiCall(API_LIST.RECOMMEND_TOPICS, { sessionId })
             .then((data) => {
                 console.log(data);
                 const topics = Array.isArray(data.data.topics)
@@ -196,7 +261,12 @@ const VideoChatPage = () => {
     const startSpeechRecognition = (stream, username) => {
         // 브라우저 지원 확인
         if (!('webkitSpeechRecognition' in window)) {
-            console.error('SpeechRecognition not supported in this browser.');
+            console.error('speech recognition을 지원하지 않는 브라우저');
+            return;
+        }
+
+        if (recognitionRef.current) {
+            console.warn('음성인식이 이미 시작됨');
             return;
         }
 
@@ -229,13 +299,23 @@ const VideoChatPage = () => {
 
         recognition.onend = () => {
             console.log('Speech recognition ended');
-            recognition.start();
+            if (recognitionRef.current != null) {
+                recognition.onstart();
+            }
         };
 
         recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
             if (event.error !== 'no-speech') {
-                console.error('Speech recognition error:', event.error);
-                recognition.start();
+                try {
+                    recognition.stop(); // 현재 인식을 멈추고 재시작
+                    recognition.start();
+                } catch (error) {
+                    console.error(
+                        'Error starting speech recognition again:',
+                        error
+                    );
+                }
             }
         };
 
