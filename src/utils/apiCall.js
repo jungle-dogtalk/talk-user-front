@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const SERVER_URL_LOCAL = 'http://localhost:5000';
 // const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
@@ -7,9 +8,9 @@ const generateHeaders = (customHeaders) => {
     let headers = customHeaders
         ? { ...customHeaders }
         : { 'Content-Type': 'application/json' };
-    const userToken = localStorage.getItem('accessToken');
+    const userToken = Cookies.get('token');
     if (userToken) {
-        headers.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
+        headers.Authorization = `Bearer ${userToken}`;
     }
 
     return headers;

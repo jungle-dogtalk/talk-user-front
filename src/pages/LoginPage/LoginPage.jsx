@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'; // 리디렉션을 위해 useNav
 import { useDispatch, useSelector } from 'react-redux'; // Redux 훅스 가져오기
 import { loginUser } from '../../redux/slices/userSlice'; // 로그인 액션 가져오기
 import './LoginPage.css'; // 로그인 페이지 스타일 시트 가져오기
-import logo from '../../assets/cat_logo.jpg'; // 로고 이미지 경로
+import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 
 const LoginPage = () => {
     const [username, setUsername] = useState(''); // 사용자 이름 상태 변수와 설정 함수
@@ -32,47 +32,51 @@ const LoginPage = () => {
     return (
         <div className="home-page">
             <div className="login-box">
-                <img src={logo} alt="명톡 로고" className="logo" />
+                <div className="logo-container">
+                    <img src={logo} alt="명톡 로고" className="logo" />
+                </div>
                 <form onSubmit={handleLogin} className="login-form">
-                    <div className="input-group">
-                        <label htmlFor="username">ID</label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="아이디를 입력하세요"
-                            required
-                        />
+                    <div className="input-container">
+                        <div className="input-group">
+                            <label htmlFor="username">ID</label>
+                            <input
+                                type="text"
+                                id="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="아이디를 입력하세요"
+                                required
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label htmlFor="password">PW</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="비밀번호를 입력하세요"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="login-button">
+                            로그인
+                        </button>
                     </div>
-                    <div className="input-group">
-                        <label htmlFor="password">PW</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="비밀번호를 입력하세요"
-                            required
-                        />
-                    </div>
-                    {loading && <p>Loading...</p>}
-                    {error && <p className="error">{error}</p>}
-                    <button type="submit" className="login-button">
-                        로그인
-                    </button>
                 </form>
+                {loading && <p>Loading...</p>}
+                {error && <p className="error">{error}</p>}
                 <div className="links">
                     <a href="/signup" className="signup-link">
                         회원가입 하기
                     </a>
+                    <span> | </span>
                     <a href="/forgot-password" className="forgot-link">
                         ID/PW 찾기
                     </a>
                 </div>
             </div>
         </div>
-        
     );
 };
 
