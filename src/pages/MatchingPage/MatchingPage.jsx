@@ -38,7 +38,7 @@ const MatchingPage = () => {
         return () => {
             socket.disconnect();
         };
-    }, [userInfo]);
+    }, []);
 
     const handleStopClick = () => {
         alert('중단하기 버튼이 클릭되었습니다.');
