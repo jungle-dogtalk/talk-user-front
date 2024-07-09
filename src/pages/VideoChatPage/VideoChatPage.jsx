@@ -208,6 +208,9 @@ const VideoChatPage = () => {
                                     .querySelector('canvas');
 
                                 console.log('캔버스 -> ', canvas);
+                                var ctx = canvas.getContext('2d');
+                                console.log('ctx -> ', ctx);
+
                                 // var ctx = canvas.getContext('3d');
                                 // console.log('ctx -> ', ctx);
                                 // ctx.filter = 'grayscale(100%)';
@@ -222,12 +225,12 @@ const VideoChatPage = () => {
                                 //     loop();
                                 // });
                                 video.play();
-                                var grayVideoTrack = canvas
+                                var videoTrack = canvas
                                     .captureStream(FRAME_RATE)
                                     .getVideoTracks()[0];
                                 var publisher = OV.initPublisher(undefined, {
                                     audioSource: undefined,
-                                    videoSource: grayVideoTrack,
+                                    videoSource: videoTrack,
                                 });
 
                                 setPublisher(publisher);
@@ -384,33 +387,47 @@ const VideoChatPage = () => {
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
                 <h1 className="text-white text-4xl">멍톡</h1>
-                <button onClick={leaveSession} className="text-white text-lg bg-red-600 px-4 py-2 rounded-md">중단하기</button>
+                <button
+                    onClick={leaveSession}
+                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
+                >
+                    중단하기
+                </button>
             </header>
-            <div className="flex flex-1">
+            <div className="flex flex-1 video-container">
+                <AvatarApp></AvatarApp>
                 <div className="w-3/4 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
-                    {publisher ? (
+                    {publisher && (
                         <div className="relative border-2 border-gray-300 h-64">
                             <OpenViduVideo streamManager={publisher} />
-                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">나</div>
-                        </div>
-                    ) : (
-                        <div className="relative border-2 border-gray-300 h-64 flex items-center justify-center">
-                            <div className="text-gray-500">화면이 나올 공간</div>
+                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                                나
+                            </div>
                         </div>
                     )}
                     {subscribers.map((subscriber, index) => (
-                        <div key={index} className="relative border-2 border-gray-300 h-64">
+                        <div
+                            key={index}
+                            className="relative border-2 border-gray-300 h-64"
+                        >
                             <OpenViduVideo streamManager={subscriber} />
                             <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                 상대방 {index + 1}
                             </div>
                         </div>
                     ))}
-                    {Array.from({ length: 4 - subscribers.length - 1 }).map((_, index) => (
-                        <div key={index} className="relative border-2 border-gray-300 h-64 flex items-center justify-center">
-                            <div className="text-gray-500">화면이 나올 공간</div>
-                        </div>
-                    ))}
+                    {Array.from({ length: 4 - subscribers.length - 1 }).map(
+                        (_, index) => (
+                            <div
+                                key={index}
+                                className="relative border-2 border-gray-300 h-64 flex items-center justify-center"
+                            >
+                                <div className="text-gray-500">
+                                    화면이 나올 공간
+                                </div>
+                            </div>
+                        )
+                    )}
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#f0e8d9] p-4">
                     <h2 className="text-lg font-bold mb-2">채팅방</h2>
@@ -438,9 +455,13 @@ const VideoChatPage = () => {
                 <div className="bg-white p-12 rounded-md shadow-md text-center mx-4">
                     <h2 className="text-2xl font-bold">미션!</h2>
                     <p className="text-lg mt-2">
-                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이 인식되어야 본격적인 통화가 시작됩니다. 멍멍!
+                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이
+                        인식되어야 본격적인 통화가 시작됩니다. 멍멍!
                     </p>
-                    <button onClick={requestTopicRecommendations} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md">
+                    <button
+                        onClick={requestTopicRecommendations}
+                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+                    >
                         주제 추천
                     </button>
                     {recommendedTopics.length > 0 && (
@@ -467,10 +488,5 @@ const VideoChatPage = () => {
             </div>
         </div>
     );
-    
-    
-    
-    
 };
-export default VideoChatPage; 
-    
+export default VideoChatPage;
