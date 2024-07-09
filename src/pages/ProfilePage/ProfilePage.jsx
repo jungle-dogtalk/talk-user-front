@@ -108,61 +108,105 @@ const ProfilePage = () => {
     };
 
     return (
-        <div className="profile-page">
-            <div className="header">
-                <img src={logo} alt="명톡 로고" className="logo" />
-                <button className="delete-account" onClick={handleDeleteAccount}>
-                    탈퇴하기
-                </button>
-            </div>
-            <div className="profile-card">
-            <div className="profile-details">
-                    <div className="profile-picture-container">
-                        <img src={profileImage} alt="프로필 사진" className="profile-picture" />
-                        <label htmlFor="file-input" className="file-input-label">
-                            <img src={editIcon} alt="수정 아이콘" className="additional-image" />
-                        </label>
-                        <input type="file" id="file-input" className="file-input" onChange={handleFileChange} />
-                    </div>
-                    <h2>이름: {userInfo?.name}</h2>
-                    <h3>닉네임: {userInfo?.username}</h3>
+        <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
+            <header className="w-full bg-[#89644C] p-4 flex items-center justify-between">
+                <img src={logo} alt="명톡 로고" className="w-16 h-16" />
+                <button className="text-white" onClick={handleDeleteAccount}>탈퇴하기</button>
+            </header>
+            <div className="flex flex-col items-center py-8 flex-1 w-full">
+                <div className="relative mb-8">
+                    <img
+                        src={profileImage}
+                        alt="프로필 사진"
+                        className="w-56 h-56 rounded-full border-2 border-gray-300"
+                    />
+                    <label htmlFor="file-input" className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer">
+                        <img src={editIcon} alt="수정 아이콘" className="w-6 h-6" />
+                    </label>
+                    <input
+                        type="file"
+                        id="file-input"
+                        className="hidden"
+                        onChange={handleFileChange}
+                    />
                 </div>
-                <div className="progress-bars">
-                    <div className="progress-bar">
-                        <div className="bar red" style={{ width: '74%' }}></div>
-                        <span>74%</span>
+                <h2 className="text-2xl font-bold mb-2">이름: {userInfo?.name}</h2>
+                <h3 className="text-xl mb-4">닉네임: {userInfo?.username}</h3>
+                <div className="w-full max-w-3xl">
+                    <div className="flex flex-col items-center mb-8">
+                    <div className="w-full mx-auto mb-4">
+                        <span className="block text-left mb-1">대화지수</span>
+                        <div className="w-full h-4 bg-gray-200 rounded-full shadow-inner">
+                            <div className="h-4 bg-red-500 rounded-full shadow" style={{ width: '74%' }}></div>
+                        </div>
+                        <span className="block text-right text-sm mt-1">74%</span>
+                        </div>
+                        <div className="w-full mx-auto">
+                            <span className="block text-left mb-1">매너지수</span>
+                            <div className="w-full h-4 bg-gray-200 rounded-full shadow-inner">
+                                <div className="h-4 bg-blue-500 rounded-full shadow" style={{ width: '80%' }}></div>
+                            </div>
+                            <span className="block text-right text-sm mt-1">80%</span>
+                        </div>
                     </div>
-                    <div className="progress-bar">
-                        <div className="bar blue" style={{ width: '80%' }}></div>
-                        <span>80%</span>
+                    <hr className="w-full my-8 border-gray-400" />
+                    <div className="text-center mt-8">
+                        <h2 className="text-xl font-bold mb-4">관심사</h2>
+                        <div className="grid grid-cols-6 gap-4">
+                            {[
+                                { name: '독서', icon: '📚' },
+                                { name: '영화 감상', icon: '🎬' },
+                                { name: '게임', icon: '🎮' },
+                                { name: '여행', icon: '✈️' },
+                                { name: '요리', icon: '🍳' },
+                                { name: '드라이브', icon: '🚗' },
+                                { name: 'KPOP', icon: '💃' },
+                                { name: '메이크업', icon: '💄' },
+                                { name: '인테리어', icon: '🪑' },
+                                { name: '그림', icon: '🎨' },
+                                { name: '애완동물', icon: '🐶' },
+                                { name: '부동산', icon: '🏡' },
+                                { name: '맛집 투어', icon: '🍔' },
+                                { name: '헬스', icon: '💪🏻' },
+                                { name: '산책', icon: '🌳' },
+                                { name: '수영', icon: '🏊' },
+                                { name: '사진 찍기', icon: '📸' },
+                                { name: '주식', icon: '📈' },
+                            ].map((interest) => (
+                                <div
+                                    key={interest.name}
+                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${clickedInterests.includes(interest.name) ? 'bg-blue-100' : 'bg-white'}`}
+                                    onClick={() => handleInterestClick(interest.name)}
+                                >
+                                    <span className="block text-center text-2xl">{interest.icon}</span>
+                                    <span className="block text-center text-sm">{interest.name}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-                <div className="interests">
-                    <div className="interests-header"></div>
-                    <div className="interests-content">
-                        {interestsList.map((interest, index) => (
-                            <button
-                                key={index}
-                                className={`interest-tag ${clickedInterests.includes(interest) ? 'clicked' : ''}`}
-                                onClick={() => handleInterestClick(interest)}
-                            >
-                                {interest}
-                            </button>
-                        ))}
+                    <div className="flex justify-center mt-8">
+                        <button
+                            type="button"
+                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            onClick={() => navigate(-1)}
+                        >
+                            뒤로가기
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                            onClick={handleProfileUpdate}
+                        >
+                            수정하기
+                        </button>
                     </div>
-                    <div className="interests-footer"></div>
-                </div>
-                <div className="buttons">
-                    <button className="back-button" onClick={() => navigate(-1)}>
-                        뒤로가기
-                    </button>
-                    <button className="edit-button" onClick={handleProfileUpdate}>
-                        수정하기
-                    </button>
                 </div>
             </div>
         </div>
     );
+    
+    
+    
 };
 
 export default ProfilePage;
