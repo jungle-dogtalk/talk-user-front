@@ -47,6 +47,7 @@ const ProfilePage = () => {
             });
             
             if (response.status === 200) {
+                alert('계정 삭제가 잘 되었습니다. ');
                 dispatch(logoutUser()); // 로그아웃 액션 디스패치
                 navigate('/'); // 홈으로 리다이렉트
             }

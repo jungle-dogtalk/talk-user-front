@@ -35,7 +35,7 @@ const SignUpPage = () => {
         e.preventDefault();
         if (password !== confirmPassword) {
             // 비밀번호 확인
-            alert('Passwords do not match');
+            alert('비밀번호가 틀려요!');
             return;
         }
 
