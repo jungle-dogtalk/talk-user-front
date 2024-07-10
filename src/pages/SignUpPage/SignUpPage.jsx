@@ -165,7 +165,7 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="confirm-password" className="w-24 text-right">비밀번호 확인</label>
+                        <label htmlFor="confirm-password" className="w-22 text-right">비밀번호 확인</label>
                         <input
                             type="password"
                             id="confirm-password"
