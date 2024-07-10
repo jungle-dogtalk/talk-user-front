@@ -19,6 +19,9 @@ const LoginPage = () => {
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/main'); // 로그인 성공 시 메인 페이지로 이동
         }
+        else{
+            alert('ID/PW 확인해주세요.')
+        }
 
     };
 
