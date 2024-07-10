@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'; // Import axios for file upload
 import { logoutUser } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
-import './ProfilePage.css';
 import Cookies from 'js-cookie'; // 쿠키 라이브러리 임포트
 
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
