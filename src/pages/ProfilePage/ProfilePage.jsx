@@ -108,7 +108,7 @@ const ProfilePage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#89644C] p-4 flex items-center justify-between">
+            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
                 <button className="text-white" onClick={handleDeleteAccount}>탈퇴하기</button>
             </header>
@@ -129,21 +129,21 @@ const ProfilePage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <h2 className="text-2xl font-bold mb-2">이름: {userInfo?.name}</h2>
-                <h3 className="text-xl mb-4">닉네임: {userInfo?.username}</h3>
+                <h2 className="text-xl font-bold mb-2">이름: {userInfo?.name}</h2>
+                <h3 className="text-xl font-bold mb-4">닉네임: {userInfo?.username}</h3>
                 <div className="w-full max-w-3xl">
                     <div className="flex flex-col items-center mb-8">
                     <div className="w-full mx-auto mb-4">
                         <span className="block text-left mb-1">대화지수</span>
-                        <div className="w-full h-4 bg-gray-200 rounded-full shadow-inner">
-                            <div className="h-4 bg-red-500 rounded-full shadow" style={{ width: '74%' }}></div>
+                        <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
+                            <div className="h-8 bg-red-500 rounded-full shadow" style={{ width: '74%' }}></div>
                         </div>
                         <span className="block text-right text-sm mt-1">74%</span>
                         </div>
                         <div className="w-full mx-auto">
                             <span className="block text-left mb-1">매너지수</span>
-                            <div className="w-full h-4 bg-gray-200 rounded-full shadow-inner">
-                                <div className="h-4 bg-blue-500 rounded-full shadow" style={{ width: '80%' }}></div>
+                            <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
+                                <div className="h-8 bg-blue-500 rounded-full shadow" style={{ width: '80%' }}></div>
                             </div>
                             <span className="block text-right text-sm mt-1">80%</span>
                         </div>
