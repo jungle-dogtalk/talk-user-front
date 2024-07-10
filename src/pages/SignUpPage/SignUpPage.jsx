@@ -248,7 +248,7 @@ const SignUpPage = () => {
                         </div>
                     </div>
                     {error && <p className="text-red-500 text-center">{error}</p>}
-                    <div className="flex justify-center mt-8">
+                    <div className="flex w-full justify-center mt-8">
                         <button
                             type="button"
                             className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
