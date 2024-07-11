@@ -61,6 +61,11 @@ const API_LIST = {
         path: `/api/audio/end-call`,
         desc: '통화 종료 및 관심사 도출',
     },
+    GET_TOKEN: {
+        method: 'POST',
+        path: `/api/openvidu/token`,
+        desc: 'OpenVidu 토큰 발급'
+    }
 };
 
 // OPEN API 목록
