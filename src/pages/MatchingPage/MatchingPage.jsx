@@ -11,9 +11,7 @@ const MatchingPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
     console.log('유저인포 ->  ', userInfo);
 
-    // const socket = io('http://localhost:5000', {
-    //     query: { userId: userInfo._id },
-    // });
+    // const socket = io('http://localhost:5000');
 
     const socket = io('https://api.barking-talk.org');
 
