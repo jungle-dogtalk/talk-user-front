@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from './AvatarApp.module.css';
-import { Canvas, useFrame, useGraph } from '@react-three/fiber';
+import { Canvas, useThree, useFrame, useGraph } from '@react-three/fiber';
 import { Color, Euler, Matrix4, SkinnedMesh } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
@@ -31,6 +31,12 @@ function AvatarApp() {
         setUrl(event.target.value);
     };
     const [url, setUrl] = useState('');
+
+    const Background = () => {
+        const { scene } = useThree();
+        scene.background = new Color('#fff'); // 흰 배경
+        return null;
+    };
 
     /* 비디오 설정 */
     const setup = async () => {
@@ -104,14 +110,14 @@ function AvatarApp() {
             <Canvas
                 id="avatar_canvas"
                 style={{
-                    backgroundColor: 'purple',
                     height: 400,
                 }}
                 camera={{
                     fov: 25,
                 }}
             >
-                <ambientLight intensity={0.5} />
+                <Background></Background>
+                <ambientLight intensity={1} />
                 <pointLight
                     position={[1, 1, 1]}
                     color={new Color(1, 0, 0)}
