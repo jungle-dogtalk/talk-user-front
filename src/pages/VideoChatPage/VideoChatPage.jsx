@@ -6,7 +6,7 @@ import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import { apiCall, apiCallWithFileData } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
-import dogImage from '../../assets/dog.jpg'; // 강아지 이미지
+import dogImage from '../../assets/dog.png'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken } from '../../services/openviduService';
@@ -375,9 +375,9 @@ const VideoChatPage = () => {
                     중단하기
                 </button>
             </header>
-            <div className="flex flex-1 video-container">
-                <AvatarApp></AvatarApp>
-                <div className="w-3/4 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
+            <div className="flex flex-1">
+            <AvatarApp></AvatarApp>
+                <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
                     {publisher && (
                         <div className="relative border-2 border-gray-300 h-64">
                             <OpenViduVideo streamManager={publisher} />
@@ -403,48 +403,32 @@ const VideoChatPage = () => {
                                 key={index}
                                 className="relative border-2 border-gray-300 h-64 flex items-center justify-center"
                             >
-                                <div className="text-gray-500">
-                                    화면이 나올 공간
-                                </div>
+                                <div className="text-gray-500">화면이 나올 공간</div>
                             </div>
                         )
                     )}
                 </div>
-                <div className="w-1/4 flex flex-col bg-[#f0e8d9] p-4">
-                    <h2 className="text-lg font-bold mb-2">채팅방</h2>
-                    <div className="flex-1 bg-white p-4 rounded-md shadow-md h-full">
-                        {/* 채팅 메시지들 */}
+                <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
+                    <h2 className="text-lg font-bold mb-2 text-center">남은 시간: 8분 27초(실시간 줄어듬)</h2>
+                    <div className="flex-1 flex flex-col justify-between">
+                        {Array.from({ length: 4 }).map((_, index) => (
+                            <img
+                                key={index}
+                                src={dogImage}
+                                alt={`Dog ${index + 1}`}
+                                className="w-14 h-14 mb-2"
+                            />
+                        ))}
                     </div>
-                    <input
-                        type="text"
-                        placeholder="메시지를 입력하세요..."
-                        className="mt-4 p-2 border rounded-md bg-[#fcf8ef]"
-                    />
                 </div>
             </div>
-            <div className="bg-[#d1c4b2] py-4 flex justify-between items-start w-full">
-                <div className="flex flex-col items-center">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <img
-                            key={index}
-                            src={dogImage}
-                            alt={`Dog ${index + 1}`}
-                            className="w-16 h-16 mb-2"
-                        />
-                    ))}
-                </div>
-                <div className="bg-white p-12 rounded-md shadow-md text-center mx-4">
-                    <h2 className="text-2xl font-bold">미션!</h2>
-                    <p className="text-lg mt-2">
-                        통화를 시작하기 위해서 '멍'을 외쳐주세요! 음성이
-                        인식되어야 본격적인 통화가 시작됩니다. 멍멍!
-                    </p>
-                    <button
-                        onClick={requestTopicRecommendations}
-                        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
-                    >
-                        주제 추천
+            <div className="flex">
+                <div className="w-3/4 bg-white  flex justify-center items-start">
+                    <div className="w-full bg-white p-4 rounded-md   text-center mx-4">
+                    <button onClick={requestTopicRecommendations} className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4">
+                        주제 추천 Btn
                     </button>
+
                     {recommendedTopics.length > 0 && (
                         <div className="recommended-topics mt-4">
                             <h3 className="text-lg font-semibold">추천 주제</h3>
@@ -454,20 +438,38 @@ const VideoChatPage = () => {
                                 ))}
                             </ul>
                         </div>
-                    )}
+                        )}
                 </div>
-                <div className="flex flex-col items-center">
-                    {Array.from({ length: 4 }).map((_, index) => (
-                        <img
-                            key={index}
-                            src={dogHouseImage}
-                            alt={`Dog House ${index + 1}`}
-                            className="w-16 h-16 mb-2"
-                        />
-                    ))}
+                </div>
+                <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
+                    <div className="flex-1 flex flex-col justify-between items-center">
+                       
+                    </div>
                 </div>
             </div>
         </div>
     );
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 };
 export default VideoChatPage;
