@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios'; // axios 임포트
 import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
-
 
 const SignUpPage = () => {
     // 상태 변수들 정의
@@ -32,7 +31,7 @@ const SignUpPage = () => {
         }
     }, [token, navigate]);
 
-     // 회원가입 처리 함수
+    // 회원가입 처리 함수
     const handleSignUp = async (e) => {
         e.preventDefault();
         if (password !== confirmPassword) {
@@ -53,33 +52,47 @@ const SignUpPage = () => {
         formData.append('name', name);
         formData.append('email', email);
         formData.append('nickname', nickname);
-        interests.forEach(interest => formData.append('interests', interest));
+        interests.forEach((interest) => formData.append('interests', interest));
         formData.append('profileImage', selectedFile);
 
         // interests2를 빈 값으로 추가
         formData.append('interests2', JSON.stringify([]));
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await axios.post(
+                'http://localhost:5000/api/auth/signup',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
 
             if (response.data) {
-                alert('회원가입이 성공적으로 성공하셨습니다.')
+                alert('회원가입이 성공적으로 성공하셨습니다.');
                 navigate('/');
             }
         } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message);
-            alert('An error occurred during sign up: ' + (error.response ? error.response.data.message : error.message));
+            console.error(
+                'Error:',
+                error.response ? error.response.data : error.message
+            );
+            alert(
+                'An error occurred during sign up: ' +
+                    (error.response
+                        ? error.response.data.message
+                        : error.message)
+            );
         }
     };
 
     // 관심사 변경 처리 함수
     const handleInterestChange = (interestName) => {
         if (interests.includes(interestName)) {
-            setInterests(interests.filter((interest) => interest !== interestName));
+            setInterests(
+                interests.filter((interest) => interest !== interestName)
+            );
         } else {
             setInterests([...interests, interestName]);
         }
@@ -88,15 +101,25 @@ const SignUpPage = () => {
     // 아이디 중복 체크 함수
     const handleUsernameCheck = async () => {
         try {
-            const response = await apiCall(API_LIST.CHECK_USERNAME, { username });
+            const response = await apiCall(API_LIST.CHECK_USERNAME, {
+                username,
+            });
             if (response.data) {
                 alert(response.message);
             } else {
                 alert('ID를 사용하실 수 있습니다.');
             }
         } catch (error) {
-            console.error('Error checking username:', error.response ? error.response.data : error.message);
-            alert('An error occurred while checking the username: ' + (error.response ? error.response.data.message : error.message));
+            console.error(
+                'Error checking username:',
+                error.response ? error.response.data : error.message
+            );
+            alert(
+                'An error occurred while checking the username: ' +
+                    (error.response
+                        ? error.response.data.message
+                        : error.message)
+            );
         }
     };
 
@@ -112,7 +135,7 @@ const SignUpPage = () => {
             setSelectedFile(file); // 선택된 파일 상태 업데이트
         }
     };
-    
+
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
             <header className="w-full bg-[#89644C] p-4 flex items-center justify-between">
@@ -125,8 +148,15 @@ const SignUpPage = () => {
                         alt="프로필 사진"
                         className="w-56 h-56 rounded-full border-2 border-gray-300"
                     />
-                    <label htmlFor="file-input" className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer">
-                        <img src={editIcon} alt="수정 아이콘" className="w-6 h-6" />
+                    <label
+                        htmlFor="file-input"
+                        className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer"
+                    >
+                        <img
+                            src={editIcon}
+                            alt="수정 아이콘"
+                            className="w-6 h-6"
+                        />
                     </label>
                     <input
                         type="file"
@@ -135,9 +165,14 @@ const SignUpPage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <form onSubmit={handleSignUp} className="w-full max-w-lg space-y-6">
+                <form
+                    onSubmit={handleSignUp}
+                    className="w-full max-w-lg space-y-6"
+                >
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="username" className="w-24 text-right">아이디</label>
+                        <label htmlFor="username" className="w-24 text-right">
+                            아이디
+                        </label>
                         <input
                             type="text"
                             id="username"
@@ -156,7 +191,9 @@ const SignUpPage = () => {
                         </button>
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="password" className="w-24 text-right">비밀번호</label>
+                        <label htmlFor="password" className="w-24 text-right">
+                            비밀번호
+                        </label>
                         <input
                             type="password"
                             id="password"
@@ -168,7 +205,12 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="confirm-password" className="w-22 text-right">비밀번호 확인</label>
+                        <label
+                            htmlFor="confirm-password"
+                            className="w-22 text-right"
+                        >
+                            비밀번호 확인
+                        </label>
                         <input
                             type="password"
                             id="confirm-password"
@@ -180,7 +222,9 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="name" className="w-24 text-right">이름</label>
+                        <label htmlFor="name" className="w-24 text-right">
+                            이름
+                        </label>
                         <input
                             type="text"
                             id="name"
@@ -192,7 +236,9 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="nickname" className="w-24 text-right">닉네임</label>
+                        <label htmlFor="nickname" className="w-24 text-right">
+                            닉네임
+                        </label>
                         <input
                             type="text"
                             id="nickname"
@@ -204,7 +250,9 @@ const SignUpPage = () => {
                         />
                     </div>
                     <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="email" className="w-24 text-right">이메일</label>
+                        <label htmlFor="email" className="w-24 text-right">
+                            이메일
+                        </label>
                         <input
                             type="email"
                             id="email"
@@ -241,16 +289,28 @@ const SignUpPage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${interests.includes(interest.name) ? 'bg-blue-100' : 'bg-white'}`}
-                                    onClick={() => handleInterestChange(interest.name)}
+                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${
+                                        interests.includes(interest.name)
+                                            ? 'bg-blue-100'
+                                            : 'bg-white'
+                                    }`}
+                                    onClick={() =>
+                                        handleInterestChange(interest.name)
+                                    }
                                 >
-                                    <span className="block text-center text-2xl">{interest.icon}</span>
-                                    <span className="block text-center text-sm">{interest.name}</span>
+                                    <span className="block text-center text-2xl">
+                                        {interest.icon}
+                                    </span>
+                                    <span className="block text-center text-sm">
+                                        {interest.name}
+                                    </span>
                                 </div>
                             ))}
                         </div>
                     </div>
-                    {error && <p className="text-red-500 text-center">{error}</p>}
+                    {error && (
+                        <p className="text-red-500 text-center">{error}</p>
+                    )}
                     <div className="flex w-full justify-center mt-8">
                         <button
                             type="button"
@@ -270,15 +330,6 @@ const SignUpPage = () => {
             </div>
         </div>
     );
-    
-    
-    
-    
-    
-    
-    
-    
-    
 };
 
 export default SignUpPage;
