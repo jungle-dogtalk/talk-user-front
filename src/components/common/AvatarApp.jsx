@@ -26,6 +26,7 @@ function AvatarApp() {
         'https://models.readyplayer.me/668d14f634432ca7edca24af.glb',
         'https://models.readyplayer.me/668d150a7a0772243cddc4af.glb',
         'https://models.readyplayer.me/668d152063703fb7530e8a0d.glb',
+        'https://models.readyplayer.me/668fc33763703fb7531ac725.glb',
     ];
     const handleOnChange = (event) => {
         setUrl(event.target.value);
