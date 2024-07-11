@@ -68,84 +68,85 @@ const VideoChatPage = () => {
     }, [location]);
 
     // 세션 떠남
-    const leaveSession = useCallback(() => {
-        if (isLeaving) {
-            // 중복 중단 막기
-            return;
+    const leaveSession = useCallback(async () => {
+    if (isLeaving) {
+        // 중복 중단 막기
+        return;
+    }
+    setIsLeaving(true);
+
+    // openVidu 세션에서 연결 해제
+    if (session) {
+        session.disconnect();
+    }
+
+    // 음성인식 종료
+    if (recognitionRef.current) {
+        try {
+            recognitionRef.current.stop();
+        } catch (error) {
+            console.error('음성인식 종료 오류:', error);
         }
-        setIsLeaving(true);
+        recognitionRef.current.onend = null;
+        recognitionRef.current = null;
+    }
 
-        // openVidu 세션에서 연결 해제
-        if (session) {
-            session.disconnect();
+    // 사용자 카메라 & 마이크 비활성화
+    if (publisher) {
+        const mediaStream = publisher.stream.getMediaStream();
+        if (mediaStream && mediaStream.getTracks) {
+            // 모든 미디어 트랙 중지
+            mediaStream.getTracks().forEach((track) => track.stop());
         }
+    }
 
-        // 음성인식 종료
-        if (recognitionRef.current) {
-            try {
-                // recognitionRef.current.abort(); // 인식 중지
-                recognitionRef.current.stop();
-            } catch (error) {
-                console.error('음성인식 종료 오류:', error);
-            }
-            recognitionRef.current.onend = null;
-            recognitionRef.current = null;
-        }
+    const username = userInfo.username;
+    const sessionId = new URLSearchParams(location.search).get('sessionId');
 
-        // 사용자 카메라 & 마이크 비활성화
-        if (publisher) {
-            const mediaStream = publisher.stream.getMediaStream();
-            if (mediaStream && mediaStream.getTracks) {
-                // 모든 미디어 트랙 중지
-                mediaStream.getTracks().forEach((track) => track.stop());
-            }
-        }
+    console.log('중단하기 요청 전송:', { username, sessionId });
 
-        const username = userInfo.username;
-        const sessionId = new URLSearchParams(location.search).get('sessionId');
+    try {
+        // 기존 leaveSession 로직
+        const response = await apiCall(API_LIST.END_CALL, { username, sessionId });
+        console.log('API 응답:', response);
 
-        console.log('중단하기 요청 전송:', { username, sessionId });
-
-        apiCall(API_LIST.END_CALL, { username, sessionId })
-            .then((response) => {
-                console.log('API 응답:', response);
-
-                if (response.data) {
-                    const interestsData = {
-                        username: response.data.username,
-                        interests: response.data.interests,
-                    };
-                    console.log(
-                        '로컬 스토리지에 저장할 데이터:',
-                        interestsData
-                    );
-                    setInterests(response.data.interests);
-                    localStorage.setItem(
-                        'interestsData',
-                        JSON.stringify(interestsData)
-                    );
-                    window.location.href = '/review';
-                } else {
-                    console.error('응답 데이터가 null입니다:', response);
-                }
-
-                // 소켓 연결을 끊고 세션을 정리
-                if (socket.current) {
-                    socket.current.emit('leaveSession', sessionId);
-                    socket.current.disconnect();
-                }
-
-                setSession(undefined);
-                setSubscribers([]);
-                setPublisher(undefined);
-            })
-            .catch((error) => {
-                console.error('Error ending call:', error);
-            })
-            .finally(() => {
-                setIsLeaving(true);
+        if (response.data) {
+            const interestsData = {
+                username: response.data.username,
+                interests: response.data.interests,
+            };
+            console.log('DB에 저장할 데이터:', interestsData);
+            // 사용자 정보를 DB에 업데이트하는 API 호출
+            const updateUserResponse = await axios.patch('http://localhost:5000/api/user/update-user-interests', {
+                username, // 사용자 이름
+                interests: interestsData.interests // 추가할 항목의 값
             });
-    }, [session, publisher, userInfo.username, location.search, isLeaving]);
+
+            if (updateUserResponse.status === 200) {
+                console.log('User updated successfully:', updateUserResponse.data);
+                window.location.href = '/review';
+            } else {
+                console.error('Failed to update user:', updateUserResponse);
+            }
+        } else {
+            console.error('응답 데이터가 null입니다:', response);
+        }
+
+        // 소켓 연결을 끊고 세션을 정리
+        if (socket.current) {
+            socket.current.emit('leaveSession', sessionId);
+            socket.current.disconnect();
+        }
+
+        setSession(undefined);
+        setSubscribers([]);
+        setPublisher(undefined);
+    } catch (error) {
+        console.error('Error ending call:', error);
+    } finally {
+        setIsLeaving(false);
+    }
+}, [session, publisher, userInfo.username, location.search, isLeaving]);
 
     // 세션 참여
     const joinSession = useCallback(
