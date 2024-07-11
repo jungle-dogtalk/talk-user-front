@@ -9,7 +9,7 @@ import { API_LIST } from '../../utils/apiList';
 import dogImage from '../../assets/dog.png'; // 강아지 이미지
 import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
-import { getToken } from '../../services/openviduService';
+import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
@@ -69,64 +69,117 @@ const VideoChatPage = () => {
 
     // 세션 떠남
     const leaveSession = useCallback(async () => {
-    if (isLeaving) {
-        // 중복 중단 막기
-        return;
-    }
-    setIsLeaving(true);
+        if (isLeaving) {
+            // 중복 중단 막기
+            return;
+        }
+        setIsLeaving(true);
 
-    // openVidu 세션에서 연결 해제
-    if (session) {
-        session.disconnect();
-    }
+        // openVidu 세션에서 연결 해제
+        if (session) {
+            session.disconnect();
+        }
 
-    // 음성인식 종료
-    if (recognitionRef.current) {
+        // 음성인식 종료
+        if (recognitionRef.current) {
+            try {
+                recognitionRef.current.stop();
+            } catch (error) {
+                console.error('음성인식 종료 오류:', error);
+            }
+            recognitionRef.current.onend = null;
+            recognitionRef.current = null;
+        }
+
+        // 사용자 카메라 & 마이크 비활성화
+        if (publisher) {
+            const mediaStream = publisher.stream.getMediaStream();
+            if (mediaStream && mediaStream.getTracks) {
+                // 모든 미디어 트랙 중지
+                mediaStream.getTracks().forEach((track) => track.stop());
+            }
+        }
+
+        const username = userInfo.username;
+        const sessionId = new URLSearchParams(location.search).get('sessionId');
+
+        console.log('중단하기 요청 전송:', { username, sessionId });
+
         try {
-            recognitionRef.current.stop();
+            // 기존 leaveSession 로직
+            const response = await apiCall(API_LIST.END_CALL, {
+                username,
+                sessionId,
+            });
+            console.log('API 응답:', response);
+
+            window.location.href = '/review';
+
+            // 소켓 연결을 끊고 세션을 정리
+            if (socket.current) {
+                socket.current.emit('leaveSession', sessionId);
+                socket.current.disconnect();
+            }
+
+            setSession(undefined);
+            setSubscribers([]);
+            setPublisher(undefined);
         } catch (error) {
-            console.error('음성인식 종료 오류:', error);
+            console.error('Error ending call:', error);
+        } finally {
+            setIsLeaving(false);
         }
-        recognitionRef.current.onend = null;
-        recognitionRef.current = null;
-    }
+    }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-    // 사용자 카메라 & 마이크 비활성화
-    if (publisher) {
-        const mediaStream = publisher.stream.getMediaStream();
-        if (mediaStream && mediaStream.getTracks) {
-            // 모든 미디어 트랙 중지
-            mediaStream.getTracks().forEach((track) => track.stop());
-        }
-    }
+    const startStreaming = (mediaStream, OV) => {
+        setTimeout(() => {
+            var videoTrack = mediaStream.getVideoTracks()[0];
+            var video = document.createElement('video');
+            video.srcObject = new MediaStream([videoTrack]);
 
-    const username = userInfo.username;
-    const sessionId = new URLSearchParams(location.search).get('sessionId');
+            // var canvas = document.createElement('canvas');
 
-    console.log('중단하기 요청 전송:', { username, sessionId });
+            var canvas = document
+                .getElementById('avatar_canvas')
+                .querySelector('div')
+                .querySelector('canvas');
 
-    try {
-        // 기존 leaveSession 로직
-        const response = await apiCall(API_LIST.END_CALL, { username, sessionId });
-        console.log('API 응답:', response);
-        
-        window.location.href = '/review';
+            console.log('캔버스 -> ', canvas);
+            var ctx = canvas.getContext('2d');
+            console.log('ctx -> ', ctx);
 
-        // 소켓 연결을 끊고 세션을 정리
-        if (socket.current) {
-            socket.current.emit('leaveSession', sessionId);
-            socket.current.disconnect();
-        }
+            // var ctx = canvas.getContext('3d');
+            // console.log('ctx -> ', ctx);
+            // ctx.filter = 'grayscale(100%)';
 
-        setSession(undefined);
-        setSubscribers([]);
-        setPublisher(undefined);
-    } catch (error) {
-        console.error('Error ending call:', error);
-    } finally {
-        setIsLeaving(false);
-    }
-}, [session, publisher, userInfo.username, location.search, isLeaving]);
+            // video.addEventListener('play', () => {
+            //     var loop = () => {
+            //         if (!video.paused && !video.ended) {
+            //             ctx.drawImage(video, 0, 0, 300, 170);
+            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+            //         }
+            //     };
+            //     loop();
+            // });
+            video.play();
+            var videoTrack = canvas
+                .captureStream(FRAME_RATE)
+                .getVideoTracks()[0];
+            var publisher = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: videoTrack,
+            });
+
+            setPublisher(publisher);
+            session.publish(publisher);
+            // 음성인식 시작
+            startSpeechRecognition(
+                publisher.stream.getMediaStream(),
+                userInfo.username
+            );
+            socket.current.emit('joinSession', sid);
+        }, 5000);
+    };
 
     // 세션 참여
     const joinSession = useCallback(
@@ -165,7 +218,16 @@ const VideoChatPage = () => {
                 );
             });
 
-            getToken(sid).then((token) => {
+            enterToSession(session, sid, OV);
+        },
+        [userInfo.username]
+    );
+
+    const enterToSession = (session, sid, OV) => {
+        if (sid === 'sessionA' || sid === 'sessionB' || sid === 'sessionC') {
+            getTokenForTest(sid);
+        } else {
+            getToken(sid, userInfo._id).then((token) => {
                 session
                     .connect(token)
                     .then(() => {
@@ -175,54 +237,7 @@ const VideoChatPage = () => {
                             resolution: '1280x720',
                             frameRate: FRAME_RATE,
                         }).then((mediaStream) => {
-                            setTimeout(() => {
-                                var videoTrack =
-                                    mediaStream.getVideoTracks()[0];
-                                var video = document.createElement('video');
-                                video.srcObject = new MediaStream([videoTrack]);
-
-                                // var canvas = document.createElement('canvas');
-
-                                var canvas = document
-                                    .getElementById('avatar_canvas')
-                                    .querySelector('div')
-                                    .querySelector('canvas');
-
-                                console.log('캔버스 -> ', canvas);
-                                var ctx = canvas.getContext('2d');
-                                console.log('ctx -> ', ctx);
-
-                                // var ctx = canvas.getContext('3d');
-                                // console.log('ctx -> ', ctx);
-                                // ctx.filter = 'grayscale(100%)';
-
-                                // video.addEventListener('play', () => {
-                                //     var loop = () => {
-                                //         if (!video.paused && !video.ended) {
-                                //             ctx.drawImage(video, 0, 0, 300, 170);
-                                //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-                                //         }
-                                //     };
-                                //     loop();
-                                // });
-                                video.play();
-                                var videoTrack = canvas
-                                    .captureStream(FRAME_RATE)
-                                    .getVideoTracks()[0];
-                                var publisher = OV.initPublisher(undefined, {
-                                    audioSource: undefined,
-                                    videoSource: videoTrack,
-                                });
-
-                                setPublisher(publisher);
-                                session.publish(publisher);
-                                // 음성인식 시작
-                                startSpeechRecognition(
-                                    publisher.stream.getMediaStream(),
-                                    userInfo.username
-                                );
-                                socket.current.emit('joinSession', sid);
-                            }, 5000);
+                            startStreaming(mediaStream, OV);
                         });
                     })
                     .catch((error) => {
@@ -233,9 +248,8 @@ const VideoChatPage = () => {
                         );
                     });
             });
-        },
-        [userInfo.username]
-    );
+        }
+    };
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
@@ -376,7 +390,7 @@ const VideoChatPage = () => {
                 </button>
             </header>
             <div className="flex flex-1">
-            <AvatarApp></AvatarApp>
+                <AvatarApp></AvatarApp>
                 <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
                     {publisher && (
                         <div className="relative border-2 border-gray-300 h-64">
@@ -403,13 +417,17 @@ const VideoChatPage = () => {
                                 key={index}
                                 className="relative border-2 border-gray-300 h-64 flex items-center justify-center"
                             >
-                                <div className="text-gray-500">화면이 나올 공간</div>
+                                <div className="text-gray-500">
+                                    화면이 나올 공간
+                                </div>
                             </div>
                         )
                     )}
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
-                    <h2 className="text-lg font-bold mb-2 text-center">남은 시간: 8분 27초(실시간 줄어듬)</h2>
+                    <h2 className="text-lg font-bold mb-2 text-center">
+                        남은 시간: 8분 27초(실시간 줄어듬)
+                    </h2>
                     <div className="flex-1 flex flex-col justify-between">
                         {Array.from({ length: 4 }).map((_, index) => (
                             <img
@@ -425,51 +443,32 @@ const VideoChatPage = () => {
             <div className="flex">
                 <div className="w-3/4 bg-white  flex justify-center items-start">
                     <div className="w-full bg-white p-4 rounded-md   text-center mx-4">
-                    <button onClick={requestTopicRecommendations} className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4">
-                        주제 추천 Btn
-                    </button>
+                        <button
+                            onClick={requestTopicRecommendations}
+                            className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4"
+                        >
+                            주제 추천 Btn
+                        </button>
 
-                    {recommendedTopics.length > 0 && (
-                        <div className="recommended-topics mt-4">
-                            <h3 className="text-lg font-semibold">추천 주제</h3>
-                            <ul className="list-disc list-inside">
-                                {recommendedTopics.map((topic, index) => (
-                                    <li key={index}>{topic}</li>
-                                ))}
-                            </ul>
-                        </div>
+                        {recommendedTopics.length > 0 && (
+                            <div className="recommended-topics mt-4">
+                                <h3 className="text-lg font-semibold">
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    {recommendedTopics.map((topic, index) => (
+                                        <li key={index}>{topic}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         )}
-                </div>
+                    </div>
                 </div>
                 <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
-                    <div className="flex-1 flex flex-col justify-between items-center">
-                       
-                    </div>
+                    <div className="flex-1 flex flex-col justify-between items-center"></div>
                 </div>
             </div>
         </div>
     );
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 };
 export default VideoChatPage;
