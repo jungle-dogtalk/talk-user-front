@@ -15,7 +15,7 @@ const MatchingPage = () => {
     //     query: { userId: userInfo._id },
     // });
 
-    const socket = io('http://localhost:5000');
+    const socket = io('https://api.barking-talk.org');
 
     //사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {

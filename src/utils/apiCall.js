@@ -1,8 +1,8 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const SERVER_URL_LOCAL = 'http://localhost:5000';
-// const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
+// const SERVER_URL_LOCAL = 'http://localhost:5000';
+const SERVER_URL_LOCAL = 'https://api.barking-talk.org';
 
 const generateHeaders = (customHeaders) => {
     let headers = customHeaders
