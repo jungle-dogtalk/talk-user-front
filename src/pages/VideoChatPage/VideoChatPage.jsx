@@ -67,6 +67,7 @@ const VideoChatPage = () => {
         };
     }, [location]);
 
+    // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
     const leaveSession = useCallback(async () => {
         if (isLeaving) {
@@ -223,32 +224,43 @@ const VideoChatPage = () => {
         [userInfo.username]
     );
 
-    const enterToSession = (session, sid, OV) => {
-        if (sid === 'sessionA' || sid === 'sessionB' || sid === 'sessionC') {
-            getTokenForTest(sid);
+    const enterToSession = async (session, sid, OV) => {
+        let tokenForOV;
+        const allowedSessionId = [
+            'sessionA',
+            'sessionB',
+            'sessionC',
+            'sessionD',
+            'sessionE',
+            'sessionG',
+            'sessionH',
+        ];
+
+        if (allowedSessionId.includes(sid)) {
+            tokenForOV = await getTokenForTest(sid);
         } else {
-            getToken(sid, userInfo._id).then((token) => {
-                session
-                    .connect(token)
-                    .then(() => {
-                        OV.getUserMedia({
-                            audioSource: false,
-                            videoSource: undefined,
-                            resolution: '1280x720',
-                            frameRate: FRAME_RATE,
-                        }).then((mediaStream) => {
-                            startStreaming(mediaStream, OV);
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(
-                            'There was an error connecting to the session:',
-                            error.code,
-                            error.message
-                        );
-                    });
-            });
+            tokenForOV = await getToken(sid, userInfo._id);
         }
+
+        session
+            .connect(tokenForOV)
+            .then(() => {
+                OV.getUserMedia({
+                    audioSource: false,
+                    videoSource: undefined,
+                    resolution: '1280x720',
+                    frameRate: FRAME_RATE,
+                }).then((mediaStream) => {
+                    startStreaming(mediaStream, OV);
+                });
+            })
+            .catch((error) => {
+                console.log(
+                    'There was an error connecting to the session:',
+                    error.code,
+                    error.message
+                );
+            });
     };
 
     // 설정 창 표시/숨기기 토글 함수

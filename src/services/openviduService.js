@@ -91,7 +91,12 @@ const getToken = async (sessionId, userId) => {
         userId,
     }
     const result = await apiCall(API_LIST.GET_TOKEN, parameters);
-    return result.token;
+    if (!result.status) {
+        alert('토큰 발급 실패');
+        return;
+    }
+
+    return result.data;
 };
 
 export { getToken, getTokenForTest };
