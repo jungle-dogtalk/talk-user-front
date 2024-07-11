@@ -109,28 +109,8 @@ const VideoChatPage = () => {
         // 기존 leaveSession 로직
         const response = await apiCall(API_LIST.END_CALL, { username, sessionId });
         console.log('API 응답:', response);
-
-        if (response.data) {
-            const interestsData = {
-                username: response.data.username,
-                interests: response.data.interests,
-            };
-            console.log('DB에 저장할 데이터:', interestsData);
-            // 사용자 정보를 DB에 업데이트하는 API 호출
-            const updateUserResponse = await axios.patch('http://localhost:5000/api/user/update-user-interests', {
-                username, // 사용자 이름
-                interests: interestsData.interests // 추가할 항목의 값
-            });
-
-            if (updateUserResponse.status === 200) {
-                console.log('User updated successfully:', updateUserResponse.data);
-                window.location.href = '/review';
-            } else {
-                console.error('Failed to update user:', updateUserResponse);
-            }
-        } else {
-            console.error('응답 데이터가 null입니다:', response);
-        }
+        
+        window.location.href = '/review';
 
         // 소켓 연결을 끊고 세션을 정리
         if (socket.current) {
