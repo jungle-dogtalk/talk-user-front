@@ -56,6 +56,9 @@ const SignUpPage = () => {
         interests.forEach(interest => formData.append('interests', interest));
         formData.append('profileImage', selectedFile);
 
+        // interests2를 빈 값으로 추가
+        formData.append('interests2', JSON.stringify([]));
+
         try {
             const response = await axios.post('http://localhost:5000/api/auth/signup', formData, {
                 headers: {
