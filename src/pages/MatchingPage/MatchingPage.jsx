@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './MatchingPage.css';
-import waitingDogImage from '../../assets/dog.jpg'; // 강아지 이미지
+import waitingDogImage from '../../assets/dog.png'; // 강아지 이미지
 import waitingHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import { io } from 'socket.io-client';
 import { apiCall } from '../../utils/apiCall';
