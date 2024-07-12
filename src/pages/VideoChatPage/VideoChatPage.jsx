@@ -56,6 +56,21 @@ const VideoChatPage = () => {
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null)); // 말풍선 타이머 상태
 
+    const [remainingTime, setRemainingTime] = useState(300); // 300초 = 5분
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setRemainingTime((prevTime) => {
+                if (prevTime <= 1) {
+                    return 300; // 0초가 되면 다시 5분(300초)으로 리셋
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
+
     useEffect(() => {
         const interval = setInterval(() => {
             setDogPositions((prevPositions) => {
@@ -281,9 +296,7 @@ const VideoChatPage = () => {
         //     loop();
         // });
         video.play();
-        var videoTrack = canvas
-            .captureStream(FRAME_RATE)
-            .getVideoTracks()[0];
+        var videoTrack = canvas.captureStream(FRAME_RATE).getVideoTracks()[0];
         var publisher = OV.initPublisher(undefined, {
             audioSource: undefined,
             videoSource: videoTrack,
@@ -297,7 +310,7 @@ const VideoChatPage = () => {
             userInfo.username
         );
         socket.current.emit('joinSession', sessionId);
-    }    
+    };
 
     // 세션 참여
     const joinSession = useCallback(async () => {
@@ -499,44 +512,74 @@ const VideoChatPage = () => {
                     중단하기
                 </button>
             </header>
-            <div className="flex flex-1">
-                <AvatarApp></AvatarApp>
-                <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
-                    {publisher && (
-                        <div className="relative border-2 border-gray-300 h-64">
-                            <OpenViduVideo streamManager={publisher} />
-                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
-                                나
-                            </div>
-                        </div>
-                    )}
-                    {subscribers.map((subscriber, index) => (
-                        <div
-                            key={index}
-                            className="relative border-2 border-gray-300 h-64"
-                        >
-                            <OpenViduVideo streamManager={subscriber} />
-                            <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
-                                상대방 {index + 1}
-                            </div>
-                        </div>
-                    ))}
-                    {Array.from({ length: 4 - subscribers.length - 1 }).map(
-                        (_, index) => (
-                            <div
-                                key={index}
-                                className="relative border-2 border-gray-300 h-64 flex items-center justify-center"
-                            >
-                                <div className="text-gray-500">
-                                    화면이 나올 공간
+            <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-col w-3/4">
+                    <AvatarApp></AvatarApp>
+                    <div
+                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300"
+                        style={{ flex: '1 1 auto' }}
+                    >
+                        {publisher && (
+                            <div className="relative border-2 border-gray-300 aspect-video">
+                                <OpenViduVideo streamManager={publisher} />
+                                <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                                    나
                                 </div>
                             </div>
-                        )
-                    )}
+                        )}
+                        {subscribers.map((subscriber, index) => (
+                            <div
+                                key={index}
+                                className="relative border-2 border-gray-300 aspect-video"
+                            >
+                                <OpenViduVideo streamManager={subscriber} />
+                                <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                                    상대방 {index + 1}
+                                </div>
+                            </div>
+                        ))}
+                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
+                            (_, index) => (
+                                <div
+                                    key={index}
+                                    className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
+                                >
+                                    <div className="text-gray-500">
+                                        화면이 나올 공간
+                                    </div>
+                                </div>
+                            )
+                        )}
+                    </div>
+                    <div
+                        className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
+                        style={{ height: '200px' }}
+                    >
+                        <button
+                            onClick={requestTopicRecommendations}
+                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
+                        >
+                            주제 추천 Btn
+                        </button>
+
+                        {recommendedTopics.length > 0 && (
+                            <div className="recommended-topics mt-4">
+                                <h3 className="text-lg font-semibold">
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    {recommendedTopics.map((topic, index) => (
+                                        <li key={index}>{topic}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
                     <h2 className="text-lg font-bold mb-2 text-center">
-                        남은 시간: 8분 27초(실시간 줄어듬)
+                        남은 시간: {Math.floor(remainingTime / 60)}분{' '}
+                        {remainingTime % 60}초
                     </h2>
                     <div
                         className="flex-1 relative"
@@ -581,35 +624,6 @@ const VideoChatPage = () => {
                             </div>
                         ))}
                     </div>
-                </div>
-            </div>
-
-            <div className="flex">
-                <div className="w-3/4 bg-white  flex justify-center items-start">
-                    <div className="w-full bg-white p-4 rounded-md   text-center mx-4">
-                        <button
-                            onClick={requestTopicRecommendations}
-                            className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4"
-                        >
-                            주제 추천 Btn
-                        </button>
-
-                        {recommendedTopics.length > 0 && (
-                            <div className="recommended-topics mt-4">
-                                <h3 className="text-lg font-semibold">
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    {recommendedTopics.map((topic, index) => (
-                                        <li key={index}>{topic}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
-                    <div className="flex-1 flex flex-col justify-between items-center"></div>
                 </div>
             </div>
         </div>
