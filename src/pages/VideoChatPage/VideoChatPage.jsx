@@ -350,7 +350,8 @@ const VideoChatPage = () => {
 
         let tokenForOV = '';
 
-        if (sessionId == 'sessionA') {
+        const allowedSessionIdList = ['sessionA', 'sessionB', 'sessionC', 'sessionD', 'sessionE', 'sessionH'];
+        if (allowedSessionIdList.includes(sessionId)) {
             tokenForOV = await getTokenForTest();
         } else {
             tokenForOV = await getToken();
