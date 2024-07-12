@@ -214,9 +214,6 @@ const VideoChatPage = () => {
 
         return () => {
             if (socket.current) {
-                const sessionId = new URLSearchParams(location.search).get(
-                    'sessionId'
-                );
                 socket.current.emit('leaveSession', sessionId);
                 socket.current.disconnect();
             }
@@ -258,7 +255,6 @@ const VideoChatPage = () => {
         }
 
         const username = userInfo.username;
-        const sessionId = new URLSearchParams(location.search).get('sessionId');
 
         console.log('중단하기 요청 전송:', { username, sessionId });
 
@@ -288,125 +284,149 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-    const startStream = (mediaStream, OV, session) => {
-        var videoTrack = mediaStream.getVideoTracks()[0];
-        var video = document.createElement('video');
-        video.srcObject = new MediaStream([videoTrack]);
+    const startStreaming = (session, OV, mediaStream) => {
+        setTimeout(() => {
+            var videoTrack = mediaStream.getVideoTracks()[0];
+            var video = document.createElement('video');
+            video.srcObject = new MediaStream([videoTrack]);
 
-        // var canvas = document.createElement('canvas');
+            // var canvas = document.createElement('canvas');
 
-        var canvas = document
-            .getElementById('avatar_canvas')
-            .querySelector('div')
-            .querySelector('canvas');
+            var canvas = document
+                .getElementById('avatar_canvas')
+                .querySelector('div')
+                .querySelector('canvas');
 
-        console.log('캔버스 -> ', canvas);
-        var ctx = canvas.getContext('2d');
-        console.log('ctx -> ', ctx);
+            console.log('캔버스 -> ', canvas);
+            var ctx = canvas.getContext('2d');
+            console.log('ctx -> ', ctx);
 
-        // var ctx = canvas.getContext('3d');
-        // console.log('ctx -> ', ctx);
-        // ctx.filter = 'grayscale(100%)';
+            // var ctx = canvas.getContext('3d');
+            // console.log('ctx -> ', ctx);
+            // ctx.filter = 'grayscale(100%)';
 
-        // video.addEventListener('play', () => {
-        //     var loop = () => {
-        //         if (!video.paused && !video.ended) {
-        //             ctx.drawImage(video, 0, 0, 300, 170);
-        //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-        //         }
-        //     };
-        //     loop();
-        // });
-        video.play();
-        var videoTrack = canvas.captureStream(FRAME_RATE).getVideoTracks()[0];
-        var publisher = OV.initPublisher(undefined, {
-            audioSource: undefined,
-            videoSource: videoTrack,
-        });
-        setPublisher(publisher);
-        session.publish(publisher);
-        // 음성인식 시작
-        startSpeechRecognition(
-            publisher.stream.getMediaStream(),
-            userInfo.username
-        );
-        socket.current.emit('joinSession', sessionId);
+            // video.addEventListener('play', () => {
+            //     var loop = () => {
+            //         if (!video.paused && !video.ended) {
+            //             ctx.drawImage(video, 0, 0, 300, 170);
+            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+            //         }
+            //     };
+            //     loop();
+            // });
+            video.play();
+            var videoTrack = canvas
+                .captureStream(FRAME_RATE)
+                .getVideoTracks()[0];
+            var publisher = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: videoTrack,
+            });
+
+            setPublisher(publisher);
+            session.publish(publisher);
+            // 음성인식 시작
+            startSpeechRecognition(
+                publisher.stream.getMediaStream(),
+                userInfo.username
+            );
+            socket.current.emit('joinSession', sid);
+        }, 5000);
     };
 
     // 세션 참여
-    const joinSession = useCallback(async () => {
-        const OV = new OpenVidu();
-        const session = OV.initSession();
-        setSession(session);
+    const joinSession = useCallback(
+        async (sid) => {
+            const OV = new OpenVidu();
+            const session = OV.initSession();
+            setSession(session);
 
-        session.on('streamCreated', (event) => {
-            let subscriber = session.subscribe(event.stream, undefined);
-            setSubscribers((prevSubscribers) => [
-                ...prevSubscribers,
-                subscriber,
-            ]);
-        });
+            session.on('streamCreated', (event) => {
+                let subscriber = session.subscribe(event.stream, undefined);
+                setSubscribers((prevSubscribers) => [
+                    ...prevSubscribers,
+                    subscriber,
+                ]);
+            });
 
-        session.on('streamDestroyed', (event) => {
-            setSubscribers((prevSubscribers) =>
-                prevSubscribers.filter(
-                    (sub) => sub !== event.stream.streamManager
-                )
-            );
-        });
-
-        // 발화 시작 감지
-        session.on('publisherStartSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' start speaking'
-            );
-        });
-
-        // 발화 종료 감지
-        session.on('publisherStopSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' stop speaking'
-            );
-        });
-
-        let tokenForOV = '';
-
-        const allowedSessionIdList = [
-            'sessionA',
-            'sessionB',
-            'sessionC',
-            'sessionD',
-            'sessionE',
-            'sessionH',
-        ];
-        if (allowedSessionIdList.includes(sessionId)) {
-            tokenForOV = await getTokenForTest();
-        } else {
-            tokenForOV = await getToken();
-        }
-
-        session
-            .connect(tokenForOV)
-            .then(() => {
-                OV.getUserMedia({
-                    audioSource: false,
-                    videoSource: undefined,
-                    resolution: '1280x720',
-                    frameRate: FRAME_RATE,
-                }).then((mediaStream) => {
-                    setTimeout(() => {
-                        startStream(mediaStream, OV, session);
-                    }, 5000);
-                });
-            })
-            .catch((error) => {
-                console.log(
-                    'There was an error connecting to the session:',
-                    error.code,
-                    error.message
+            session.on('streamDestroyed', (event) => {
+                setSubscribers((prevSubscribers) =>
+                    prevSubscribers.filter(
+                        (sub) => sub !== event.stream.streamManager
+                    )
                 );
             });
-    }, [userInfo.username]);
+
+            // 발화 시작 감지
+            session.on('publisherStartSpeaking', (event) => {
+                console.log(
+                    'User ' + event.connection.connectionId + ' start speaking'
+                );
+            });
+
+            // 발화 종료 감지
+            session.on('publisherStopSpeaking', (event) => {
+                console.log(
+                    'User ' + event.connection.connectionId + ' stop speaking'
+                );
+            });
+
+            const allowedSessionIdList = [
+                'sessionA',
+                'sessionB',
+                'sessionC',
+                'sessionD',
+                'sessionE',
+                'sessionH',
+            ];
+            if (!allowedSessionIdList.includes(sessionId)) {
+                getToken(sid, userInfo._id).then((token) => {
+                    session
+                        .connect(token)
+                        .then(() => {
+                            OV.getUserMedia({
+                                audioSource: false,
+                                videoSource: undefined,
+                                resolution: '1280x720',
+                                frameRate: FRAME_RATE,
+                            }).then((mediaStream) => {
+                                startStreaming(session, OV, mediaStream);
+                            });
+                        })
+                        .catch((error) => {
+                            console.log(
+                                'There was an error connecting to the session:',
+                                error.code,
+                                error.message
+                            );
+                        });
+                });
+            } else {
+                getTokenForTest(sid).then((token) => {
+                    session
+                        .connect(token)
+                        .then(() => {
+                            OV.getUserMedia({
+                                audioSource: false,
+                                videoSource: undefined,
+                                resolution: '1280x720',
+                                frameRate: FRAME_RATE,
+                            }).then((mediaStream) => {
+                                startStreaming(session, OV, mediaStream);
+                            });
+                        })
+                        .catch((error) => {
+                            console.log(
+                                'There was an error connecting to the session:',
+                                error.code,
+                                error.message
+                            );
+                        });
+                });
+            }
+        },
+        [userInfo.username]
+    );
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
@@ -427,7 +447,7 @@ const VideoChatPage = () => {
 
     useEffect(() => {
         // URL에서 sessionId 파라미터를 가져옵니다.
-        joinSession();
+        joinSession(sessionId);
     }, [location, joinSession]);
 
     // 텍스트 데이터를 서버로 전송하는 함수
