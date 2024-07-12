@@ -148,7 +148,7 @@ const VideoChatPage = () => {
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
             const response = await axios.get(
-                'http://localhost:5000/api/user/ai-interests',
+                `${import.meta.env.VITE_API_URL}/api/user/ai-interests`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                 }
@@ -174,8 +174,7 @@ const VideoChatPage = () => {
 
     // socket 연결 처리
     useEffect(() => {
-        socket.current = io('https://api.barking-talk.org');
-        // socket.current = io('http://localhost:5000');
+        socket.current = io(import.meta.env.VITE_API_URL);
 
         socket.current.on('connect', () => {
             console.log('WebSocket connection opened');
@@ -271,8 +270,6 @@ const VideoChatPage = () => {
             });
             console.log('API 응답:', response);
 
-            window.location.href = '/review';
-
             // 소켓 연결을 끊고 세션을 정리
             if (socket.current) {
                 socket.current.emit('leaveSession', sessionId);
@@ -282,6 +279,8 @@ const VideoChatPage = () => {
             setSession(undefined);
             setSubscribers([]);
             setPublisher(undefined);
+
+            window.location.href = '/review';
         } catch (error) {
             console.error('Error ending call:', error);
         } finally {
