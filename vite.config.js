@@ -5,10 +5,6 @@ export default defineConfig({
     plugins: [react()],
     define: {
         'process.env': {
-            VITE_OPENVIDU_URL:
-                process.env.VITE_OPENVIDU_URL ||
-                'https://video.barking-talk.org:4443',
-            VITE_OPENVIDU_SECRET: process.env.VITE_OPENVIDU_SECRET || 'namanmu',
         },
     },
 });

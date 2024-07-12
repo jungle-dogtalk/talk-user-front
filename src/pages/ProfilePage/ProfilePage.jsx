@@ -57,7 +57,7 @@ const ProfilePage = () => {
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
             const response = await axios.delete(
-                'http://localhost:5000/api/auth/account-deletion',
+                `${import.meta.env.VITE_API_URL}/api/auth/account-deletion`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`, // 토큰을 요청 헤더에 추가
@@ -109,7 +109,7 @@ const ProfilePage = () => {
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
             const response = await axios.patch(
-                'http://localhost:5000/api/user/profile',
+                `${import.meta.env.VITE_API_URL}/api/user/profile`,
                 formData,
                 {
                     headers: {

@@ -2,18 +2,15 @@ import { apiCall } from '../utils/apiCall';
 import { API_LIST } from '../utils/apiList';
 import axios from 'axios';
 
-// 환경 변수에서 OpenVidu 서버 URL 가져옴
-const API_URL = import.meta.env.VITE_BACKEND_URL;
+const OPENVIDU_SERVER_URL = import.meta.env.VITE_OPENVIDU_SERVER_URL;
+const OPENVIDU_SERVER_SECRET = import.meta.env.VITE_OPENVIDU_SERVER_SECRET;
 
 const getTokenForTest = async (sessionId) => {
-    const OPENVIDU_SERVER_URL = 'https://video.barking-talk.org';
-    const OPENVIDU_SERVER_SECRET = 'namanmu';
-
     const createSession = (sessionId) => {
         return new Promise((resolve, reject) => {
             var data = JSON.stringify({ customSessionId: sessionId });
             axios
-                .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
+                .post(`${OPENVIDU_SERVER_URL}/openvidu/api/sessions`, data, {
                     headers: {
                         Authorization:
                             'Basic ' +

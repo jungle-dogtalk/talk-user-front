@@ -25,7 +25,7 @@ export const fetchUserProfile = createAsyncThunk(
     async (_, { getState, rejectWithValue }) => {
         const token = getState().user.token; // Redux state에서 사용자 토큰을 가져옴
         try {
-            const response = await fetch('http://localhost:5000/api/user/profile', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`, // 요청 헤더에 인증 토큰을 포함
                 },
@@ -54,7 +54,7 @@ const userSlice = createSlice({
         error: null,
     },
     reducers: {
-        
+
         // 사용자 로그아웃 시 쿠키에서 토큰과 사용자 정보 삭제 + 상태 초기화
         logoutUser: (state) => {
             Cookies.remove('token');
@@ -101,7 +101,7 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
-            
+
     },
 });
 

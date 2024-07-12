@@ -11,9 +11,7 @@ const MatchingPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
     console.log('유저인포 ->  ', userInfo);
 
-    // const socket = io('http://localhost:5000');
-
-    const socket = io('https://api.barking-talk.org');
+    const socket = io(import.meta.env.VITE_API_URL);
 
     //사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {
