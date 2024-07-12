@@ -19,6 +19,15 @@ import dogWalkGif from '../../assets/dogWalk.gif'; // 강아지 걷는 GIF
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
+    const location = useLocation();
+    const sessionId = new URLSearchParams(location.search).get('sessionId');
+    const recognitionRef = useRef(null);
+    const socket = useRef(null);
+    const getRandomPosition = () => ({
+        x: Math.random() * 90,
+        y: Math.random() * 90
+    });
+    const distance = (p1, p2) => Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
@@ -32,16 +41,12 @@ const VideoChatPage = () => {
     const [aiInterests, setAiInterests] = useState([]); // AI 관심사 결과 저장
     const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
 
-      
-    const recognitionRef = useRef(null);
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
     if (!userInfo) {
         return <div>Loading...</div>;
     }
 
-    const location = useLocation();
-    const socket = useRef(null);
 
     const [dogPositions, setDogPositions] = useState(Array(4).fill({ x: 50, y: 50 }));
     const [dogDestinations, setDogDestinations] = useState(Array(4).fill(null));
@@ -50,12 +55,6 @@ const VideoChatPage = () => {
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null)); // 말풍선 타이머 상태
 
 
-    const getRandomPosition = () => ({
-        x: Math.random() * 90,
-        y: Math.random() * 90
-    });
-
-const distance = (p1, p2) => Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
 
   
 useEffect(() => {
@@ -185,121 +184,70 @@ useEffect(() => {
     // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
     const leaveSession = useCallback(async () => {
-        if (isLeaving) {
-            // 중복 중단 막기
-            return;
-        }
-        setIsLeaving(true);
+    if (isLeaving) {
+        // 중복 중단 막기
+        return;
+    }
+    setIsLeaving(true);
 
-        // openVidu 세션에서 연결 해제
-        if (session) {
-            session.disconnect();
-        }
+    // openVidu 세션에서 연결 해제
+    if (session) {
+        session.disconnect();
+    }
 
-        // 음성인식 종료
-        if (recognitionRef.current) {
-            try {
-                recognitionRef.current.stop();
-            } catch (error) {
-                console.error('음성인식 종료 오류:', error);
-            }
-            recognitionRef.current.onend = null;
-            recognitionRef.current = null;
-        }
-
-        // 사용자 카메라 & 마이크 비활성화
-        if (publisher) {
-            const mediaStream = publisher.stream.getMediaStream();
-            if (mediaStream && mediaStream.getTracks) {
-                // 모든 미디어 트랙 중지
-                mediaStream.getTracks().forEach((track) => track.stop());
-            }
-        }
-
-        const username = userInfo.username;
-        const sessionId = new URLSearchParams(location.search).get('sessionId');
-
-        console.log('중단하기 요청 전송:', { username, sessionId });
-
+    // 음성인식 종료
+    if (recognitionRef.current) {
         try {
-            // 기존 leaveSession 로직
+            recognitionRef.current.stop();
+        } catch (error) {
+            console.error('음성인식 종료 오류:', error);
+        }
+        recognitionRef.current.onend = null;
+        recognitionRef.current = null;
+    }
+
+    // 사용자 카메라 & 마이크 비활성화
+    if (publisher) {
+        const mediaStream = publisher.stream.getMediaStream();
+        if (mediaStream && mediaStream.getTracks) {
+            // 모든 미디어 트랙 중지
+            mediaStream.getTracks().forEach((track) => track.stop());
+        }
+    }
+
+    const username = userInfo.username;
+
+    console.log('중단하기 요청 전송:', { username, sessionId });
+
+    try {
+        // 기존 leaveSession 로직
             const response = await apiCall(API_LIST.END_CALL, {
                 username,
                 sessionId,
             });
-            console.log('API 응답:', response);
+        console.log('API 응답:', response);
+        
+        window.location.href = '/review';
 
-            window.location.href = '/review';
-
-            // 소켓 연결을 끊고 세션을 정리
-            if (socket.current) {
-                socket.current.emit('leaveSession', sessionId);
-                socket.current.disconnect();
-            }
-
-            setSession(undefined);
-            setSubscribers([]);
-            setPublisher(undefined);
-        } catch (error) {
-            console.error('Error ending call:', error);
-        } finally {
-            setIsLeaving(false);
+        // 소켓 연결을 끊고 세션을 정리
+        if (socket.current) {
+            socket.current.emit('leaveSession', sessionId);
+            socket.current.disconnect();
         }
-    }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-    const startStreaming = (mediaStream, OV) => {
-        setTimeout(() => {
-            var videoTrack = mediaStream.getVideoTracks()[0];
-            var video = document.createElement('video');
-            video.srcObject = new MediaStream([videoTrack]);
-
-            // var canvas = document.createElement('canvas');
-
-            var canvas = document
-                .getElementById('avatar_canvas')
-                .querySelector('div')
-                .querySelector('canvas');
-
-            console.log('캔버스 -> ', canvas);
-            var ctx = canvas.getContext('2d');
-            console.log('ctx -> ', ctx);
-
-            // var ctx = canvas.getContext('3d');
-            // console.log('ctx -> ', ctx);
-            // ctx.filter = 'grayscale(100%)';
-
-            // video.addEventListener('play', () => {
-            //     var loop = () => {
-            //         if (!video.paused && !video.ended) {
-            //             ctx.drawImage(video, 0, 0, 300, 170);
-            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-            //         }
-            //     };
-            //     loop();
-            // });
-            video.play();
-            var videoTrack = canvas
-                .captureStream(FRAME_RATE)
-                .getVideoTracks()[0];
-            var publisher = OV.initPublisher(undefined, {
-                audioSource: undefined,
-                videoSource: videoTrack,
-            });
-
-            setPublisher(publisher);
-            session.publish(publisher);
-            // 음성인식 시작
-            startSpeechRecognition(
-                publisher.stream.getMediaStream(),
-                userInfo.username
-            );
-            socket.current.emit('joinSession', sid);
-        }, 5000);
-    };
+        setSession(undefined);
+        setSubscribers([]);
+        setPublisher(undefined);
+    } catch (error) {
+        console.error('Error ending call:', error);
+    } finally {
+        setIsLeaving(false);
+    }
+}, [session, publisher, userInfo.username, location.search, isLeaving]);
 
     // 세션 참여
-    const joinSession = useCallback(
-        (sid) => {
+    const joinSession = useCallback(        
+        () => {
             const OV = new OpenVidu();
             const session = OV.initSession();
             setSession(session);
@@ -334,49 +282,79 @@ useEffect(() => {
                 );
             });
 
-            enterToSession(session, sid, OV);
+            
+
+            getTokenForTest(sessionId).then((token) => {
+                session
+                    .connect(token)
+                    .then(() => {
+                        OV.getUserMedia({
+                            audioSource: false,
+                            videoSource: undefined,
+                            resolution: '1280x720',
+                            frameRate: FRAME_RATE,
+                        }).then((mediaStream) => {
+                            setTimeout(() => {
+                                var videoTrack =
+                                    mediaStream.getVideoTracks()[0];
+                                var video = document.createElement('video');
+                                video.srcObject = new MediaStream([videoTrack]);
+
+                                // var canvas = document.createElement('canvas');
+
+                                var canvas = document
+                                    .getElementById('avatar_canvas')
+                                    .querySelector('div')
+                                    .querySelector('canvas');
+
+                                console.log('캔버스 -> ', canvas);
+                                var ctx = canvas.getContext('2d');
+                                console.log('ctx -> ', ctx);
+
+                                // var ctx = canvas.getContext('3d');
+                                // console.log('ctx -> ', ctx);
+                                // ctx.filter = 'grayscale(100%)';
+
+                                // video.addEventListener('play', () => {
+                                //     var loop = () => {
+                                //         if (!video.paused && !video.ended) {
+                                //             ctx.drawImage(video, 0, 0, 300, 170);
+                                //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+                                //         }
+                                //     };
+                                //     loop();
+                                // });
+                                video.play();
+                                var videoTrack = canvas
+                                    .captureStream(FRAME_RATE)
+                                    .getVideoTracks()[0];
+                                var publisher = OV.initPublisher(undefined, {
+                                    audioSource: undefined,
+                                    videoSource: videoTrack,
+                                });
+
+                                setPublisher(publisher);
+                                session.publish(publisher);
+                                // 음성인식 시작
+                                startSpeechRecognition(
+                                    publisher.stream.getMediaStream(),
+                                    userInfo.username
+                                );
+                                socket.current.emit('joinSession', sid);
+                            }, 5000);
+                        });
+                    })
+                    .catch((error) => {
+                        console.log(
+                            'There was an error connecting to the session:',
+                            error.code,
+                            error.message
+                        );
+                    });
+            });
         },
         [userInfo.username]
     );
-
-    const enterToSession = async (session, sid, OV) => {
-        let tokenForOV;
-        const allowedSessionId = [
-            'sessionA',
-            'sessionB',
-            'sessionC',
-            'sessionD',
-            'sessionE',
-            'sessionG',
-            'sessionH',
-        ];
-
-        if (allowedSessionId.includes(sid)) {
-            tokenForOV = await getTokenForTest(sid);
-        } else {
-            tokenForOV = await getToken(sid, userInfo._id);
-        }
-
-        session
-            .connect(tokenForOV)
-            .then(() => {
-                OV.getUserMedia({
-                    audioSource: false,
-                    videoSource: undefined,
-                    resolution: '1280x720',
-                    frameRate: FRAME_RATE,
-                }).then((mediaStream) => {
-                    startStreaming(mediaStream, OV);
-                });
-            })
-            .catch((error) => {
-                console.log(
-                    'There was an error connecting to the session:',
-                    error.code,
-                    error.message
-                );
-            });
-    };
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
@@ -397,11 +375,7 @@ useEffect(() => {
 
     useEffect(() => {
         // URL에서 sessionId 파라미터를 가져옵니다.
-        const params = new URLSearchParams(location.search);
-        const urlSessionId = params.get('sessionId');
-        if (urlSessionId) {
-            joinSession(urlSessionId);
-        }
+        joinSession();
     }, [location, joinSession]);
 
     // 텍스트 데이터를 서버로 전송하는 함수
@@ -428,7 +402,6 @@ useEffect(() => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
-        const sessionId = new URLSearchParams(location.search).get('sessionId');
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
     };
@@ -517,7 +490,7 @@ useEffect(() => {
                 </button>
             </header>
             <div className="flex flex-1">
-                <AvatarApp></AvatarApp>
+            <AvatarApp></AvatarApp>
                 <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
                     {publisher && (
                         <div className="relative border-2 border-gray-300 h-64">
@@ -560,12 +533,12 @@ useEffect(() => {
                                 top: `${pos.y}%`,
                                 transition: 'all 0.05s linear',
                             }}>
-                                <img
+                            <img
                                     src={dogWalkGif}
-                                    alt={`Dog ${index + 1}`}
+                                alt={`Dog ${index + 1}`}
                                     className="w-14 h-14 cursor-pointer"
                                     onClick={(event) => handleDogClick(index, event)}
-                                />
+                            />
                                 {showBubble[index] && (
                                     <div className="absolute bg-white p-2 rounded-md shadow-md" style={{
                                         top: pos.y < 50 ? '100%' : 'auto',
@@ -579,10 +552,10 @@ useEffect(() => {
                                  </div>
                                     )}
                                     </div>
-                                ))}
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
 
             <div className="flex">
                 <div className="w-3/4 bg-white  flex justify-center items-start">
@@ -591,25 +564,27 @@ useEffect(() => {
                             onClick={requestTopicRecommendations}
                             className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4"
                         >
-                            주제 추천 Btn
-                        </button>
+                        주제 추천 Btn
+                    </button>
 
-                        {recommendedTopics.length > 0 && (
-                            <div className="recommended-topics mt-4">
+                    {recommendedTopics.length > 0 && (
+                        <div className="recommended-topics mt-4">
                                 <h3 className="text-lg font-semibold">
                                     추천 주제
                                 </h3>
-                                <ul className="list-disc list-inside">
-                                    {recommendedTopics.map((topic, index) => (
-                                        <li key={index}>{topic}</li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <ul className="list-disc list-inside">
+                                {recommendedTopics.map((topic, index) => (
+                                    <li key={index}>{topic}</li>
+                                ))}
+                            </ul>
+                        </div>
                         )}
-                    </div>
+                </div>
                 </div>
                 <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
-                    <div className="flex-1 flex flex-col justify-between items-center"></div>
+                    <div className="flex-1 flex flex-col justify-between items-center">
+                       
+                    </div>
                 </div>
             </div>
         </div>
