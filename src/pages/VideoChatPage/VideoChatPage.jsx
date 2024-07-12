@@ -247,7 +247,7 @@ useEffect(() => {
 
     // 세션 참여
     const joinSession = useCallback(        
-        () => {
+        async () => {
             const OV = new OpenVidu();
             const session = OV.initSession();
             setSession(session);
@@ -282,76 +282,80 @@ useEffect(() => {
                 );
             });
 
-            
+            let tokenForOV = '';
 
-            getTokenForTest(sessionId).then((token) => {
-                session
-                    .connect(token)
-                    .then(() => {
-                        OV.getUserMedia({
-                            audioSource: false,
-                            videoSource: undefined,
-                            resolution: '1280x720',
-                            frameRate: FRAME_RATE,
-                        }).then((mediaStream) => {
-                            setTimeout(() => {
-                                var videoTrack =
-                                    mediaStream.getVideoTracks()[0];
-                                var video = document.createElement('video');
-                                video.srcObject = new MediaStream([videoTrack]);
+            if (sessionId == 'sessionA') {
+                tokenForOV = await getTokenForTest();
+            } else {
+                tokenForOV = await getToken();
+            }            
 
-                                // var canvas = document.createElement('canvas');
+            session
+                .connect(tokenForOV)
+                .then(() => {
+                    OV.getUserMedia({
+                        audioSource: false,
+                        videoSource: undefined,
+                        resolution: '1280x720',
+                        frameRate: FRAME_RATE,
+                    }).then((mediaStream) => {
+                        setTimeout(() => {
+                            var videoTrack =
+                                mediaStream.getVideoTracks()[0];
+                            var video = document.createElement('video');
+                            video.srcObject = new MediaStream([videoTrack]);
 
-                                var canvas = document
-                                    .getElementById('avatar_canvas')
-                                    .querySelector('div')
-                                    .querySelector('canvas');
+                            // var canvas = document.createElement('canvas');
 
-                                console.log('캔버스 -> ', canvas);
-                                var ctx = canvas.getContext('2d');
-                                console.log('ctx -> ', ctx);
+                            var canvas = document
+                                .getElementById('avatar_canvas')
+                                .querySelector('div')
+                                .querySelector('canvas');
 
-                                // var ctx = canvas.getContext('3d');
-                                // console.log('ctx -> ', ctx);
-                                // ctx.filter = 'grayscale(100%)';
+                            console.log('캔버스 -> ', canvas);
+                            var ctx = canvas.getContext('2d');
+                            console.log('ctx -> ', ctx);
 
-                                // video.addEventListener('play', () => {
-                                //     var loop = () => {
-                                //         if (!video.paused && !video.ended) {
-                                //             ctx.drawImage(video, 0, 0, 300, 170);
-                                //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-                                //         }
-                                //     };
-                                //     loop();
-                                // });
-                                video.play();
-                                var videoTrack = canvas
-                                    .captureStream(FRAME_RATE)
-                                    .getVideoTracks()[0];
-                                var publisher = OV.initPublisher(undefined, {
-                                    audioSource: undefined,
-                                    videoSource: videoTrack,
-                                });
+                            // var ctx = canvas.getContext('3d');
+                            // console.log('ctx -> ', ctx);
+                            // ctx.filter = 'grayscale(100%)';
 
-                                setPublisher(publisher);
-                                session.publish(publisher);
-                                // 음성인식 시작
-                                startSpeechRecognition(
-                                    publisher.stream.getMediaStream(),
-                                    userInfo.username
-                                );
-                                socket.current.emit('joinSession', sid);
-                            }, 5000);
-                        });
-                    })
-                    .catch((error) => {
-                        console.log(
-                            'There was an error connecting to the session:',
-                            error.code,
-                            error.message
-                        );
+                            // video.addEventListener('play', () => {
+                            //     var loop = () => {
+                            //         if (!video.paused && !video.ended) {
+                            //             ctx.drawImage(video, 0, 0, 300, 170);
+                            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+                            //         }
+                            //     };
+                            //     loop();
+                            // });
+                            video.play();
+                            var videoTrack = canvas
+                                .captureStream(FRAME_RATE)
+                                .getVideoTracks()[0];
+                            var publisher = OV.initPublisher(undefined, {
+                                audioSource: undefined,
+                                videoSource: videoTrack,
+                            });
+
+                            setPublisher(publisher);
+                            session.publish(publisher);
+                            // 음성인식 시작
+                            startSpeechRecognition(
+                                publisher.stream.getMediaStream(),
+                                userInfo.username
+                            );
+                            socket.current.emit('joinSession', sid);
+                        }, 5000);
                     });
-            });
+                })
+                .catch((error) => {
+                    console.log(
+                        'There was an error connecting to the session:',
+                        error.code,
+                        error.message
+                    );
+                });
         },
         [userInfo.username]
     );
