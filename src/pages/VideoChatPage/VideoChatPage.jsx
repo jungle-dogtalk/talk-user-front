@@ -251,6 +251,54 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
+    const startStream = (mediaStream, OV, session) => {
+        var videoTrack = mediaStream.getVideoTracks()[0];
+        var video = document.createElement('video');
+        video.srcObject = new MediaStream([videoTrack]);
+
+        // var canvas = document.createElement('canvas');
+
+        var canvas = document
+            .getElementById('avatar_canvas')
+            .querySelector('div')
+            .querySelector('canvas');
+
+        console.log('캔버스 -> ', canvas);
+        var ctx = canvas.getContext('2d');
+        console.log('ctx -> ', ctx);
+
+        // var ctx = canvas.getContext('3d');
+        // console.log('ctx -> ', ctx);
+        // ctx.filter = 'grayscale(100%)';
+
+        // video.addEventListener('play', () => {
+        //     var loop = () => {
+        //         if (!video.paused && !video.ended) {
+        //             ctx.drawImage(video, 0, 0, 300, 170);
+        //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+        //         }
+        //     };
+        //     loop();
+        // });
+        video.play();
+        var videoTrack = canvas
+            .captureStream(FRAME_RATE)
+            .getVideoTracks()[0];
+        var publisher = OV.initPublisher(undefined, {
+            audioSource: undefined,
+            videoSource: videoTrack,
+        });
+
+        setPublisher(publisher);
+        session.publish(publisher);
+        // 음성인식 시작
+        startSpeechRecognition(
+            publisher.stream.getMediaStream(),
+            userInfo.username
+        );
+        socket.current.emit('joinSession', sessionId);
+    }    
+
     // 세션 참여
     const joinSession = useCallback(async () => {
         const OV = new OpenVidu();
@@ -305,51 +353,7 @@ const VideoChatPage = () => {
                     frameRate: FRAME_RATE,
                 }).then((mediaStream) => {
                     setTimeout(() => {
-                        var videoTrack = mediaStream.getVideoTracks()[0];
-                        var video = document.createElement('video');
-                        video.srcObject = new MediaStream([videoTrack]);
-
-                        // var canvas = document.createElement('canvas');
-
-                        var canvas = document
-                            .getElementById('avatar_canvas')
-                            .querySelector('div')
-                            .querySelector('canvas');
-
-                        console.log('캔버스 -> ', canvas);
-                        var ctx = canvas.getContext('2d');
-                        console.log('ctx -> ', ctx);
-
-                        // var ctx = canvas.getContext('3d');
-                        // console.log('ctx -> ', ctx);
-                        // ctx.filter = 'grayscale(100%)';
-
-                        // video.addEventListener('play', () => {
-                        //     var loop = () => {
-                        //         if (!video.paused && !video.ended) {
-                        //             ctx.drawImage(video, 0, 0, 300, 170);
-                        //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-                        //         }
-                        //     };
-                        //     loop();
-                        // });
-                        video.play();
-                        var videoTrack = canvas
-                            .captureStream(FRAME_RATE)
-                            .getVideoTracks()[0];
-                        var publisher = OV.initPublisher(undefined, {
-                            audioSource: undefined,
-                            videoSource: videoTrack,
-                        });
-
-                        setPublisher(publisher);
-                        session.publish(publisher);
-                        // 음성인식 시작
-                        startSpeechRecognition(
-                            publisher.stream.getMediaStream(),
-                            userInfo.username
-                        );
-                        socket.current.emit('joinSession', sid);
+                        startStream(mediaStream, OV, session);
                     }, 5000);
                 });
             })
