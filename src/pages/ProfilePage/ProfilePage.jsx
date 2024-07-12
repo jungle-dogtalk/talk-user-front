@@ -9,28 +9,6 @@ import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
 
-// 관심사 목록을 배열로 정의
-const interestsList = [
-    '독서',
-    '영화 감상',
-    '게임',
-    '여행',
-    '요리',
-    '드라이브',
-    'KPOP',
-    '메이크업',
-    '인테리어',
-    '그림',
-    '애완동물',
-    '부동산',
-    '맛집 투어',
-    '헬스',
-    '산책',
-    '수영',
-    '사진 찍기',
-    '주식',
-];
-
 const ProfilePage = () => {
     // Redux 상태와 훅 초기화
     const userInfo = useSelector((state) => state.user.userInfo);
@@ -131,7 +109,7 @@ const ProfilePage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
+            <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
                 <button className="text-white" onClick={handleDeleteAccount}>
                     탈퇴하기
@@ -142,7 +120,7 @@ const ProfilePage = () => {
                     <img
                         src={profileImage}
                         alt="프로필 사진"
-                        className="w-56 h-56 rounded-full border-2 border-gray-300"
+                        className="w-40 h-40 rounded-full border-2 border-gray-300"
                     />
                     <label
                         htmlFor="file-input"
@@ -179,7 +157,7 @@ const ProfilePage = () => {
                                     style={{ width: '74%' }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm mt-1">
+                            <span className="block text-right text-sm mt-1 font-bold">
                                 74%
                             </span>
                         </div>
@@ -193,14 +171,16 @@ const ProfilePage = () => {
                                     style={{ width: '80%' }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm mt-1">
+                            <span className="block text-right text-sm mt-1 font-bold ">
                                 80%
                             </span>
                         </div>
                     </div>
                     <hr className="w-full my-8 border-gray-400" />
                     <div className="text-center mt-8">
-                        <h2 className="text-xl font-bold mb-4">관심사</h2>
+                        <h2 className="text-xl font-bold mb-4">
+                            내가 고른 관심사
+                        </h2>
                         <div className="grid grid-cols-6 gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
@@ -224,7 +204,7 @@ const ProfilePage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${
+                                    className={`p-2 w-28 rounded-xl border cursor-pointer flex items-center ${
                                         clickedInterests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -233,14 +213,32 @@ const ProfilePage = () => {
                                         handleInterestClick(interest.name)
                                     }
                                 >
-                                    <span className="block text-center text-2xl">
+                                    <span className=" text-2xl mr-1">
                                         {interest.icon}
                                     </span>
-                                    <span className="block text-center text-sm">
+                                    <span className="text-xs leading-tight">
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
+                        </div>
+                        <h2 className="text-xl font-bold mt-8 mb-4">
+                            AI 관심사
+                        </h2>
+                        
+                        <div className="flex justify-center">
+                            <div className="flex flex-wrap justify-center">
+                                {userInfo?.interests2?.map((interest, index) => (
+                                    <div
+                                        key={index}
+                                        className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
+                                    >
+                                        <span className="block text-center text-sm">
+                                            {interest}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className="flex justify-center mt-8">
@@ -263,6 +261,7 @@ const ProfilePage = () => {
             </div>
         </div>
     );
+    
 };
 
 export default ProfilePage;
