@@ -531,6 +531,8 @@ const VideoChatPage = () => {
         }
     };
 
+    
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
@@ -542,11 +544,11 @@ const VideoChatPage = () => {
                     중단하기
                 </button>
             </header>
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4">
                     <AvatarApp></AvatarApp>
                     <div
-                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300"
+                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
                         style={{ flex: '1 1 auto' }}
                     >
                         {publisher && (
@@ -555,6 +557,20 @@ const VideoChatPage = () => {
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     나
                                 </div>
+                                <img
+                                    src={settingsIcon}
+                                    alt="설정"
+                                    className="absolute top-2 right-2 w-6 h-6 cursor-pointer"
+                                    onClick={toggleSettings}
+                                />
+                                {showSettings && (
+                                    <div className="absolute top-10 right-2 w-38 bg-white shadow-lg rounded-lg p-2 z-50">
+                                        <SettingMenu
+                                            publisher={publisher}
+                                            onMirroredChange={handleMirrorChange}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
                         {subscribers.map((subscriber, index) => (
@@ -591,22 +607,15 @@ const VideoChatPage = () => {
                         >
                             주제 추천 Btn
                         </button>
-
+    
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
-                                <h3 className="text-lg font-semibold">
-                                    추천 주제
-                                </h3>
+                                <h3 className="text-lg font-semibold">추천 주제</h3>
                                 <ul className="list-disc list-inside">
                                     {recommendedTopics.map((topic, index) => (
                                         <li key={index}>{topic}</li>
                                     ))}
                                 </ul>
-                                {/* <ul className="list-disc list-inside">
-                                {recommendedTopics.map((topic, index) => (
-                                    <li key={index}>{topic}</li>
-                                ))}
-                            </ul> */}
                             </div>
                         )}
                     </div>
@@ -616,10 +625,7 @@ const VideoChatPage = () => {
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
-                    <div
-                        className="flex-1 relative"
-                        style={{ height: '300px' }}
-                    >
+                    <div className="flex-1 relative" style={{ height: '300px' }}>
                         {dogPositions.map((pos, index) => (
                             <div
                                 key={index}
@@ -634,17 +640,14 @@ const VideoChatPage = () => {
                                     src={dogWalkGif}
                                     alt={`Dog ${index + 1}`}
                                     className="w-14 h-14 cursor-pointer"
-                                    onClick={(event) =>
-                                        handleDogClick(index, event)
-                                    }
+                                    onClick={(event) => handleDogClick(index, event)}
                                 />
                                 {showBubble[index] && (
                                     <div
                                         className="absolute bg-white p-2 rounded-md shadow-md"
                                         style={{
                                             top: pos.y < 50 ? '100%' : 'auto',
-                                            bottom:
-                                                pos.y >= 50 ? '100%' : 'auto',
+                                            bottom: pos.y >= 50 ? '100%' : 'auto',
                                             left: pos.x < 50 ? '0' : 'auto',
                                             right: pos.x >= 50 ? '0' : 'auto',
                                             width: '150px',
@@ -663,5 +666,7 @@ const VideoChatPage = () => {
             </div>
         </div>
     );
+    
+    
 };
 export default VideoChatPage;
