@@ -521,21 +521,21 @@ useEffect(() => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
-            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
-                <h1 className="text-white text-4xl">멍톡</h1>
-                <button
-                    onClick={leaveSession}
-                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
-                >
-                    중단하기
-                </button>
-            </header>
-            <div className="flex flex-1">
-                <AvatarApp></AvatarApp>
-                <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
+    <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
+        <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
+            <h1 className="text-white text-4xl">멍톡</h1>
+            <button
+                onClick={leaveSession}
+                className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
+            >
+                중단하기
+            </button>
+        </header>
+        <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-col w-3/4">
+                <div className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300" style={{ flex: '1 1 auto' }}>
                     {publisher && (
-                        <div className="relative border-2 border-gray-300 h-64">
+                        <div className="relative border-2 border-gray-300 aspect-video">
                             <OpenViduVideo streamManager={publisher} />
                             <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                 나
@@ -545,7 +545,7 @@ useEffect(() => {
                     {subscribers.map((subscriber, index) => (
                         <div
                             key={index}
-                            className="relative border-2 border-gray-300 h-64"
+                            className="relative border-2 border-gray-300 aspect-video"
                         >
                             <OpenViduVideo streamManager={subscriber} />
                             <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
@@ -557,7 +557,7 @@ useEffect(() => {
                         (_, index) => (
                             <div
                                 key={index}
-                                className="relative border-2 border-gray-300 h-64 flex items-center justify-center"
+                                className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
                             >
                                 <div className="text-gray-500">
                                     화면이 나올 공간
@@ -566,70 +566,65 @@ useEffect(() => {
                         )
                     )}
                 </div>
-                <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
+                <div className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto" style={{ height: '200px' }}>
+                    <button
+                        onClick={requestTopicRecommendations}
+                        className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
+                    >
+                        주제 추천 Btn
+                    </button>
+
+                    {recommendedTopics.length > 0 && (
+                        <div className="recommended-topics mt-4">
+                            <h3 className="text-lg font-semibold">
+                                추천 주제
+                            </h3>
+                            <ul className="list-disc list-inside">
+                                {recommendedTopics.map((topic, index) => (
+                                    <li key={index}>{topic}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
                 <h2 className="text-lg font-bold mb-2 text-center">
                     남은 시간: {Math.floor(remainingTime / 60)}분 {remainingTime % 60}초
                 </h2>
-                    <div className="flex-1 relative" style={{ height: '300px' }}>
+                <div className="flex-1 relative" style={{ height: '300px' }}>
                     {dogPositions.map((pos, index) => (
-                            <div key={index} className="absolute" style={{
-                                left: `${pos.x}%`,
-                                top: `${pos.y}%`,
-                                transition: 'all 0.05s linear',
-                            }}>
-                                <img
-                                    src={dogWalkGif}
-                                    alt={`Dog ${index + 1}`}
-                                    className="w-14 h-14 cursor-pointer"
-                                    onClick={(event) => handleDogClick(index, event)}
-                                />
-                                {showBubble[index] && (
-                                    <div className="absolute bg-white p-2 rounded-md shadow-md" style={{
-                                        top: pos.y < 50 ? '100%' : 'auto',
-                                        bottom: pos.y >= 50 ? '100%' : 'auto',
-                                        left: pos.x < 50 ? '0' : 'auto',
-                                        right: pos.x >= 50 ? '0' : 'auto',
-                                        width: '150px'
-                                    }}>
-                                        <h3 className="text-sm font-semibold">강아지 {index + 1} 관심사</h3>
-                                        <p>{aiInterests[index]}</p>
-                                 </div>
-                                    )}
-                                    </div>
-                                ))}
+                        <div key={index} className="absolute" style={{
+                            left: `${pos.x}%`,
+                            top: `${pos.y}%`,
+                            transition: 'all 0.05s linear',
+                        }}>
+                            <img
+                                src={dogWalkGif}
+                                alt={`Dog ${index + 1}`}
+                                className="w-14 h-14 cursor-pointer"
+                                onClick={(event) => handleDogClick(index, event)}
+                            />
+                            {showBubble[index] && (
+                                <div className="absolute bg-white p-2 rounded-md shadow-md" style={{
+                                    top: pos.y < 50 ? '100%' : 'auto',
+                                    bottom: pos.y >= 50 ? '100%' : 'auto',
+                                    left: pos.x < 50 ? '0' : 'auto',
+                                    right: pos.x >= 50 ? '0' : 'auto',
+                                    width: '150px'
+                                }}>
+                                    <h3 className="text-sm font-semibold">강아지 {index + 1} 관심사</h3>
+                                    <p>{aiInterests[index]}</p>
+                                </div>
+                            )}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
+    </div>
+);
 
-            <div className="flex">
-                <div className="w-3/4 bg-white  flex justify-center items-start">
-                    <div className="w-full bg-white p-4 rounded-md   text-center mx-4">
-                        <button
-                            onClick={requestTopicRecommendations}
-                            className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4"
-                        >
-                            주제 추천 Btn
-                        </button>
-
-                        {recommendedTopics.length > 0 && (
-                            <div className="recommended-topics mt-4">
-                                <h3 className="text-lg font-semibold">
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    {recommendedTopics.map((topic, index) => (
-                                        <li key={index}>{topic}</li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-                </div>
-                <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
-                    <div className="flex-1 flex flex-col justify-between items-center"></div>
-                </div>
-            </div>
-        </div>
-    );
+    
 };
 export default VideoChatPage;
