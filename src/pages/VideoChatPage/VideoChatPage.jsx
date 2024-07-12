@@ -175,6 +175,7 @@ const VideoChatPage = () => {
     // socket 연결 처리
     useEffect(() => {
         socket.current = io('https://api.barking-talk.org');
+        // socket.current = io('http://localhost:5000');
 
         socket.current.on('connect', () => {
             console.log('WebSocket connection opened');
@@ -188,14 +189,35 @@ const VideoChatPage = () => {
         // 결과 데이터 수신 받아와 변수에 저장 후 상태 업데이트
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
-            const topics = Array.isArray(data.data.topics)
-                ? data.data.topics
-                : [];
-            setRecommendedTopics(topics);
+            setRecommendedTopics((prevTopics) => {
+                if (data === '\n') {
+                    return [...prevTopics, ''];
+                } else {
+                    const updatedTopics = [...prevTopics];
+                    if (updatedTopics.length === 0) {
+                        updatedTopics.push(data);
+                    } else {
+                        updatedTopics[updatedTopics.length - 1] += data;
+                    }
+                    return updatedTopics;
+                }
+            });
+            /*------------본래 주제 한 번에 받아오던 코드-------------*/
+            // const topics = Array.isArray(data.data.topics)
+            //     ? data.data.topics
+            //     : [];
+            // setRecommendedTopics(topics);
+        });
+
+        socket.current.on('endOfStream', () => {
+            console.log('Streaming ended');
         });
 
         return () => {
             if (socket.current) {
+                const sessionId = new URLSearchParams(location.search).get(
+                    'sessionId'
+                );
                 socket.current.emit('leaveSession', sessionId);
                 socket.current.disconnect();
             }
@@ -237,6 +259,7 @@ const VideoChatPage = () => {
         }
 
         const username = userInfo.username;
+        const sessionId = new URLSearchParams(location.search).get('sessionId');
 
         console.log('중단하기 요청 전송:', { username, sessionId });
 
@@ -301,7 +324,6 @@ const VideoChatPage = () => {
             audioSource: undefined,
             videoSource: videoTrack,
         });
-
         setPublisher(publisher);
         session.publish(publisher);
         // 음성인식 시작
@@ -350,7 +372,14 @@ const VideoChatPage = () => {
 
         let tokenForOV = '';
 
-        const allowedSessionIdList = ['sessionA', 'sessionB', 'sessionC', 'sessionD', 'sessionE', 'sessionH'];
+        const allowedSessionIdList = [
+            'sessionA',
+            'sessionB',
+            'sessionC',
+            'sessionD',
+            'sessionE',
+            'sessionH',
+        ];
         if (allowedSessionIdList.includes(sessionId)) {
             tokenForOV = await getTokenForTest();
         } else {
@@ -404,10 +433,11 @@ const VideoChatPage = () => {
 
     // 텍스트 데이터를 서버로 전송하는 함수
     const sendTranscription = (username, transcript) => {
+        console.log('transcript: ', transcript);
         const sessionId = new URLSearchParams(location.search).get('sessionId');
-        if (!transcript) {
+        if (!transcript || transcript == '') {
             // 인식된 게 없으면 전송 x
-            console.error('Transcript is empty or null:', transcript);
+            console.log('Transcript is empty or null:', transcript);
             return;
         }
         console.log('서버로 전송: ', { username, transcript, sessionId });
@@ -573,6 +603,11 @@ const VideoChatPage = () => {
                                         <li key={index}>{topic}</li>
                                     ))}
                                 </ul>
+                                {/* <ul className="list-disc list-inside">
+                                {recommendedTopics.map((topic, index) => (
+                                    <li key={index}>{topic}</li>
+                                ))}
+                            </ul> */}
                             </div>
                         )}
                     </div>
