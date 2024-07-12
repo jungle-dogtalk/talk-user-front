@@ -25,9 +25,10 @@ const VideoChatPage = () => {
     const socket = useRef(null);
     const getRandomPosition = () => ({
         x: Math.random() * 90,
-        y: Math.random() * 90
+        y: Math.random() * 90,
     });
-    const distance = (p1, p2) => Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
+    const distance = (p1, p2) =>
+        Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
 
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
@@ -47,103 +48,108 @@ const VideoChatPage = () => {
         return <div>Loading...</div>;
     }
 
-
-    const [dogPositions, setDogPositions] = useState(Array(4).fill({ x: 50, y: 50 }));
+    const [dogPositions, setDogPositions] = useState(
+        Array(4).fill({ x: 50, y: 50 })
+    );
     const [dogDestinations, setDogDestinations] = useState(Array(4).fill(null));
     const [movingDogs, setMovingDogs] = useState(Array(4).fill(true));
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null)); // 말풍선 타이머 상태
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setDogPositions((prevPositions) => {
+                if (!Array.isArray(prevPositions)) return prevPositions;
 
+                return prevPositions.map((pos, index) => {
+                    if (!Array.isArray(movingDogs) || !movingDogs[index])
+                        return pos;
 
-  
-useEffect(() => {
-    const interval = setInterval(() => {
-      setDogPositions(prevPositions => {
-        if (!Array.isArray(prevPositions)) return prevPositions;
-  
-        return prevPositions.map((pos, index) => {
-          if (!Array.isArray(movingDogs) || !movingDogs[index]) return pos;
-  
-          let dest = Array.isArray(dogDestinations) ? dogDestinations[index] : null;
-          if (!dest || distance(pos, dest) < 1) {
-            dest = getRandomPosition();
-            setDogDestinations(prev => {
-              if (!Array.isArray(prev)) return prev;
-              return prev.map((d, i) => i === index ? dest : d);
+                    let dest = Array.isArray(dogDestinations)
+                        ? dogDestinations[index]
+                        : null;
+                    if (!dest || distance(pos, dest) < 1) {
+                        dest = getRandomPosition();
+                        setDogDestinations((prev) => {
+                            if (!Array.isArray(prev)) return prev;
+                            return prev.map((d, i) => (i === index ? dest : d));
+                        });
+                    }
+
+                    const dx = dest.x - pos.x;
+                    const dy = dest.y - pos.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const speed = 0.35; // 속도 조절
+
+                    return {
+                        x: pos.x + (dx / length) * speed,
+                        y: pos.y + (dy / length) * speed,
+                    };
+                });
             });
-          }
-  
-          const dx = dest.x - pos.x;
-          const dy = dest.y - pos.y;
-          const length = Math.sqrt(dx*dx + dy*dy);
-          const speed = 0.35; // 속도 조절
-  
-          return {
-            x: pos.x + (dx / length) * speed,
-            y: pos.y + (dy / length) * speed
-          };
-        });
-      });
-    }, 50);
-  
-    return () => clearInterval(interval);
-  }, [movingDogs, dogDestinations]);
+        }, 50);
 
-  
+        return () => clearInterval(interval);
+    }, [movingDogs, dogDestinations]);
 
-  const handleDogClick = (index, event) => {
-    fetchAiInterests(event, index);
+    const handleDogClick = (index, event) => {
+        fetchAiInterests(event, index);
 
-    // 기존 타이머 초기화
-    if (bubbleTimers[index]) {
-        clearTimeout(bubbleTimers[index]);
-    }
+        // 기존 타이머 초기화
+        if (bubbleTimers[index]) {
+            clearTimeout(bubbleTimers[index]);
+        }
 
-    // 말풍선 표시
-    setShowBubble(prev => {
-        if (!Array.isArray(prev)) return prev;
-        return prev.map((v, i) => i === index ? true : v);
-    });
-
-    setMovingDogs(prev => {
-        if (!Array.isArray(prev)) return prev;
-        return prev.map((v, i) => i === index ? false : v);
-    });
-
-    // 새로운 타이머 설정
-    const newTimer = setTimeout(() => {
-        setShowBubble(prev => {
+        // 말풍선 표시
+        setShowBubble((prev) => {
             if (!Array.isArray(prev)) return prev;
-            return prev.map((v, i) => i === index ? false : v);
+            return prev.map((v, i) => (i === index ? true : v));
         });
-        setMovingDogs(prev => {
-            if (!Array.isArray(prev)) return prev;
-            return prev.map((v, i) => i === index ? true : v);
-        });
-    }, 10000);
 
-    setBubbleTimers(prev => {
-        if (!Array.isArray(prev)) return prev;
-        return prev.map((timer, i) => i === index ? newTimer : timer);
-    });
-};
+        setMovingDogs((prev) => {
+            if (!Array.isArray(prev)) return prev;
+            return prev.map((v, i) => (i === index ? false : v));
+        });
+
+        // 새로운 타이머 설정
+        const newTimer = setTimeout(() => {
+            setShowBubble((prev) => {
+                if (!Array.isArray(prev)) return prev;
+                return prev.map((v, i) => (i === index ? false : v));
+            });
+            setMovingDogs((prev) => {
+                if (!Array.isArray(prev)) return prev;
+                return prev.map((v, i) => (i === index ? true : v));
+            });
+        }, 10000);
+
+        setBubbleTimers((prev) => {
+            if (!Array.isArray(prev)) return prev;
+            return prev.map((timer, i) => (i === index ? newTimer : timer));
+        });
+    };
 
     const fetchAiInterests = useCallback(async (event, index) => {
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
-            const response = await axios.get('http://localhost:5000/api/user/ai-interests', {
-                headers: { Authorization: `Bearer ${token}`},
-            });     
+            const response = await axios.get(
+                'http://localhost:5000/api/user/ai-interests',
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
 
             if (response.status === 200) {
                 const aiInterestsData = response.data.aiInterests;
                 // 모든 강아지의 관심사를 동일하게 설정
                 setAiInterests(Array(4).fill(aiInterestsData));
-    
+
                 if (event && event.target) {
                     const rect = event.target.getBoundingClientRect();
-                    setBubblePosition({ top: rect.top - 40, left: rect.right + 10 });
+                    setBubblePosition({
+                        top: rect.top - 40,
+                        left: rect.right + 10,
+                    });
                 }
             }
         } catch (error) {
@@ -184,181 +190,177 @@ useEffect(() => {
     // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
     const leaveSession = useCallback(async () => {
-    if (isLeaving) {
-        // 중복 중단 막기
-        return;
-    }
-    setIsLeaving(true);
+        if (isLeaving) {
+            // 중복 중단 막기
+            return;
+        }
+        setIsLeaving(true);
 
-    // openVidu 세션에서 연결 해제
-    if (session) {
-        session.disconnect();
-    }
+        // openVidu 세션에서 연결 해제
+        if (session) {
+            session.disconnect();
+        }
 
-    // 음성인식 종료
-    if (recognitionRef.current) {
+        // 음성인식 종료
+        if (recognitionRef.current) {
+            try {
+                recognitionRef.current.stop();
+            } catch (error) {
+                console.error('음성인식 종료 오류:', error);
+            }
+            recognitionRef.current.onend = null;
+            recognitionRef.current = null;
+        }
+
+        // 사용자 카메라 & 마이크 비활성화
+        if (publisher) {
+            const mediaStream = publisher.stream.getMediaStream();
+            if (mediaStream && mediaStream.getTracks) {
+                // 모든 미디어 트랙 중지
+                mediaStream.getTracks().forEach((track) => track.stop());
+            }
+        }
+
+        const username = userInfo.username;
+
+        console.log('중단하기 요청 전송:', { username, sessionId });
+
         try {
-            recognitionRef.current.stop();
-        } catch (error) {
-            console.error('음성인식 종료 오류:', error);
-        }
-        recognitionRef.current.onend = null;
-        recognitionRef.current = null;
-    }
-
-    // 사용자 카메라 & 마이크 비활성화
-    if (publisher) {
-        const mediaStream = publisher.stream.getMediaStream();
-        if (mediaStream && mediaStream.getTracks) {
-            // 모든 미디어 트랙 중지
-            mediaStream.getTracks().forEach((track) => track.stop());
-        }
-    }
-
-    const username = userInfo.username;
-
-    console.log('중단하기 요청 전송:', { username, sessionId });
-
-    try {
-        // 기존 leaveSession 로직
+            // 기존 leaveSession 로직
             const response = await apiCall(API_LIST.END_CALL, {
                 username,
                 sessionId,
             });
-        console.log('API 응답:', response);
-        
-        window.location.href = '/review';
+            console.log('API 응답:', response);
 
-        // 소켓 연결을 끊고 세션을 정리
-        if (socket.current) {
-            socket.current.emit('leaveSession', sessionId);
-            socket.current.disconnect();
+            window.location.href = '/review';
+
+            // 소켓 연결을 끊고 세션을 정리
+            if (socket.current) {
+                socket.current.emit('leaveSession', sessionId);
+                socket.current.disconnect();
+            }
+
+            setSession(undefined);
+            setSubscribers([]);
+            setPublisher(undefined);
+        } catch (error) {
+            console.error('Error ending call:', error);
+        } finally {
+            setIsLeaving(false);
         }
-
-        setSession(undefined);
-        setSubscribers([]);
-        setPublisher(undefined);
-    } catch (error) {
-        console.error('Error ending call:', error);
-    } finally {
-        setIsLeaving(false);
-    }
-}, [session, publisher, userInfo.username, location.search, isLeaving]);
+    }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
     // 세션 참여
-    const joinSession = useCallback(        
-        async () => {
-            const OV = new OpenVidu();
-            const session = OV.initSession();
-            setSession(session);
+    const joinSession = useCallback(async () => {
+        const OV = new OpenVidu();
+        const session = OV.initSession();
+        setSession(session);
 
-            session.on('streamCreated', (event) => {
-                let subscriber = session.subscribe(event.stream, undefined);
-                setSubscribers((prevSubscribers) => [
-                    ...prevSubscribers,
-                    subscriber,
-                ]);
-            });
+        session.on('streamCreated', (event) => {
+            let subscriber = session.subscribe(event.stream, undefined);
+            setSubscribers((prevSubscribers) => [
+                ...prevSubscribers,
+                subscriber,
+            ]);
+        });
 
-            session.on('streamDestroyed', (event) => {
-                setSubscribers((prevSubscribers) =>
-                    prevSubscribers.filter(
-                        (sub) => sub !== event.stream.streamManager
-                    )
-                );
-            });
+        session.on('streamDestroyed', (event) => {
+            setSubscribers((prevSubscribers) =>
+                prevSubscribers.filter(
+                    (sub) => sub !== event.stream.streamManager
+                )
+            );
+        });
 
-            // 발화 시작 감지
-            session.on('publisherStartSpeaking', (event) => {
-                console.log(
-                    'User ' + event.connection.connectionId + ' start speaking'
-                );
-            });
+        // 발화 시작 감지
+        session.on('publisherStartSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' start speaking'
+            );
+        });
 
-            // 발화 종료 감지
-            session.on('publisherStopSpeaking', (event) => {
-                console.log(
-                    'User ' + event.connection.connectionId + ' stop speaking'
-                );
-            });
+        // 발화 종료 감지
+        session.on('publisherStopSpeaking', (event) => {
+            console.log(
+                'User ' + event.connection.connectionId + ' stop speaking'
+            );
+        });
 
-            let tokenForOV = '';
+        let tokenForOV = '';
 
-            if (sessionId == 'sessionA') {
-                tokenForOV = await getTokenForTest();
-            } else {
-                tokenForOV = await getToken();
-            }            
+        if (sessionId == 'sessionA') {
+            tokenForOV = await getTokenForTest();
+        } else {
+            tokenForOV = await getToken();
+        }
 
-            session
-                .connect(tokenForOV)
-                .then(() => {
-                    OV.getUserMedia({
-                        audioSource: false,
-                        videoSource: undefined,
-                        resolution: '1280x720',
-                        frameRate: FRAME_RATE,
-                    }).then((mediaStream) => {
-                        setTimeout(() => {
-                            var videoTrack =
-                                mediaStream.getVideoTracks()[0];
-                            var video = document.createElement('video');
-                            video.srcObject = new MediaStream([videoTrack]);
+        session
+            .connect(tokenForOV)
+            .then(() => {
+                OV.getUserMedia({
+                    audioSource: false,
+                    videoSource: undefined,
+                    resolution: '1280x720',
+                    frameRate: FRAME_RATE,
+                }).then((mediaStream) => {
+                    setTimeout(() => {
+                        var videoTrack = mediaStream.getVideoTracks()[0];
+                        var video = document.createElement('video');
+                        video.srcObject = new MediaStream([videoTrack]);
 
-                            // var canvas = document.createElement('canvas');
+                        // var canvas = document.createElement('canvas');
 
-                            var canvas = document
-                                .getElementById('avatar_canvas')
-                                .querySelector('div')
-                                .querySelector('canvas');
+                        var canvas = document
+                            .getElementById('avatar_canvas')
+                            .querySelector('div')
+                            .querySelector('canvas');
 
-                            console.log('캔버스 -> ', canvas);
-                            var ctx = canvas.getContext('2d');
-                            console.log('ctx -> ', ctx);
+                        console.log('캔버스 -> ', canvas);
+                        var ctx = canvas.getContext('2d');
+                        console.log('ctx -> ', ctx);
 
-                            // var ctx = canvas.getContext('3d');
-                            // console.log('ctx -> ', ctx);
-                            // ctx.filter = 'grayscale(100%)';
+                        // var ctx = canvas.getContext('3d');
+                        // console.log('ctx -> ', ctx);
+                        // ctx.filter = 'grayscale(100%)';
 
-                            // video.addEventListener('play', () => {
-                            //     var loop = () => {
-                            //         if (!video.paused && !video.ended) {
-                            //             ctx.drawImage(video, 0, 0, 300, 170);
-                            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-                            //         }
-                            //     };
-                            //     loop();
-                            // });
-                            video.play();
-                            var videoTrack = canvas
-                                .captureStream(FRAME_RATE)
-                                .getVideoTracks()[0];
-                            var publisher = OV.initPublisher(undefined, {
-                                audioSource: undefined,
-                                videoSource: videoTrack,
-                            });
+                        // video.addEventListener('play', () => {
+                        //     var loop = () => {
+                        //         if (!video.paused && !video.ended) {
+                        //             ctx.drawImage(video, 0, 0, 300, 170);
+                        //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
+                        //         }
+                        //     };
+                        //     loop();
+                        // });
+                        video.play();
+                        var videoTrack = canvas
+                            .captureStream(FRAME_RATE)
+                            .getVideoTracks()[0];
+                        var publisher = OV.initPublisher(undefined, {
+                            audioSource: undefined,
+                            videoSource: videoTrack,
+                        });
 
-                            setPublisher(publisher);
-                            session.publish(publisher);
-                            // 음성인식 시작
-                            startSpeechRecognition(
-                                publisher.stream.getMediaStream(),
-                                userInfo.username
-                            );
-                            socket.current.emit('joinSession', sid);
-                        }, 5000);
-                    });
-                })
-                .catch((error) => {
-                    console.log(
-                        'There was an error connecting to the session:',
-                        error.code,
-                        error.message
-                    );
+                        setPublisher(publisher);
+                        session.publish(publisher);
+                        // 음성인식 시작
+                        startSpeechRecognition(
+                            publisher.stream.getMediaStream(),
+                            userInfo.username
+                        );
+                        socket.current.emit('joinSession', sid);
+                    }, 5000);
                 });
-        },
-        [userInfo.username]
-    );
+            })
+            .catch((error) => {
+                console.log(
+                    'There was an error connecting to the session:',
+                    error.code,
+                    error.message
+                );
+            });
+    }, [userInfo.username]);
 
     // 설정 창 표시/숨기기 토글 함수
     const toggleSettings = () => {
@@ -494,7 +496,7 @@ useEffect(() => {
                 </button>
             </header>
             <div className="flex flex-1">
-            <AvatarApp></AvatarApp>
+                <AvatarApp></AvatarApp>
                 <div className="flex-1 grid grid-cols-2 gap-4 p-4 border-2 border-gray-300">
                     {publisher && (
                         <div className="relative border-2 border-gray-300 h-64">
@@ -529,33 +531,50 @@ useEffect(() => {
                     )}
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
-                    <h2 className="text-lg font-bold mb-2 text-center">남은 시간: 8분 27초(실시간 줄어듬)</h2>
-                    <div className="flex-1 relative" style={{ height: '300px' }}>
-                    {dogPositions.map((pos, index) => (
-                            <div key={index} className="absolute" style={{
-                                left: `${pos.x}%`,
-                                top: `${pos.y}%`,
-                                transition: 'all 0.05s linear',
-                            }}>
-                            <img
+                    <h2 className="text-lg font-bold mb-2 text-center">
+                        남은 시간: 8분 27초(실시간 줄어듬)
+                    </h2>
+                    <div
+                        className="flex-1 relative"
+                        style={{ height: '300px' }}
+                    >
+                        {dogPositions.map((pos, index) => (
+                            <div
+                                key={index}
+                                className="absolute"
+                                style={{
+                                    left: `${pos.x}%`,
+                                    top: `${pos.y}%`,
+                                    transition: 'all 0.05s linear',
+                                }}
+                            >
+                                <img
                                     src={dogWalkGif}
-                                alt={`Dog ${index + 1}`}
+                                    alt={`Dog ${index + 1}`}
                                     className="w-14 h-14 cursor-pointer"
-                                    onClick={(event) => handleDogClick(index, event)}
-                            />
+                                    onClick={(event) =>
+                                        handleDogClick(index, event)
+                                    }
+                                />
                                 {showBubble[index] && (
-                                    <div className="absolute bg-white p-2 rounded-md shadow-md" style={{
-                                        top: pos.y < 50 ? '100%' : 'auto',
-                                        bottom: pos.y >= 50 ? '100%' : 'auto',
-                                        left: pos.x < 50 ? '0' : 'auto',
-                                        right: pos.x >= 50 ? '0' : 'auto',
-                                        width: '150px'
-                                    }}>
-                                        <h3 className="text-sm font-semibold">강아지 {index + 1} 관심사</h3>
+                                    <div
+                                        className="absolute bg-white p-2 rounded-md shadow-md"
+                                        style={{
+                                            top: pos.y < 50 ? '100%' : 'auto',
+                                            bottom:
+                                                pos.y >= 50 ? '100%' : 'auto',
+                                            left: pos.x < 50 ? '0' : 'auto',
+                                            right: pos.x >= 50 ? '0' : 'auto',
+                                            width: '150px',
+                                        }}
+                                    >
+                                        <h3 className="text-sm font-semibold">
+                                            강아지 {index + 1} 관심사
+                                        </h3>
                                         <p>{aiInterests[index]}</p>
-                                 </div>
-                                    )}
                                     </div>
+                                )}
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -568,27 +587,25 @@ useEffect(() => {
                             onClick={requestTopicRecommendations}
                             className="mt-4 bg-gray-300 text-brown-700 text-4xl font-bold px-4 py-2 rounded-md inline-block mb-4"
                         >
-                        주제 추천 Btn
-                    </button>
+                            주제 추천 Btn
+                        </button>
 
-                    {recommendedTopics.length > 0 && (
-                        <div className="recommended-topics mt-4">
+                        {recommendedTopics.length > 0 && (
+                            <div className="recommended-topics mt-4">
                                 <h3 className="text-lg font-semibold">
                                     추천 주제
                                 </h3>
-                            <ul className="list-disc list-inside">
-                                {recommendedTopics.map((topic, index) => (
-                                    <li key={index}>{topic}</li>
-                                ))}
-                            </ul>
-                        </div>
+                                <ul className="list-disc list-inside">
+                                    {recommendedTopics.map((topic, index) => (
+                                        <li key={index}>{topic}</li>
+                                    ))}
+                                </ul>
+                            </div>
                         )}
-                </div>
+                    </div>
                 </div>
                 <div className="w-1/4 bg-[#CFFFAA] p-4 flex flex-col justify-center items-center">
-                    <div className="flex-1 flex flex-col justify-between items-center">
-                       
-                    </div>
+                    <div className="flex-1 flex flex-col justify-between items-center"></div>
                 </div>
             </div>
         </div>
