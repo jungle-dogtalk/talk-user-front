@@ -49,6 +49,21 @@ const VideoChatPage = () => {
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null)); // 말풍선 타이머 상태
 
+    const [remainingTime, setRemainingTime] = useState(300); // 300초 = 5분
+
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setRemainingTime((prevTime) => {
+                if (prevTime <= 1) {
+                    return 300; // 0초가 되면 다시 5분(300초)으로 리셋
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
+    
+        return () => clearInterval(timer);
+    }, []);
 
     const getRandomPosition = () => ({
         x: Math.random() * 90,
@@ -552,7 +567,9 @@ useEffect(() => {
                     )}
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
-                    <h2 className="text-lg font-bold mb-2 text-center">남은 시간: 8분 27초(실시간 줄어듬)</h2>
+                <h2 className="text-lg font-bold mb-2 text-center">
+                    남은 시간: {Math.floor(remainingTime / 60)}분 {remainingTime % 60}초
+                </h2>
                     <div className="flex-1 relative" style={{ height: '300px' }}>
                     {dogPositions.map((pos, index) => (
                             <div key={index} className="absolute" style={{
