@@ -100,81 +100,81 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
     }, []);
 
     return (
-        <div className="p-1 bg-white rounded-lg shadow-md space-y-1 overflow-y-auto" style={{ maxHeight: '150px', width: '80px' }}>
-            <h2 className="text-xxxs font-bold mb-1">설정</h2>
-            <div className="space-y-1">
+        <div className="p-2 bg-white rounded-lg shadow-md space-y-2 overflow-y-auto" style={{ maxHeight: '200px', width: '100px' }}>
+            <h2 className="text-xs font-bold mb-2">설정</h2>
+            <div className="space-y-2">
                 <button
-                    className={`w-full py-0.5 px-1 rounded-md ${
+                    className={`w-full py-1 px-2 rounded-md ${
                         isVideoActive
                             ? 'bg-red-500 text-white'
                             : 'bg-green-500 text-white'
                     }`}
                     onClick={toggleVideo}
-                    style={{ fontSize: '11px' }}
+                    style={{ fontSize: '12px' }}
                 >
                     {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
                 </button>
                 <button
-                    className={`w-full py-0.5 px-1 rounded-md ${
+                    className={`w-full py-1 px-2 rounded-md ${
                         isAudioActive
                             ? 'bg-red-500 text-white'
                             : 'bg-green-500 text-white'
                     }`}
                     onClick={toggleAudio}
-                    style={{ fontSize: '11px' }}
+                    style={{ fontSize: '12px' }}
                 >
                     {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
                 </button>
                 <button
-                    className={`w-full py-0.5 px-1 rounded-md ${
+                    className={`w-full py-1 px-2 rounded-md ${
                         isMirrored
                             ? 'bg-gray-500 text-white'
                             : 'bg-blue-500 text-white'
                     }`}
                     onClick={toggleMirror}
-                    style={{ fontSize: '10px' }}
+                    style={{ fontSize: '11px' }}
                 >
                     {isMirrored ? '반전 해제' : '반전 적용'}
                 </button>
                 <div>
-                    <label className="block text-xxxs font-medium text-gray-700" style={{ fontSize: '9px' }}>카메라 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">카메라 선택:</label>
                     <select
-                        className="block w-full p-0.5 border rounded-md text-xxxs"
+                        className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleVideoDeviceChange}
                         value={selectedVideoDevice}
-                        style={{ maxWidth: '60px' }}
+                        style={{ maxWidth: '80px' }}
                     >
                         {devices.videoDevices &&
                             devices.videoDevices.map((device) => (
-                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '8px' }}>
+                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
                                     {device.label}
                                 </option>
                             ))}
                     </select>
                 </div>
                 <div>
-                    <label className="block font-medium text-gray-700" style={{ fontSize: '9px' }}>마이크 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">마이크 선택:</label>
                     <select
-                        className="block w-full p-0.5 border rounded-md text-xxxs"
+                        className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleAudioInputDeviceChange}
                         value={selectedAudioInputDevice}
-                        style={{ maxWidth: '60px' }}
+                        style={{ maxWidth: '80px' }}
                     >
                         {devices.audioInputDevices &&
                             devices.audioInputDevices.map((device) => (
-                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '8px' }}>
+                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
                                     {device.label}
                                 </option>
                             ))}
                     </select>
                 </div>
                 <div>
-                    <label className="block font-medium text-gray-700" style={{ fontSize: '9px' }}>스피커 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">스피커 선택:</label>
                     <select
-                        className="block w-full p-0.5 border rounded-md text-xxxs"
+                        className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleAudioOutputDeviceChange}
                         value={selectedAudioOutputDevice}
-                        style={{ maxWidth: '60px' }}
+                        style={{ maxWidth: '80px' }}
                     >
                         {devices.audioOutputDevices &&
                             devices.audioOutputDevices.map((device) => (
@@ -187,6 +187,7 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
             </div>
         </div>
     );
+    
 };
 
 export default SettingMenu;
