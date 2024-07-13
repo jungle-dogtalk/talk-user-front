@@ -71,6 +71,11 @@ const API_LIST = {
         path: `/api/user/session-data`,
         desc: '세션 데이터 조회'
     },
+    GET_SESSION_TIMER: {
+        method: GET,
+        path: `/api/openvidu/session/timer`,
+        desc: '세션 남은시간 조회'
+    }
 };
 
 // OPEN API 목록
