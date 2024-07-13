@@ -224,7 +224,7 @@ const VideoChatPage = () => {
                 publisher.stream.getMediaStream(),
                 userInfo.username
             );
-            socket.current.emit('joinSession', sid);
+            socket.current.emit('joinSession', sessionId);
         }, 5000);
     };
 
