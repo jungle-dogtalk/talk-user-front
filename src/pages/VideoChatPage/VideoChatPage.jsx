@@ -6,17 +6,13 @@ import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import { apiCall, apiCallWithFileData } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
-import dogImage from '../../assets/dog.png'; // 강아지 이미지
-import dogHouseImage from '../../assets/doghouse.jpg'; // 강아지 집 이미지
 import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
-import Cookies from 'js-cookie';
 import MovingDogs from './MovingDogs';
 
-import dogWalkGif from '../../assets/dogWalk.gif'; // 강아지 걷는 GIF
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
@@ -24,12 +20,6 @@ const VideoChatPage = () => {
     const sessionId = new URLSearchParams(location.search).get('sessionId');
     const recognitionRef = useRef(null);
     const socket = useRef(null);
-    const getRandomPosition = () => ({
-        x: Math.random() * 90,
-        y: Math.random() * 90,
-    });
-    const distance = (p1, p2) =>
-        Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
 
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
@@ -40,22 +30,12 @@ const VideoChatPage = () => {
     const [recommendedTopics, setRecommendedTopics] = useState([]); // 주제 추천 결과 저장
     const [interests, setInterests] = useState([]); // 관심사 결과 저장
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
-    const [aiInterests, setAiInterests] = useState([]); // AI 관심사 결과 저장
-    const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
     if (!userInfo) {
         return <div>Loading...</div>;
     }
-
-    const [dogPositions, setDogPositions] = useState(
-        Array(4).fill({ x: 50, y: 50 })
-    );
-    const [dogDestinations, setDogDestinations] = useState(Array(4).fill(null));
-    const [movingDogs, setMovingDogs] = useState(Array(4).fill(true));
-    const [showBubble, setShowBubble] = useState(Array(4).fill(false));
-    const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null)); // 말풍선 타이머 상태
 
     const [remainingTime, setRemainingTime] = useState(300); // 300초 = 5분
 
@@ -72,106 +52,6 @@ const VideoChatPage = () => {
         return () => clearInterval(timer);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setDogPositions((prevPositions) => {
-                if (!Array.isArray(prevPositions)) return prevPositions;
-
-                return prevPositions.map((pos, index) => {
-                    if (!Array.isArray(movingDogs) || !movingDogs[index])
-                        return pos;
-
-                    let dest = Array.isArray(dogDestinations)
-                        ? dogDestinations[index]
-                        : null;
-                    if (!dest || distance(pos, dest) < 1) {
-                        dest = getRandomPosition();
-                        setDogDestinations((prev) => {
-                            if (!Array.isArray(prev)) return prev;
-                            return prev.map((d, i) => (i === index ? dest : d));
-                        });
-                    }
-
-                    const dx = dest.x - pos.x;
-                    const dy = dest.y - pos.y;
-                    const length = Math.sqrt(dx * dx + dy * dy);
-                    const speed = 0.35; // 속도 조절
-
-                    return {
-                        x: pos.x + (dx / length) * speed,
-                        y: pos.y + (dy / length) * speed,
-                    };
-                });
-            });
-        }, 50);
-
-        return () => clearInterval(interval);
-    }, [movingDogs, dogDestinations]);
-
-    const handleDogClick = (index, event) => {
-        fetchAiInterests(event, index);
-
-        // 기존 타이머 초기화
-        if (bubbleTimers[index]) {
-            clearTimeout(bubbleTimers[index]);
-        }
-
-        // 말풍선 표시
-        setShowBubble((prev) => {
-            if (!Array.isArray(prev)) return prev;
-            return prev.map((v, i) => (i === index ? true : v));
-        });
-
-        setMovingDogs((prev) => {
-            if (!Array.isArray(prev)) return prev;
-            return prev.map((v, i) => (i === index ? false : v));
-        });
-
-        // 새로운 타이머 설정
-        const newTimer = setTimeout(() => {
-            setShowBubble((prev) => {
-                if (!Array.isArray(prev)) return prev;
-                return prev.map((v, i) => (i === index ? false : v));
-            });
-            setMovingDogs((prev) => {
-                if (!Array.isArray(prev)) return prev;
-                return prev.map((v, i) => (i === index ? true : v));
-            });
-        }, 10000);
-
-        setBubbleTimers((prev) => {
-            if (!Array.isArray(prev)) return prev;
-            return prev.map((timer, i) => (i === index ? newTimer : timer));
-        });
-    };
-
-    const fetchAiInterests = useCallback(async (event, index) => {
-        try {
-            const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
-            const response = await axios.get(
-                `${import.meta.env.VITE_API_URL}/api/user/ai-interests`,
-                {
-                    headers: { Authorization: `Bearer ${token}` },
-                }
-            );
-
-            if (response.status === 200) {
-                const aiInterestsData = response.data.aiInterests;
-                // 모든 강아지의 관심사를 동일하게 설정
-                setAiInterests(Array(4).fill(aiInterestsData));
-
-                if (event && event.target) {
-                    const rect = event.target.getBoundingClientRect();
-                    setBubblePosition({
-                        top: rect.top - 40,
-                        left: rect.right + 10,
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching AI interests:', error);
-        }
-    }, []);
 
     // socket 연결 처리
     useEffect(() => {
