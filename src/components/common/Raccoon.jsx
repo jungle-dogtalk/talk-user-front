@@ -97,6 +97,7 @@ function Raccoon() {
                 style={{ width: 640, height: 480 }}
             ></video>
             <Canvas
+                id="avatar_canvas"
                 style={{
                     position: 'absolute',
                     top: 0,
@@ -106,7 +107,7 @@ function Raccoon() {
                     height: 480,
                 }}
                 camera={{
-                    fov: 6,
+                    fov: 10,
                     position: [0, 0, 10],
                 }}
             >

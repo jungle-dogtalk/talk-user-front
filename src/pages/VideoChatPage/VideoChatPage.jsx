@@ -15,8 +15,10 @@ import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 import Cookies from 'js-cookie';
 import Raccoon from '../../components/common/Raccoon';
+import RaccoonHand from '../../components/common/RaccoonHand';
 
 import dogWalkGif from '../../assets/dogWalk.gif'; // 강아지 걷는 GIF
+import Hand from '../../components/common/Hand';
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
@@ -178,17 +180,17 @@ const VideoChatPage = () => {
         socket.current = io(import.meta.env.VITE_API_URL);
 
         socket.current.on('connect', () => {
-            console.log('WebSocket connection opened');
+            // console.log('WebSocket connection opened');
         });
 
         socket.current.on('disconnect', () => {
-            console.log('WebSocket connection closed');
+            // console.log('WebSocket connection closed');
         });
 
         // 주제 추천 결과 이벤트 수신
         // 결과 데이터 수신 받아와 변수에 저장 후 상태 업데이트
         socket.current.on('topicRecommendations', (data) => {
-            console.log('Received topic recommendations:', data);
+            // console.log('Received topic recommendations:', data);
             setRecommendedTopics((prevTopics) => {
                 if (data === '\n') {
                     return [...prevTopics, ''];
@@ -358,16 +360,16 @@ const VideoChatPage = () => {
 
         // 발화 시작 감지
         session.on('publisherStartSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' start speaking'
-            );
+            // console.log(
+            //     'User ' + event.connection.connectionId + ' start speaking'
+            // );
         });
 
         // 발화 종료 감지
         session.on('publisherStopSpeaking', (event) => {
-            console.log(
-                'User ' + event.connection.connectionId + ' stop speaking'
-            );
+            // console.log(
+            //     'User ' + event.connection.connectionId + ' stop speaking'
+            // );
         });
 
         let tokenForOV = '';
@@ -433,24 +435,24 @@ const VideoChatPage = () => {
 
     // 텍스트 데이터를 서버로 전송하는 함수
     const sendTranscription = (username, transcript) => {
-        console.log('transcript: ', transcript);
+        // console.log('transcript: ', transcript);
         const sessionId = new URLSearchParams(location.search).get('sessionId');
         if (!transcript || transcript == '') {
             // 인식된 게 없으면 전송 x
             console.log('Transcript is empty or null:', transcript);
             return;
         }
-        console.log('서버로 전송: ', { username, transcript, sessionId });
+        // console.log('서버로 전송: ', { username, transcript, sessionId });
         apiCall(API_LIST.RECEIVE_TRANSCRIPT, {
             username,
             transcript,
             sessionId,
         })
             .then((data) => {
-                console.log('Transcript received:', data);
+                // console.log('Transcript received:', data);
             })
             .catch((error) => {
-                console.error('Error sending transcript:', error);
+                // console.error('Error sending transcript:', error);
             });
     };
 
@@ -479,19 +481,19 @@ const VideoChatPage = () => {
         recognition.interimResults = false; // 중간 결과 처리
 
         recognition.onstart = () => {
-            console.log('Speech recognition started');
+            // console.log('Speech recognition started');
         };
 
         recognition.onresult = (event) => {
-            console.log('in onresult');
+            // console.log('in onresult');
             // 음성인식 결과가 도출될 때마다 인식된 음성 처리(stt)
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
                     const transcript = event.results[i][0].transcript;
-                    console.log('Mozilla result:', {
-                        username,
-                        transcript,
-                    });
+                    // console.log('Mozilla result:', {
+                    //     username,
+                    //     transcript,
+                    // });
                     sendTranscription(username, transcript);
                     setSttResults((prevResults) => [
                         ...prevResults,
@@ -546,7 +548,8 @@ const VideoChatPage = () => {
             <div className="flex flex-1 overflow-hidden">
                 <div className="flex flex-col w-3/4">
                     {/* <AvatarApp></AvatarApp> */}
-                    <Raccoon></Raccoon>
+                    {/* <Raccoon></Raccoon> */}
+                    <RaccoonHand></RaccoonHand>
                     <div
                         className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300"
                         style={{ flex: '1 1 auto' }}
