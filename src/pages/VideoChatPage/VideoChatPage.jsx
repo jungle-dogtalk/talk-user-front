@@ -14,6 +14,7 @@ import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 import Cookies from 'js-cookie';
+import Raccoon from '../../components/common/Raccoon';
 
 import dogWalkGif from '../../assets/dogWalk.gif'; // 강아지 걷는 GIF
 
@@ -544,7 +545,8 @@ const VideoChatPage = () => {
             </header>
             <div className="flex flex-1 overflow-hidden">
                 <div className="flex flex-col w-3/4">
-                    <AvatarApp></AvatarApp>
+                    {/* <AvatarApp></AvatarApp> */}
+                    <Raccoon></Raccoon>
                     <div
                         className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300"
                         style={{ flex: '1 1 auto' }}
