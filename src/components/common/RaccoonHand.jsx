@@ -120,7 +120,7 @@ function RaccoonHand() {
                     height: 480,
                 }}
                 camera={{
-                    fov: 10,
+                    fov: 20,
                     position: [0, 0, 10],
                 }}
             >
