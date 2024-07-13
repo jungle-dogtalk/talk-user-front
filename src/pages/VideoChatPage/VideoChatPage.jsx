@@ -14,6 +14,7 @@ import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 import Cookies from 'js-cookie';
+import MovingDogs from './MovingDogs';
 
 import dogWalkGif from '../../assets/dogWalk.gif'; // 강아지 걷는 GIF
 
@@ -645,43 +646,7 @@ const VideoChatPage = () => {
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
-                    <div className="flex-1 relative" style={{ height: '300px' }}>
-                        {dogPositions.map((pos, index) => (
-                            <div
-                                key={index}
-                                className="absolute"
-                                style={{
-                                    left: `${pos.x}%`,
-                                    top: `${pos.y}%`,
-                                    transition: 'all 0.05s linear',
-                                }}
-                            >
-                                <img
-                                    src={dogWalkGif}
-                                    alt={`Dog ${index + 1}`}
-                                    className="w-14 h-14 cursor-pointer"
-                                    onClick={(event) => handleDogClick(index, event)}
-                                />
-                                {showBubble[index] && (
-                                    <div
-                                        className="absolute bg-white p-2 rounded-md shadow-md"
-                                        style={{
-                                            top: pos.y < 50 ? '100%' : 'auto',
-                                            bottom: pos.y >= 50 ? '100%' : 'auto',
-                                            left: pos.x < 50 ? '0' : 'auto',
-                                            right: pos.x >= 50 ? '0' : 'auto',
-                                            width: '150px',
-                                        }}
-                                    >
-                                        <h3 className="text-sm font-semibold">
-                                            강아지 {index + 1} 관심사
-                                        </h3>
-                                        <p>{aiInterests[index]}</p>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
+                    <MovingDogs />
                 </div>
             </div>
         </div>
