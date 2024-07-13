@@ -65,7 +65,12 @@ const API_LIST = {
         method: 'POST',
         path: `/api/openvidu/token`,
         desc: 'OpenVidu 토큰 발급'
-    }
+    },
+    GET_SESSION_DATA: {
+        method: GET,
+        path: `/api/user/session-data`,
+        desc: '세션 데이터 조회'
+    },
 };
 
 // OPEN API 목록

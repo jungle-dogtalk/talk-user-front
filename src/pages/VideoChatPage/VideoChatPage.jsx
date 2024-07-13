@@ -13,7 +13,6 @@ import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 import MovingDogs from './MovingDogs';
 
-
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
     const location = useLocation();
@@ -52,6 +51,20 @@ const VideoChatPage = () => {
         return () => clearInterval(timer);
     }, []);
 
+    useEffect(() => {
+        const fetchSessionData = async () => {
+            try {
+                const response = await apiCall(API_LIST.GET_SESSION_DATA, {
+                    sessionId,
+                });
+                console.log('Session data:', response.data);
+            } catch (error) {
+                console.error('Error fetching session data:', error);
+            }
+        };
+
+        fetchSessionData();
+    }, []); // sessionId 의존성 제거
 
     // socket 연결 처리
     useEffect(() => {
@@ -432,8 +445,6 @@ const VideoChatPage = () => {
         }
     };
 
-    
-
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
@@ -468,7 +479,9 @@ const VideoChatPage = () => {
                                     <div className="absolute top-10 right-2 w-38 bg-white shadow-lg rounded-lg p-2 z-50">
                                         <SettingMenu
                                             publisher={publisher}
-                                            onMirroredChange={handleMirrorChange}
+                                            onMirroredChange={
+                                                handleMirrorChange
+                                            }
                                         />
                                     </div>
                                 )}
@@ -508,10 +521,12 @@ const VideoChatPage = () => {
                         >
                             주제 추천 Btn
                         </button>
-    
+
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
-                                <h3 className="text-lg font-semibold">추천 주제</h3>
+                                <h3 className="text-lg font-semibold">
+                                    추천 주제
+                                </h3>
                                 <ul className="list-disc list-inside">
                                     {recommendedTopics.map((topic, index) => (
                                         <li key={index}>{topic}</li>
@@ -531,7 +546,5 @@ const VideoChatPage = () => {
             </div>
         </div>
     );
-    
-    
 };
 export default VideoChatPage;
