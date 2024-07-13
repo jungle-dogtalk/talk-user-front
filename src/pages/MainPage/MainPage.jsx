@@ -55,7 +55,7 @@ const MainPage = () => {
                         className="w-48 h-48 rounded-full mb-4"
                     />
                     <h2 className="text-2xl font-bold mb-4">이름: {userInfo?.name}</h2>
-                    <div className="w-2/3 mb-8">
+                    <div className="w-2/3 mb-8 ">
                         <div className="flex items-center justify-center mb-4">
                             <span className="text-gray-700 font-bold text-sm mr-2">발화지수</span>
                             <div className="w-1/2 bg-red-200 h-6 rounded-full overflow-hidden">
@@ -73,14 +73,14 @@ const MainPage = () => {
                     </div>
                 </div>
                 <div className="flex space-x-8 w-full justify-center mb-4">
-                    <button className="flex flex-col items-center justify-center bg-green-100 p-6 rounded-2xl shadow-lg hover:bg-green-200 w-60 h-60 mb-2" 
+                    <button className="flex flex-col items-center justify-center bg-green-100 p-6 rounded-2xl shadow-lg hover:bg-green-200 w-50 h-50 mb-2" 
                     onClick={() => navigate('/room')}>
-                        <img src={roomIcon} alt="방에서 통화하기" className="w-24 h-24 mb-4" />
+                        <img src={roomIcon} alt="방에서 통화하기" className="w-20 h-20 mb-4" />
                         <span className="text-lg font-semibold">둘이서 통화하기</span>
                     </button>
-                    <button className="flex flex-col items-center justify-center bg-pink-100 p-6 rounded-2xl shadow-lg hover:bg-pink-200 w-60 h-60 mb-2"
+                    <button className="flex flex-col items-center justify-center bg-pink-100 p-6 rounded-2xl shadow-lg hover:bg-pink-200 w-50 h-50 mb-2"
                     onClick={() => navigate('/choose-avatar')}>
-                        <img src={groupIcon} alt="넷이서 통화하기" className="w-24 h-24 mb-4" />
+                        <img src={groupIcon} alt="넷이서 통화하기" className="w-20 h-20 mb-4" />
                         <span className="text-lg font-semibold">넷이서 통화하기</span>
                     </button>
                 </div>
