@@ -5,7 +5,7 @@ import axios from 'axios';
 const OPENVIDU_SERVER_URL = import.meta.env.VITE_OPENVIDU_SERVER_URL;
 const OPENVIDU_SERVER_SECRET = import.meta.env.VITE_OPENVIDU_SERVER_SECRET;
 
-const getTokenForTest = async (sessionId) => {
+const getTokenForTest = async (sessionId, userInfo) => {
     const createSession = (sessionId) => {
         return new Promise((resolve, reject) => {
             var data = JSON.stringify({ customSessionId: sessionId });
@@ -53,7 +53,13 @@ const getTokenForTest = async (sessionId) => {
 
     const createToken = (sessionId) => {
         return new Promise((resolve, reject) => {
-            var data = {};
+            var data = {
+                role: "PUBLISHER",
+                data: userInfo.nickname,
+                kurentoOptions: {
+                    allowedFilters: ["GStreamerFilter", "FaceOverlayFilter"]
+                }
+            };
             axios
                 .post(
                     OPENVIDU_SERVER_URL +

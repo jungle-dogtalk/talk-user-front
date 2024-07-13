@@ -296,7 +296,7 @@ const VideoChatPage = () => {
                         });
                 });
             } else {
-                getTokenForTest(sid).then((token) => {
+                getTokenForTest(sid, userInfo).then((token) => {
                     session
                         .connect(token)
                         .then(() => {
