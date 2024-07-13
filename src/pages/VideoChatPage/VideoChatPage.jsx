@@ -29,6 +29,7 @@ const VideoChatPage = () => {
     const [recommendedTopics, setRecommendedTopics] = useState([]); // 주제 추천 결과 저장
     const [interests, setInterests] = useState([]); // 관심사 결과 저장
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
+    const [sessionData, setSessionData] = useState(null);
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
@@ -57,7 +58,7 @@ const VideoChatPage = () => {
                 const response = await apiCall(API_LIST.GET_SESSION_DATA, {
                     sessionId,
                 });
-                console.log('Session data:', response.data);
+                setSessionData(response.data); // 상태에 저장
             } catch (error) {
                 console.error('Error fetching session data:', error);
             }
@@ -541,7 +542,7 @@ const VideoChatPage = () => {
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
-                    <MovingDogs />
+                    <MovingDogs sessionData={sessionData} />
                 </div>
             </div>
         </div>
