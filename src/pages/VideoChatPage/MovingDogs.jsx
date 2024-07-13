@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
 
-const MovingDogs = () => {
+const MovingDogs = ({ sessionData }) => {
     const [dogPositions, setDogPositions] = useState(Array(4).fill({ x: 50, y: 50 }));
     const [dogDestinations, setDogDestinations] = useState(Array(4).fill(null));
     const [movingDogs, setMovingDogs] = useState(Array(4).fill(true));
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null));
-    const [aiInterests, setAiInterests] = useState([]);
     const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
 
     const getRandomPosition = () => ({
@@ -17,7 +14,7 @@ const MovingDogs = () => {
         y: Math.random() * 90,
     });
 
-    const distance = (p1, p2) => Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
+    const distance = (p1, p2) => Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -35,7 +32,7 @@ const MovingDogs = () => {
                     }
                     const dx = dest.x - pos.x;
                     const dy = dest.y - pos.y;
-                    const length = Math.sqrt(dx*dx + dy*dy);
+                    const length = Math.sqrt(dx * dx + dy * dy);
                     const speed = 0.35;
                     return {
                         x: pos.x + (dx / length) * speed,
@@ -47,30 +44,11 @@ const MovingDogs = () => {
         return () => clearInterval(interval);
     }, [movingDogs, dogDestinations]);
 
-    const fetchAiInterests = useCallback(async (event, index) => {
-        try {
-            const token = Cookies.get('token');
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/user/ai-interests`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            if (response.status === 200) {
-                const aiInterestsData = response.data.aiInterests;
-                setAiInterests(Array(4).fill(aiInterestsData));
-                if (event && event.target) {
-                    const rect = event.target.getBoundingClientRect();
-                    setBubblePosition({
-                        top: rect.top - 40,
-                        left: rect.right + 10
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching AI interests:', error);
-        }
-    }, []);
-
     const handleDogClick = (index, event) => {
-        fetchAiInterests(event, index);
+        if (!sessionData[index]) return;
+
+        const { nickname, interests } = sessionData[index];
+
         if (bubbleTimers[index]) {
             clearTimeout(bubbleTimers[index]);
         }
@@ -82,6 +60,7 @@ const MovingDogs = () => {
             if (!Array.isArray(prev)) return prev;
             return prev.map((v, i) => i === index ? false : v);
         });
+
         const newTimer = setTimeout(() => {
             setShowBubble(prev => {
                 if (!Array.isArray(prev)) return prev;
@@ -92,10 +71,19 @@ const MovingDogs = () => {
                 return prev.map((v, i) => i === index ? true : v);
             });
         }, 10000);
+
         setBubbleTimers(prev => {
             if (!Array.isArray(prev)) return prev;
             return prev.map((timer, i) => i === index ? newTimer : timer);
         });
+
+        if (event && event.target) {
+            const rect = event.target.getBoundingClientRect();
+            setBubblePosition({
+                top: rect.top - 40,
+                left: rect.right + 10
+            });
+        }
     };
 
     return (
@@ -127,8 +115,8 @@ const MovingDogs = () => {
                                 width: '150px'
                             }}
                         >
-                            <h3 className="text-sm font-semibold">강아지 {index + 1} 관심사</h3>
-                            <p>{aiInterests[index]}</p>
+                            <h3 className="text-sm font-semibold">{sessionData[index]?.nickname} 관심사</h3>
+                            <p>{sessionData[index]?.interests[0]}</p>
                         </div>
                     )}
                 </div>
