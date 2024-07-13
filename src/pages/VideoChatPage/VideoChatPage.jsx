@@ -37,19 +37,35 @@ const VideoChatPage = () => {
         return <div>Loading...</div>;
     }
 
-    const [remainingTime, setRemainingTime] = useState(300); // 300초 = 5분
+    const [remainingTime, setRemainingTime] = useState(0);
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setRemainingTime((prevTime) => {
-                if (prevTime <= 1) {
-                    return 300; // 0초가 되면 다시 5분(300초)으로 리셋
-                }
-                return prevTime - 1;
-            });
-        }, 1000);
+        let timer;
 
-        return () => clearInterval(timer);
+        const fetchTimer = async () => {
+            const result = await apiCall(API_LIST.GET_SESSION_TIMER, {
+                sessionId,
+            });
+            if (result.status) {
+                const leftTime = result.data.remainingTime;
+                setRemainingTime(leftTime);
+
+                // fetchTimer 완료 후 setInterval 시작
+                timer = setInterval(() => {
+                    setRemainingTime((prevTime) => {
+                        return prevTime - 1;
+                    });
+                }, 1000);
+            }
+        };
+
+        fetchTimer();
+
+        return () => {
+            if (timer) {
+                clearInterval(timer);
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -242,6 +258,12 @@ const VideoChatPage = () => {
                     ...prevSubscribers,
                     subscriber,
                 ]);
+            });
+
+            // 세션 연결 종료 시 (타이머 초과에 의한 종료)
+            session.on('sessionDisconnected', (event) => {
+                console.log('Session disconnected:', event);
+                leaveSession();
             });
 
             session.on('streamDestroyed', (event) => {
