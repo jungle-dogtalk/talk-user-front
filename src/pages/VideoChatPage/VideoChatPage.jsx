@@ -467,7 +467,7 @@ const VideoChatPage = () => {
                             <div className="relative border-2 border-gray-300 aspect-video">
                                 <OpenViduVideo streamManager={publisher} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
-                                    나
+                                    {publisher.stream.connection.data}
                                 </div>
                                 <img
                                     src={settingsIcon}
@@ -494,7 +494,7 @@ const VideoChatPage = () => {
                             >
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
-                                    상대방 {index + 1}
+                                    {subscriber.stream.connection.data}
                                 </div>
                             </div>
                         ))}
