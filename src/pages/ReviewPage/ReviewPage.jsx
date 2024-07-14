@@ -12,7 +12,6 @@ import { API_LIST } from '../../utils/apiList';
 
 const ReviewPage = () => {
     const [ratings, setRatings] = useState([0, 0, 0]); // 세 명의 사용자 리뷰를 관리
-    const [interestsData, setInterestsData] = useState(null); // 관심사 데이터를 저장
     const [reportingUser, setReportingUser] = useState(null); // 신고할 사용자
 
     const [reportReason, setReportReason] = useState(''); // 신고 이유
@@ -21,6 +20,7 @@ const ReviewPage = () => {
 
     const [sessionId, setSessionId] = useState('');
     const [sessionData, setSessionData] = useState(null); // 세션 데이터를 저장
+    const [callUserInfo, setCallUserInfo] = useState([]); // 통화 유저 정보 저장
 
     useEffect(() => {
         // sessionStorage에서 세션 ID를 가져옴
@@ -35,6 +35,18 @@ const ReviewPage = () => {
                     });
                     setSessionData(response.data); // 상태에 저장
                     console.log(response.data);
+
+                    // 통화 유저 정보 가져오기
+                    const usernames = response.data.map((user) => user.userId);
+                    const callUserInfoResponse = await apiCall(
+                        API_LIST.GET_CALL_USER_INFO,
+                        {
+                            usernames,
+                        }
+                    );
+                    setCallUserInfo(callUserInfoResponse.data);
+                    setRatings(new Array(response.data.length).fill(0)); // 리뷰 초기화
+                    console.log(callUserInfoResponse.data);
                 } catch (error) {
                     console.error('Error fetching session data:', error);
                 }
@@ -53,8 +65,6 @@ const ReviewPage = () => {
         // 리뷰 제출 로직
         console.log('제출된 리뷰:', ratings);
         alert('리뷰가 제출되었습니다.');
-        // 로컬 스토리지에서 관심사 데이터를 지움 -> 나중에 DB 연동하면 지울 것
-        localStorage.removeItem('interestsData');
         window.location.href = '/main';
     };
 
@@ -72,6 +82,18 @@ const ReviewPage = () => {
         console.log('신고된 사용자:', reportingUser);
         alert(`${reportingUser}님을 신고했습니다.`);
         setReportingUser(null);
+    };
+
+    const getProfileImage = (index) => {
+        return callUserInfo[index]
+            ? callUserInfo[index].profileImage
+            : videoPlaceholder;
+    };
+
+    const getUtterance = (index) => {
+        return callUserInfo[index]
+            ? callUserInfo[index].utterance
+            : '발화량 정보 없음';
     };
 
     const username = userInfo?.username || '사용자';
@@ -96,77 +118,62 @@ const ReviewPage = () => {
                     즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
                 </p>
                 <div className="space-y-6">
-                    {[
-                        {
-                            name: '시고르자브종',
-                            img: profile1,
-                            speech: '발화량 42%',
-                        },
-                        { name: '멍멍', img: profile2, speech: '발화량 37%' },
-                        { name: '우하하', img: profile3, speech: '발화량 21%' },
-                    ].map((user, index) => (
-                        <div
-                            key={index}
-                            className="bg-gray-50 p-4 rounded-lg shadow-md flex items-center space-x-4"
-                        >
-                            <img
-                                src={videoPlaceholder}
-                                alt="동영상"
-                                className="w-16 h-16 rounded-full"
-                            />
-                            <img
-                                src={user.img}
-                                alt={user.name}
-                                className="w-16 h-16 rounded-full"
-                            />
-                            <div className="flex-1">
-                                <h3 className="text-xl font-semibold">
-                                    {user.name}{' '}
-                                    <span className="text-sm text-gray-500">
-                                        {user.speech}
-                                    </span>
-                                </h3>
-                                <div className="flex space-x-1">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <span
-                                            key={star}
-                                            className={`cursor-pointer text-2xl ${
-                                                ratings[index] >= star
-                                                    ? 'text-yellow-400'
-                                                    : 'text-gray-300'
-                                            }`}
-                                            onClick={() =>
-                                                handleRatingChange(index, star)
-                                            }
-                                        >
-                                            ★
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                            <button
-                                className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2"
-                                onClick={() => handleReport(user.name)}
+                    {sessionData && sessionData.length > 0 ? (
+                        sessionData.map((user, index) => (
+                            <div
+                                key={index}
+                                className="bg-gray-50 p-4 rounded-lg shadow-md flex items-center space-x-4"
                             >
-                                <span>신고하기</span>
                                 <img
-                                    src={Declaration}
-                                    alt="이모티콘"
-                                    className="w-6 h-6"
-                                />{' '}
-                                {/* 수정된 부분 */}
-                            </button>
-                        </div>
-                    ))}
+                                    src={getProfileImage(index)}
+                                    alt="프로필"
+                                    className="w-16 h-16 rounded-full"
+                                />
+                                <div className="flex-1">
+                                    <h3 className="text-xl font-semibold">
+                                        {user.nickname}{' '}
+                                        <span className="text-sm text-gray-500">
+                                            발화량 {getUtterance(index)}
+                                        </span>
+                                    </h3>
+                                    <div className="flex space-x-1">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <span
+                                                key={star}
+                                                className={`cursor-pointer text-2xl ${
+                                                    ratings[index] >= star
+                                                        ? 'text-yellow-400'
+                                                        : 'text-gray-300'
+                                                }`}
+                                                onClick={() =>
+                                                    handleRatingChange(
+                                                        index,
+                                                        star
+                                                    )
+                                                }
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2"
+                                    onClick={() => handleReport(user.nickname)}
+                                >
+                                    <span>신고하기</span>
+                                    <img
+                                        src={Declaration}
+                                        alt="이모티콘"
+                                        className="w-6 h-6"
+                                    />
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-center">Now Loading..</p>
+                    )}
                 </div>
-                {interestsData && interestsData.username === username && (
-                    <div className="mt-6 p-4 bg-yellow-100 rounded-lg">
-                        <h4 className="font-bold text-lg">
-                            '{username}'님의 관심사로 예상됩니다!
-                        </h4>
-                        <p>{interestsData.interests.join(', ')}</p>
-                    </div>
-                )}
                 <div className="flex justify-center mt-8 space-x-4">
                     {' '}
                     {/* 수정된 부분 */}
