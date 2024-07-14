@@ -64,12 +64,22 @@ const API_LIST = {
     GET_TOKEN: {
         method: 'POST',
         path: `/api/openvidu/token`,
-        desc: 'OpenVidu 토큰 발급'
+        desc: 'OpenVidu 토큰 발급',
     },
     GET_SESSION_DATA: {
         method: GET,
         path: `/api/user/session-data`,
-        desc: '세션 데이터 조회'
+        desc: '세션 데이터 조회',
+    },
+    AI_RECEIVE_TRANSCRIPT: {
+        method: POST,
+        path: `/api/audio/AIreceive-transcript`,
+        desc: '사용자 텍스트 전송 및 AI 응답 받기',
+    },
+    END_USER_CONVERSATION: {
+        method: POST,
+        path: `/api/audio/clear-user-conversation`,
+        desc: 'AI와 사용자 대화 기록 삭제',
     },
 };
 

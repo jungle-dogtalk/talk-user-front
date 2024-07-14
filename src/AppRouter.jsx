@@ -10,6 +10,7 @@ import ReviewPage from './pages/ReviewPage/ReviewPage';
 import MatchingPage from './pages/MatchingPage/MatchingPage';
 import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import AIChatPage from './pages/VideoChatPage/AIChatPage';
 
 function AppRouter() {
     return (
@@ -24,6 +25,7 @@ function AppRouter() {
             <Route path="/matching" element={<MatchingPage />} />
             <Route path="/choose-avatar" element={<ChooseAvatarPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/aichat" element={<AIChatPage />} />
         </Routes>
     );
 }
