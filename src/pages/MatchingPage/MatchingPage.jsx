@@ -16,8 +16,10 @@ const MatchingPage = () => {
     //사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {
         socket.emit('userDetails', {
-            userId: userInfo._id,
-            interests: userInfo.interests,
+            userId: userInfo.username,
+            userInterests: userInfo.interests,
+            aiInterests: userInfo.interests2,
+            nickname: userInfo.nickname,
         });
 
         socket.on('matched', (data) => {
