@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import videoPlaceholder from '../../assets/people.png'; // 동영상 공간을 위한 이미지
@@ -8,6 +9,7 @@ import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 
 const ReviewPage = () => {
+    const navigate = useNavigate();  // useNavigate 훅 추가
     const [ratings, setRatings] = useState([0, 0, 0]); // 세 명의 사용자 리뷰를 관리
     const [reportingUser, setReportingUser] = useState(null); // 신고할 사용자
 
@@ -20,6 +22,15 @@ const ReviewPage = () => {
     const [callUserInfo, setCallUserInfo] = useState([]); // 통화 유저 정보 저장
 
     useEffect(() => {
+        const fromVideoChat = sessionStorage.getItem('fromVideoChat');
+        if (!fromVideoChat) {
+            alert('비디오 채팅을 통해서만 접근 가능합니다.');
+            navigate('/main', { replace: true });
+            return;
+        }
+
+        sessionStorage.removeItem('fromVideoChat'); // 초기화
+
         // sessionStorage에서 세션 ID를 가져옴
         const savedSessionId = sessionStorage.getItem('sessionId');
         if (savedSessionId) {
@@ -30,7 +41,9 @@ const ReviewPage = () => {
                     const response = await apiCall(API_LIST.GET_SESSION_DATA, {
                         sessionId: savedSessionId,
                     });
-                    const filteredSessionData = response.data.filter(user => user.userId !== userInfo.username);
+                    const filteredSessionData = response.data.filter(
+                        (user) => user.userId !== userInfo.username
+                    );
                     setSessionData(filteredSessionData); // 필터링한 데이터를 상태에 저장
 
                     // 통화 유저 정보 가져오기
@@ -49,7 +62,7 @@ const ReviewPage = () => {
             };
             fetchSessionData();
         }
-    }, []);
+    }, [navigate, userInfo.username]);
 
     const handleRatingChange = (index, rating) => {
         const newRatings = [...ratings];
@@ -141,7 +154,10 @@ const ReviewPage = () => {
                                                         : 'text-gray-300'
                                                 }`}
                                                 onClick={() =>
-                                                    handleRatingChange(index, star)
+                                                    handleRatingChange(
+                                                        index,
+                                                        star
+                                                    )
                                                 }
                                             >
                                                 ★
