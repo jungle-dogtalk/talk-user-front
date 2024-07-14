@@ -392,6 +392,7 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
+        setRecommendedTopics([]); // 기존 추천 주제를 초기화
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
     };
