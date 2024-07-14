@@ -297,7 +297,7 @@ const VideoChatPage = () => {
                 'sessionH',
             ];
             if (!allowedSessionIdList.includes(sessionId)) {
-                getToken(sid, userInfo._id).then((token) => {
+                getToken(sid, userInfo).then((token) => {
                     session
                         .connect(token)
                         .then(() => {
