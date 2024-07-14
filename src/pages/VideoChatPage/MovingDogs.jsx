@@ -14,6 +14,8 @@ const MovingDogs = ({ sessionData }) => {
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null));
     const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
 
+    const [randomInterestIndex, setRandomInterestIndex] = useState(Array(4).fill(0));
+
     const getRandomPosition = () => ({
         x: Math.random() * 90,
         y: Math.random() * 90,
@@ -52,7 +54,10 @@ const MovingDogs = ({ sessionData }) => {
     const handleDogClick = (index, event) => {
         if (!sessionData[index]) return;
 
-        const { nickname, interests } = sessionData[index];
+        const { nickname, aiInterests } = sessionData[index];
+
+        const randomIndex = Math.floor(Math.random() * 5); // 0에서 4 사이의 랜덤 인덱스 생성
+        setRandomInterestIndex(prev => prev.map((v, i) => i === index ? randomIndex : v));
 
         if (bubbleTimers[index]) {
             clearTimeout(bubbleTimers[index]);
@@ -116,7 +121,7 @@ const MovingDogs = ({ sessionData }) => {
                                     marginBottom: '-14px'  // 강아지와의 간격
                                 }}
                             >
-                                <p>{safeSessionData[index]?.interests?.[0] || '정보 없음'}</p>
+                                <p>{safeSessionData[index]?.aiInterests?.[randomInterestIndex[index]] || '정보 없음'}</p>
                             </div>
                         )}
                         <img
