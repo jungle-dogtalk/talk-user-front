@@ -118,6 +118,7 @@ function RaccoonHand() {
                     pointerEvents: 'none',
                     width: 640,
                     height: 480,
+                    backgroundColor: 'green',
                 }}
                 camera={{
                     fov: 20,

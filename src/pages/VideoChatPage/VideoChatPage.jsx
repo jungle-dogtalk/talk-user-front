@@ -198,46 +198,70 @@ const VideoChatPage = () => {
 
     const startStreaming = (session, OV, mediaStream) => {
         setTimeout(() => {
-            var videoTrack = mediaStream.getVideoTracks()[0];
-            var video = document.createElement('video');
-            video.srcObject = new MediaStream([videoTrack]);
-
-            // var canvas = document.createElement('canvas');
-
-            var canvas = document
-                .getElementById('avatar_canvas')
-                .querySelector('div')
-                .querySelector('canvas');
-
-            console.log('캔버스 -> ', canvas);
-            var ctx = canvas.getContext('2d');
-            console.log('ctx -> ', ctx);
-
-            // var ctx = canvas.getContext('3d');
-            // console.log('ctx -> ', ctx);
-            // ctx.filter = 'grayscale(100%)';
-
-            // video.addEventListener('play', () => {
-            //     var loop = () => {
-            //         if (!video.paused && !video.ended) {
-            //             ctx.drawImage(video, 0, 0, 300, 170);
-            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-            //         }
-            //     };
-            //     loop();
-            // });
+            const video = document.createElement('video');
+            video.srcObject = new MediaStream([
+                mediaStream.getVideoTracks()[0],
+            ]);
             video.play();
-            var videoTrack = canvas
-                .captureStream(FRAME_RATE)
-                .getVideoTracks()[0];
-            var publisher = OV.initPublisher(undefined, {
+
+            const canvasElement = document
+                .getElementById('avatar_canvas')
+                .querySelector('canvas');
+            const ctx = canvasElement.getContext('2d');
+
+            const outputCanvas = document.createElement('canvas');
+            const outputCtx = outputCanvas.getContext('2d');
+            outputCanvas.width = canvasElement.width;
+            outputCanvas.height = canvasElement.height;
+
+            const chromaKey = (imageData) => {
+                const data = imageData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    if (g > 100 && r < 100 && b < 100) {
+                        data[i + 3] = 0; // 투명하게 설정
+                    }
+                }
+                return imageData;
+            };
+
+            const render = () => {
+                outputCtx.clearRect(
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+                outputCtx.drawImage(
+                    canvasElement,
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+                const imageData = outputCtx.getImageData(
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+                outputCtx.putImageData(chromaKey(imageData), 0, 0);
+                requestAnimationFrame(render);
+            };
+
+            render();
+
+            const canvasStream = outputCanvas.captureStream(FRAME_RATE);
+            const publisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
-                videoSource: videoTrack,
+                videoSource: canvasStream.getVideoTracks()[0],
             });
 
             setPublisher(publisher);
             session.publish(publisher);
-            // 음성인식 시작
+
             startSpeechRecognition(
                 publisher.stream.getMediaStream(),
                 userInfo.username
@@ -245,7 +269,6 @@ const VideoChatPage = () => {
             socket.current.emit('joinSession', sessionId);
         }, 5000);
     };
-
     // 세션 참여
     const joinSession = useCallback(
         async (sid) => {
@@ -354,6 +377,58 @@ const VideoChatPage = () => {
     // 비디오 좌우반전 처리 (SettingMenu 자식 컴포넌트 핸들러)
     const handleMirrorChange = (mirrorState) => {
         setIsMirrored(mirrorState);
+    };
+
+    const handleSubscriberChromaKey = (stream) => {
+        const videoElement = document.createElement('video');
+        videoElement.srcObject = stream.getMediaStream();
+        videoElement.play();
+
+        const canvasElement = document.createElement('canvas');
+        const ctx = canvasElement.getContext('2d');
+        document.body.appendChild(canvasElement);
+
+        const chromaKey = (imageData) => {
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                if (g > 100 && r < 100 && b < 100) {
+                    data[i + 3] = 0; // 투명하게 설정
+                }
+            }
+            return imageData;
+        };
+
+        const render = () => {
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            ctx.drawImage(
+                videoElement,
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            const imageData = ctx.getImageData(
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            ctx.putImageData(chromaKey(imageData), 0, 0);
+            requestAnimationFrame(render);
+        };
+
+        render();
+
+        const canvasStream = canvasElement.captureStream(FRAME_RATE);
+        const newPublisher = OV.initPublisher(undefined, {
+            audioSource: undefined,
+            videoSource: canvasStream.getVideoTracks()[0],
+        });
+
+        session.publish(newPublisher);
     };
 
     useEffect(() => {
@@ -521,7 +596,8 @@ const VideoChatPage = () => {
                                 )}
                             </div>
                         )}
-                        // TODO: 구독자의 화면도 하나로 합침. 그런데 사용자들의 화면을 투명한 색으로 만들고 싶음
+                        // TODO: 구독자의 화면도 하나로 합침. 그런데 사용자들의
+                        화면을 투명한 색으로 만들고 싶음
                         {/* {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
