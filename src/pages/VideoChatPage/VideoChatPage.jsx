@@ -485,14 +485,22 @@ const VideoChatPage = () => {
                     {/* <AvatarApp></AvatarApp>
                      */}
                     <RaccoonHand></RaccoonHand>
+                    // TODO: 화면을 하나로 합쳐야함
                     <div
-                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        // className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        // className="grid grid-cols-1 gap-4 p-4 border-2 border-gray-300 relative"
+                        className="relative flex-1 p-4 border-2 border-gray-300"
                         style={{ flex: '1 1 auto' }}
                     >
                         {publisher && (
-                            <div className="relative border-2 border-gray-300 aspect-video">
+                            // <div className="relative border-2 border-gray-300 aspect-video">
+                            //     <OpenViduVideo streamManager={publisher} />
+                            //     <div className="absolute top-0 left-0 bg-transparent bg-opacity-50 text-white p-2 rounded-md">
+                            //         {publisher.stream.connection.data}
+                            //     </div>
+                            <div className="absolute inset-0">
                                 <OpenViduVideo streamManager={publisher} />
-                                <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                                <div className="absolute top-0 left-0 bg-transparent bg-opacity-50 text-white p-2 rounded-md">
                                     {publisher.stream.connection.data}
                                 </div>
                                 <img
@@ -513,13 +521,26 @@ const VideoChatPage = () => {
                                 )}
                             </div>
                         )}
-                        {subscribers.map((subscriber, index) => (
+                        // TODO: 구독자의 화면도 하나로 합침. 그런데 사용자들의 화면을 투명한 색으로 만들고 싶음
+                        {/* {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
                                 className="relative border-2 border-gray-300 aspect-video"
                             >
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                                    {subscriber.stream.connection.data}
+                                </div>
+                            </div>
+                        ))} */}
+                        {subscribers.map((subscriber, index) => (
+                            <div
+                                key={index}
+                                className="absolute inset-0"
+                                style={{ zIndex: index + 1 }}
+                            >
+                                <OpenViduVideo streamManager={subscriber} />
+                                <div className="absolute top-0 left-0 bg-transparent bg-opacity-50 text-white p-2 rounded-md">
                                     {subscriber.stream.connection.data}
                                 </div>
                             </div>
