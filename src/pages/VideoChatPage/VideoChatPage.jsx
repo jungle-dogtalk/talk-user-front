@@ -187,6 +187,9 @@ const VideoChatPage = () => {
             setSubscribers([]);
             setPublisher(undefined);
 
+            // 세션 ID를 sessionStorage에 저장
+            sessionStorage.setItem('sessionId', sessionId);
+
             window.location.href = '/review';
         } catch (error) {
             console.error('Error ending call:', error);
