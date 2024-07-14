@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import styles from './VideoChatPage.module.css';
 
 const OpenViduVideo = (props) => {
     const videoRef = useRef();
@@ -9,7 +10,13 @@ const OpenViduVideo = (props) => {
         }
     }, [props.streamManager]);
 
-    return <video autoPlay={true} ref={videoRef} />;
+    return (
+        <video
+            autoPlay={true}
+            ref={videoRef}
+            className={props.isMirrored ? styles.mirrored : ''}
+        />
+    );
 };
 
 export default OpenViduVideo;
