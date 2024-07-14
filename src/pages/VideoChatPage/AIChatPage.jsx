@@ -49,7 +49,8 @@ const AIChatPage = () => {
         socketRef.current = io(import.meta.env.VITE_API_URL);
 
         socketRef.current.on('AI_RESPONSE', (message) => {
-            setAiResponse((prevResponse) => prevResponse + message);
+            // setAiResponse((prevResponse) => prevResponse + message);
+            setAiResponse(message);
             speak(message);
         });
 
@@ -123,10 +124,12 @@ const AIChatPage = () => {
 
     const aiConversation = async (username, transcript) => {
         try {
-            socketRef.current.emit('AI_RECEIVE_TRANSCRIPT', {
-                username,
-                transcript,
-            });
+            if (transcript) {
+                socketRef.current.emit('AI_RECEIVE_TRANSCRIPT', {
+                    username,
+                    transcript,
+                });
+            }
         } catch (error) {
             console.error('Error handling user input:', error);
         }
