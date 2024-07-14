@@ -37,7 +37,7 @@ const VideoChatPage = () => {
         return <div>Loading...</div>;
     }
 
-    const [remainingTime, setRemainingTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(300); // 디폴트 타이머 5분
 
     useEffect(() => {
         let timer;
@@ -53,6 +53,10 @@ const VideoChatPage = () => {
                 // fetchTimer 완료 후 setInterval 시작
                 timer = setInterval(() => {
                     setRemainingTime((prevTime) => {
+                        if (prevTime <= 0) {
+                            clearInterval(timer);
+                            return 0;
+                        }
                         return prevTime - 1;
                     });
                 }, 1000);
