@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
-import profile1 from '../../assets/profile.jpg'; // 사용자 1 이미지 경로
-import profile2 from '../../assets/profile.jpg'; // 사용자 2 이미지 경로
-import profile3 from '../../assets/profile.jpg'; // 사용자 3 이미지 경로
 import videoPlaceholder from '../../assets/people.png'; // 동영상 공간을 위한 이미지
 import Declaration from '../../assets/declaration.jpg'; // 동영상 공간을 위한 이미지
 
@@ -33,8 +30,8 @@ const ReviewPage = () => {
                     const response = await apiCall(API_LIST.GET_SESSION_DATA, {
                         sessionId: savedSessionId,
                     });
-                    setSessionData(response.data); // 상태에 저장
-                    console.log(response.data);
+                    const filteredSessionData = response.data.filter(user => user.userId !== userInfo.username);
+                    setSessionData(filteredSessionData); // 필터링한 데이터를 상태에 저장
 
                     // 통화 유저 정보 가져오기
                     const usernames = response.data.map((user) => user.userId);
@@ -46,7 +43,6 @@ const ReviewPage = () => {
                     );
                     setCallUserInfo(callUserInfoResponse.data);
                     setRatings(new Array(response.data.length).fill(0)); // 리뷰 초기화
-                    console.log(callUserInfoResponse.data);
                 } catch (error) {
                     console.error('Error fetching session data:', error);
                 }
@@ -100,17 +96,16 @@ const ReviewPage = () => {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-            <header className="w-full bg-[#a16e47] p-4 flex justify-between items-center">
+            <header className="w-full bg-[#a16e47] p-1 flex justify-between items-center">
                 <div className="flex items-center">
                     <img
                         src={logo}
                         alt="명톡 로고"
                         className="w-24 h-24 ml-2"
                     />{' '}
-                    {/* 수정된 부분 */}
                 </div>
             </header>
-            <div className="bg-white shadow-md rounded-lg p-8 mt-10 w-full max-w-4xl">
+            <div className="bg-gray-100  rounded-lg p-8 mt-10 w-full max-w-4xl">
                 <h2 className="text-2xl font-bold text-center mb-4">
                     통화 시간이 종료되었습니다.
                 </h2>
@@ -122,21 +117,21 @@ const ReviewPage = () => {
                         sessionData.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-50 p-4 rounded-lg shadow-md flex items-center space-x-4"
+                                className="bg-gray-50 p-4 rounded-lg shadow-md flex items-center space-x-10"
                             >
                                 <img
                                     src={getProfileImage(index)}
                                     alt="프로필"
                                     className="w-16 h-16 rounded-full"
                                 />
-                                <div className="flex-1">
+                                <div className="flex-1 mr-6">
                                     <h3 className="text-xl font-semibold">
                                         {user.nickname}{' '}
                                         <span className="text-sm text-gray-500">
                                             발화량 {getUtterance(index)}
                                         </span>
                                     </h3>
-                                    <div className="flex space-x-1">
+                                    <div className="flex space-x-1 mt-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
@@ -146,10 +141,7 @@ const ReviewPage = () => {
                                                         : 'text-gray-300'
                                                 }`}
                                                 onClick={() =>
-                                                    handleRatingChange(
-                                                        index,
-                                                        star
-                                                    )
+                                                    handleRatingChange(index, star)
                                                 }
                                             >
                                                 ★
@@ -158,7 +150,7 @@ const ReviewPage = () => {
                                     </div>
                                 </div>
                                 <button
-                                    className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2"
+                                    className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2 ml-4"
                                     onClick={() => handleReport(user.nickname)}
                                 >
                                     <span>신고하기</span>
@@ -174,9 +166,7 @@ const ReviewPage = () => {
                         <p className="text-center">Now Loading..</p>
                     )}
                 </div>
-                <div className="flex justify-center mt-8 space-x-4">
-                    {' '}
-                    {/* 수정된 부분 */}
+                <div className="flex justify-center mt-12 space-x-4">
                     <button
                         className="bg-gray-300 text-black px-6 py-3 rounded-full"
                         onClick={() => (window.location.href = '/main')}
