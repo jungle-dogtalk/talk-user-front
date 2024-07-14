@@ -496,7 +496,10 @@ const VideoChatPage = () => {
                     >
                         {publisher && (
                             <div className="relative border-2 border-gray-300 aspect-video">
-                                <OpenViduVideo streamManager={publisher} />
+                                <OpenViduVideo
+                                    streamManager={publisher}
+                                    isMirrored={isMirrored}
+                                />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     {publisher.stream.connection.data}
                                 </div>
