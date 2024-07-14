@@ -193,6 +193,7 @@ const VideoChatPage = () => {
 
             // 세션 ID를 sessionStorage에 저장
             sessionStorage.setItem('sessionId', sessionId);
+            sessionStorage.setItem('fromVideoChat', 'true'); // 플래그 설정
 
             window.location.href = '/review';
         } catch (error) {
