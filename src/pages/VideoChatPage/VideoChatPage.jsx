@@ -270,7 +270,7 @@ const VideoChatPage = () => {
 
     const updatePublisherWithNewPitch = (pitchValue) => {
         if (publisher && session) {
-            // 기존 퍼블리셔 스트림 중지 및 버튼에 맞는 피치 값으로 새롭게 퍼블리시
+            // 기존 퍼블리셔 스트림 중지 및 새로운 피치 값으로 새롭게 퍼블리시
             if (publisher.stream) {
                 session
                     .unpublish(publisher)
