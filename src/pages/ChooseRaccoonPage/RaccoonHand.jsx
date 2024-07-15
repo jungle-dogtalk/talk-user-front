@@ -126,7 +126,7 @@ function RaccoonHand() {
     return (
         <div
             className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            style={{ position: 'relative', width: 480, height: 360 }}
         >
             <Canvas
                 id="avatar_canvas"
@@ -135,16 +135,16 @@ function RaccoonHand() {
                     top: 0,
                     left: 0,
                     pointerEvents: 'none',
-                    width: 640,
-                    height: 480,
+                    width: 480,
+                    height: 360,
                     backgroundColor: 'white',
                 }}
                 camera={{
-                    fov: 20,
+                    fov: 10,
                     position: [0, 0, 10],
                 }}
             >
-                <ambientLight intensity={0.5} />
+                <ambientLight intensity={2} />
                 <pointLight
                     position={[1, 1, 1]}
                     color={new Color(1, 0, 0)}

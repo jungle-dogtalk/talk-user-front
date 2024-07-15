@@ -150,7 +150,7 @@ function RaccoonHand() {
                     position: [0, 0, 10],
                 }}
             >
-                <ambientLight intensity={0.5} />
+                <ambientLight intensity={2} />
                 <pointLight
                     position={[1, 1, 1]}
                     color={new Color(1, 0, 0)}
