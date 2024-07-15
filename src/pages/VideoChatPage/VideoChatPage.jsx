@@ -256,11 +256,18 @@ const VideoChatPage = () => {
 
         const chromaKey = (imageData) => {
             const data = imageData.data;
+            const threshold = 50; // 이 값을 조절하여 더 정밀한 크로마키 처리 가능
             for (let i = 0; i < data.length; i += 4) {
                 const r = data[i];
                 const g = data[i + 1];
                 const b = data[i + 2];
-                if (g > 100 && r < 100 && b < 100) {
+                if (
+                    g > 100 &&
+                    r < 100 &&
+                    b < 100 &&
+                    g - r > threshold &&
+                    g - b > threshold
+                ) {
                     data[i + 3] = 0; // 투명하게 설정
                 }
             }
@@ -289,6 +296,7 @@ const VideoChatPage = () => {
         videoElement.onloadedmetadata = () => {
             render();
 
+            //크로마키 처리된 스트림을 반환
             const canvasStream = canvasElement.captureStream(FRAME_RATE);
             const newPublisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
@@ -302,6 +310,7 @@ const VideoChatPage = () => {
         videoElement.play();
     };
 
+    //세션 참여
     const joinSession = useCallback(
         async (sid) => {
             const OV = new OpenVidu();
@@ -317,6 +326,7 @@ const VideoChatPage = () => {
                 ]);
             });
 
+            //세션 연결 종료 시 (타이머 초과에 의한 종료)
             session.on('sessionDisconnected', (event) => {
                 console.log('Session disconnected:', event);
                 leaveSession();
@@ -330,12 +340,14 @@ const VideoChatPage = () => {
                 );
             });
 
+            //발화 시작 감지
             session.on('publisherStartSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
             });
 
+            //발화 종료 감지
             session.on('publisherStopSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' stop speaking'

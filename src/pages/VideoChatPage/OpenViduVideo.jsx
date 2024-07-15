@@ -34,7 +34,14 @@ const OpenViduVideo = ({ streamManager, isPublisher }) => {
                     const r = data[i];
                     const g = data[i + 1];
                     const b = data[i + 2];
-                    if (g > 100 && r < 100 && b < 100) {
+                    const threshold = 50; // 이 값을 조절하여 더 정밀한 크로마키 처리 가능
+                    if (
+                        g > 100 &&
+                        r < 100 &&
+                        b < 100 &&
+                        g - r > threshold &&
+                        g - b > threshold
+                    ) {
                         data[i + 3] = 0; // Make pixel transparent
                     }
                 }
