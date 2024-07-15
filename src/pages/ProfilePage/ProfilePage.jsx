@@ -111,7 +111,10 @@ const ProfilePage = () => {
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
             <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
-                <button className="text-white" onClick={handleDeleteAccount}>
+                <button
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
+                    onClick={handleDeleteAccount}
+                >
                     탈퇴하기
                 </button>
             </header>
@@ -225,33 +228,35 @@ const ProfilePage = () => {
                         <h2 className="text-xl font-bold mt-8 mb-4">
                             AI 관심사
                         </h2>
-                        
+
                         <div className="flex justify-center">
                             <div className="flex flex-wrap justify-center">
-                                {userInfo?.interests2?.map((interest, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
-                                    >
-                                        <span className="block text-center text-sm">
-                                            {interest}
-                                        </span>
-                                    </div>
-                                ))}
+                                {userInfo?.interests2?.map(
+                                    (interest, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
+                                        >
+                                            <span className="block text-center text-sm">
+                                                {interest}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-8">
+                    <div className="flex justify-center mt-8 space-x-4">
                         <button
                             type="button"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
@@ -261,7 +266,6 @@ const ProfilePage = () => {
             </div>
         </div>
     );
-    
 };
 
 export default ProfilePage;
