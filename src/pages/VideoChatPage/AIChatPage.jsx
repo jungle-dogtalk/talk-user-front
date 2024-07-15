@@ -63,7 +63,7 @@ const AIChatPage = () => {
 
             timeoutRef.current = setTimeout(() => {
                 setAiResponse('');
-            }, 3000);
+            }, 5000); // 말풍선 5초 동안 보여주도록 설정
         });
 
         socketRef.current.on('AI_RESPONSE_ERROR', (error) => {
@@ -158,7 +158,13 @@ const AIChatPage = () => {
         }
     };
 
+    // const removeSpecialCharacters = (text) => {
+    //     // 정규식을 사용하여 AI 응답을 TTS할 때 물음표, 느낌표, 이모티콘 등을 제거해 말하지 않도록(근데 이미 잘 되는 듯)
+    //     return text.replace(/[\p{P}\p{S}]/gu, '');
+    // };
+
     const speak = (text) => {
+        // const filteredText = removeSpecialCharacters(text);
         if ('speechSynthesis' in window) {
             const speech = new SpeechSynthesisUtterance(text);
             speech.lang = 'ko-KR'; // 한국어 설정
