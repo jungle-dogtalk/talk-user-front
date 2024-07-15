@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-const OpenViduVideo = ({ streamManager }) => {
+const OpenViduVideo = ({ streamManager, isPublisher }) => {
     const videoRef = useRef();
     const canvasRef = useRef();
 
@@ -11,12 +11,13 @@ const OpenViduVideo = ({ streamManager }) => {
     }, [streamManager]);
 
     useEffect(() => {
-        if (videoRef.current && canvasRef.current) {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext('2d');
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
 
-            const applyChromaKey = () => {
+        const applyChromaKey = () => {
+            if (video.readyState === 4) {
+                // Check if the video is ready
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
                 ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -39,15 +40,22 @@ const OpenViduVideo = ({ streamManager }) => {
                 }
 
                 ctx.putImageData(imageData, 0, 0);
-                requestAnimationFrame(applyChromaKey);
-            };
+            }
+            requestAnimationFrame(applyChromaKey);
+        };
 
-            video.addEventListener('play', applyChromaKey);
-
-            return () => {
-                video.removeEventListener('play', applyChromaKey);
-            };
+        if (video) {
+            video.addEventListener('loadeddata', () => {
+                applyChromaKey();
+                video.play();
+            });
         }
+
+        return () => {
+            if (video) {
+                video.removeEventListener('loadeddata', applyChromaKey);
+            }
+        };
     }, []);
 
     return (

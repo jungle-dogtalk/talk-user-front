@@ -245,51 +245,50 @@ const VideoChatPage = () => {
     };
 
     // 구독자  크로마키 처리 함수
-    const handleSubscriberChromaKey = (stream, OV, session) => {
+    const handleSubscriberChromaKey = (stream) => {
         const videoElement = document.createElement('video');
         videoElement.style.display = 'none'; // Hide the video element
         document.body.appendChild(videoElement);
 
-        videoElement.onloadedmetadata = () => {
-            const canvasElement = document.createElement('canvas');
-            const ctx = canvasElement.getContext('2d');
-            document.body.appendChild(canvasElement);
+        const canvasElement = document.createElement('canvas');
+        const ctx = canvasElement.getContext('2d');
+        document.body.appendChild(canvasElement);
 
-            const chromaKey = (imageData) => {
-                const data = imageData.data;
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i];
-                    const g = data[i + 1];
-                    const b = data[i + 2];
-                    if (g > 100 && r < 100 && b < 100) {
-                        data[i + 3] = 0; // 투명하게 설정
-                    }
+        const chromaKey = (imageData) => {
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                if (g > 100 && r < 100 && b < 100) {
+                    data[i + 3] = 0; // 투명하게 설정
                 }
-                return imageData;
-            };
+            }
+            return imageData;
+        };
 
-            const render = () => {
-                ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                ctx.drawImage(
-                    videoElement,
-                    0,
-                    0,
-                    canvasElement.width,
-                    canvasElement.height
-                );
-                const imageData = ctx.getImageData(
-                    0,
-                    0,
-                    canvasElement.width,
-                    canvasElement.height
-                );
-                ctx.putImageData(chromaKey(imageData), 0, 0);
-                requestAnimationFrame(render);
-            };
+        const render = () => {
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            ctx.drawImage(
+                videoElement,
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            const imageData = ctx.getImageData(
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            ctx.putImageData(chromaKey(imageData), 0, 0);
+            requestAnimationFrame(render);
+        };
 
+        videoElement.onloadedmetadata = () => {
             render();
 
-            // 크로마키 처리된 스트림을 반환
             const canvasStream = canvasElement.captureStream(FRAME_RATE);
             const newPublisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
@@ -303,7 +302,6 @@ const VideoChatPage = () => {
         videoElement.play();
     };
 
-    // 세션 참여
     const joinSession = useCallback(
         async (sid) => {
             const OV = new OpenVidu();
@@ -312,14 +310,13 @@ const VideoChatPage = () => {
 
             session.on('streamCreated', (event) => {
                 const subscriber = session.subscribe(event.stream, undefined);
-                handleSubscriberChromaKey(event.stream, OV, session);
+                handleSubscriberChromaKey(event.stream);
                 setSubscribers((prevSubscribers) => [
                     ...prevSubscribers,
                     subscriber,
                 ]);
             });
 
-            // 세션 연결 종료 시 (타이머 초과에 의한 종료)
             session.on('sessionDisconnected', (event) => {
                 console.log('Session disconnected:', event);
                 leaveSession();
@@ -333,14 +330,12 @@ const VideoChatPage = () => {
                 );
             });
 
-            // 발화 시작 감지
             session.on('publisherStartSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
             });
 
-            // 발화 종료 감지
             session.on('publisherStopSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' stop speaking'
