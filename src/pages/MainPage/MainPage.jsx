@@ -117,7 +117,7 @@ const MainPage = () => {
                     </button>
                     <button
                         className="flex flex-col items-center justify-center bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 sm:w-50 sm:h-50"
-                        onClick={() => navigate('/choose-avatar')}
+                        onClick={() => navigate('/choose-raccoon')}
                     >
                         <img
                             src={groupIcon}
