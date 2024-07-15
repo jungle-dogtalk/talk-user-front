@@ -33,6 +33,14 @@ const MainPage = () => {
         dispatch(fetchUserProfile());
     }, [dispatch]);
 
+    // 매너지수와 발화지수 계산
+    const mannerScore = userInfo?.reviewAverageScore || 0;
+    const utteranceScore = userInfo?.utterance || 0;
+
+    // 매너지수와 발화지수가 0이라면 50으로 설정
+    const displayMannerScore = mannerScore === 0 ? 50 : mannerScore;
+    const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
@@ -70,11 +78,11 @@ const MainPage = () => {
                             <div className="w-1/2 bg-red-200 h-6 rounded-full overflow-hidden">
                                 <div
                                     className="bg-red-600 h-full rounded-full"
-                                    style={{ width: '74%' }}
+                                    style={{ width: `${displayUtteranceScore}%` }}
                                 ></div>
                             </div>
                             <span className="ml-2 text-gray-700 text-sm">
-                                74%
+                                {displayUtteranceScore}%
                             </span>
                         </div>
                         <div className="flex items-center justify-center">
@@ -84,11 +92,11 @@ const MainPage = () => {
                             <div className="w-1/2 bg-blue-200 h-6 rounded-full overflow-hidden">
                                 <div
                                     className="bg-blue-600 h-full rounded-full"
-                                    style={{ width: '88%' }}
+                                    style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
                             <span className="ml-2 text-gray-700 text-sm">
-                                88%
+                                {displayMannerScore}%
                             </span>
                         </div>
                     </div>
