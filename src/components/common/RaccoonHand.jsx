@@ -28,9 +28,12 @@ const models = [
     '/yupyup_raccoon_head.glb',
 ];
 
+const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
+
 function RaccoonHand() {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
+    const [handColorIndex, setHandColorIndex] = useState(0);
 
     const setup = async () => {
         const vision = await FilesetResolver.forVisionTasks(
@@ -115,6 +118,11 @@ function RaccoonHand() {
         setModelPath(models[nextIndex]);
     };
 
+    const changeHandColor = () => {
+        const nextColorIndex = (handColorIndex + 1) % handColors.length;
+        setHandColorIndex(nextColorIndex);
+    };
+
     return (
         <div
             className="App"
@@ -154,10 +162,13 @@ function RaccoonHand() {
                     intensity={0.5}
                 />
                 <Raccoon modelPath={modelPath} />
-                <Hand />
+                <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
             <button onClick={changeModel} style={{ position: 'absolute', top: 10, left: 10 }}>
-                Change Raccoon Model
+                Change Raccoon Face
+            </button>
+            <button onClick={changeHandColor} style={{ position: 'absolute', top: 10, right: 30 }}>
+                Change Raccoon Hand Color
             </button>
         </div>
     );
@@ -233,7 +244,7 @@ function Raccoon({ modelPath }) {
     return <primitive object={scene} />;
 }
 
-function Hand() {
+function Hand({ handColor }) {
     const handRef = useRef();
 
     useFrame(() => {
@@ -268,9 +279,7 @@ function Hand() {
                             key={`hand-${handIndex}-${i}`}
                             args={[0.05, 16, 16]}
                         >
-                            <meshBasicMaterial
-                                color={handIndex === 0 ? 'red' : 'red'}
-                            />
+                            <meshBasicMaterial color={handColor} />
                         </Sphere>
                     ))
             )}

@@ -538,7 +538,6 @@ const VideoChatPage = () => {
                     {/* <AvatarApp></AvatarApp>
                      */}
                     <RaccoonHand></RaccoonHand>
-                    // TODO: 화면을 하나로 합쳐야함
                     <div
                         // className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
                         // className="grid grid-cols-1 gap-4 p-4 border-2 border-gray-300 relative"
