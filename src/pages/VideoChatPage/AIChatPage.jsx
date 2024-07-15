@@ -138,7 +138,7 @@ const AIChatPage = () => {
     const speak = (text) => {
         if ('speechSynthesis' in window) {
             const speech = new SpeechSynthesisUtterance(text);
-            speech.lang = 'ko-KR'; // 한국어 설정 (필요에 따라 변경)
+            speech.lang = 'ko-KR'; // 한국어 설정
             speechSynthesisRef.current.speak(speech);
         } else {
             console.error('TTS를 지원하지 않는 브라우저입니다.');

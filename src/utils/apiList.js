@@ -64,23 +64,28 @@ const API_LIST = {
     GET_TOKEN: {
         method: 'POST',
         path: `/api/openvidu/token`,
-        desc: 'OpenVidu 토큰 발급'
+        desc: 'OpenVidu 토큰 발급',
     },
     GET_SESSION_DATA: {
         method: GET,
         path: `/api/user/session-data`,
-        desc: '세션 데이터 조회'
+        desc: '세션 데이터 조회',
     },
     GET_SESSION_TIMER: {
         method: GET,
         path: `/api/openvidu/session/timer`,
-        desc: '세션 남은시간 조회'
+        desc: '세션 남은시간 조회',
     },
     GET_CALL_USER_INFO: {
         method: POST,
         path: `/api/user/call-user-info`,
-        desc: '통화 유저 정보 조회'
-    }
+        desc: '통화 유저 정보 조회',
+    },
+    END_USER_CONVERSATION: {
+        method: POST,
+        path: `/api/audio/clear-user-conversation`,
+        desc: 'AI와 사용자 대화 기록 삭제',
+    },
 };
 
 // OPEN API 목록

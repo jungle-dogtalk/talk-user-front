@@ -12,6 +12,7 @@ import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import VideoChatRoute from './components/VideoChatRoute';
+import AIChatPage from './pages/VideoChatPage/AIChatPage';
 
 function AppRouter() {
     return (
@@ -47,6 +48,10 @@ function AppRouter() {
                 element={<ProtectedRoute component={ChooseAvatarPage} />}
             />
             <Route path="*" element={<NotFoundPage />} />
+            <Route
+                path="/aichat"
+                element={<ProtectedRoute component={AIChatPage} />}
+            />
         </Routes>
     );
 }
