@@ -270,20 +270,29 @@ const VideoChatPage = () => {
 
     const updatePublisherWithNewPitch = (pitchValue) => {
         if (publisher && session) {
-            // 기존 퍼블리셔 스트림 중지 및 새 피치 값으로 다시 퍼블리시
-            session
-                .unpublish(publisher)
-                .then(() => {
-                    startStreaming(
-                        session,
-                        OV,
-                        publisher.stream.getMediaStream(),
-                        pitchValue
-                    );
-                })
-                .catch((error) => {
-                    console.error('Error unpublishing:', error);
-                });
+            // 기존 퍼블리셔 스트림 중지 및 버튼에 맞는 피치 값으로 새롭게 퍼블리시
+            if (publisher.stream) {
+                session
+                    .unpublish(publisher)
+                    .then(() => {
+                        startStreaming(
+                            session,
+                            OV,
+                            publisher.stream.getMediaStream(),
+                            pitchValue
+                        );
+                    })
+                    .catch((error) => {
+                        console.error('Error unpublishing:', error);
+                    });
+            } else {
+                startStreaming(
+                    session,
+                    OV,
+                    publisher.stream.getMediaStream(),
+                    pitchValue
+                );
+            }
         }
     };
 
