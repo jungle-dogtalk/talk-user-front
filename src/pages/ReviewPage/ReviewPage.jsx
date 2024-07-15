@@ -5,6 +5,9 @@ import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import videoPlaceholder from '../../assets/people.png'; // 동영상 공간을 위한 이미지
 import Declaration from '../../assets/declaration.jpg'; // 동영상 공간을 위한 이미지
 
+import crownIcon from '../../assets/crown.png'; // 왕관 아이콘 이미지
+import celebrationEffect from '../../assets/celebration.gif'; // 축하 이펙트 이미지
+
 import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 
@@ -20,6 +23,7 @@ const ReviewPage = () => {
     const [sessionId, setSessionId] = useState('');
     const [sessionData, setSessionData] = useState(null); // 세션 데이터를 저장
     const [callUserInfo, setCallUserInfo] = useState([]); // 통화 유저 정보 저장
+    const [topTalker, setTopTalker] = useState(null); // 오늘의 수다왕
 
     useEffect(() => {
         const fromVideoChat = sessionStorage.getItem('fromVideoChat');
@@ -29,47 +33,70 @@ const ReviewPage = () => {
             return;
         }
 
-        // sessionStorage.removeItem('fromVideoChat'); // 초기화
-
-        // sessionStorage에서 세션 ID를 가져옴
+        // 세션 ID 가져오기
         const savedSessionId = sessionStorage.getItem('sessionId');
         if (savedSessionId) {
             setSessionId(savedSessionId);
-            // sessionData 가져오기
-            const fetchSessionData = async () => {
-                try {
-                    const response = await apiCall(API_LIST.GET_SESSION_DATA, {
-                        sessionId: savedSessionId,
-                    });
-                    const filteredSessionData = response.data.filter(
-                        (user) => user.userId !== userInfo.username
-                    );
-                    setSessionData(filteredSessionData); // 필터링한 데이터를 상태에 저장
-
-                    // 통화 유저 정보 가져오기
-                    const usernames = response.data.map((user) => user.userId);
-                    const callUserInfoResponse = await apiCall(
-                        API_LIST.GET_CALL_USER_INFO,
-                        {
-                            usernames,
-                        }
-                    );
-                    setCallUserInfo(callUserInfoResponse.data);
-                    setRatings(new Array(response.data.length).fill(0)); // 리뷰 초기화
-                } catch (error) {
-                    console.error('Error fetching session data:', error);
-                }
-            };
-            fetchSessionData();
+            fetchSessionData(savedSessionId); // 세션 데이터 가져오기
         }
     }, [navigate, userInfo.username]);
 
+    // 세션 데이터를 가져오는 함수
+    const fetchSessionData = async (sessionId) => {
+        try {
+            const response = await apiCall(API_LIST.GET_SESSION_DATA, {
+                sessionId,
+            });
+            if (response.data && response.data.length > 0) {
+                console.log('fetchSessionData - response.data:', response.data);
+
+                // 사용자 본인을 제외한 데이터 필터링
+                const filteredSessionData = response.data.filter(
+                    (user) => user.userId !== userInfo.username
+                );
+                setSessionData(filteredSessionData); // 필터링한 데이터를 상태에 저장
+
+                // 통화 유저 정보 가져오기
+                const usernames = filteredSessionData.map(
+                    (user) => user.userId
+                );
+                const callUserInfoResponse = await apiCall(
+                    API_LIST.GET_CALL_USER_INFO,
+                    { usernames }
+                );
+
+                setCallUserInfo(callUserInfoResponse.data);
+                setRatings(new Array(filteredSessionData.length).fill(0)); // 리뷰 초기화
+
+                // 발화량이 가장 많은 사용자 찾기
+                const allUsers = [
+                    ...callUserInfoResponse.data,
+                    {
+                        userId: userInfo.username,
+                        nickname: userInfo.nickname,
+                        utterance: userInfo.utterance,
+                    },
+                ];
+                const topTalker = allUsers.reduce((prev, current) =>
+                    prev.utterance > current.utterance ? prev : current
+                );
+                setTopTalker(topTalker);
+            } else {
+                console.error('No session data found');
+            }
+        } catch (error) {
+            console.error('Error fetching session data:', error);
+        }
+    };
+
+    // 사용자 리뷰 점수를 변경하는 함수
     const handleRatingChange = (index, rating) => {
         const newRatings = [...ratings];
         newRatings[index] = rating;
         setRatings(newRatings);
     };
 
+    // 리뷰 제출하는 함수
     const handleSubmitReview = async () => {
         try {
             await apiCall(API_LIST.SUBMIT_REVIEW, {
@@ -103,12 +130,14 @@ const ReviewPage = () => {
         setReportingUser(null);
     };
 
+    // 프로필 이미지 가져오는 함수
     const getProfileImage = (index) => {
         return callUserInfo[index]
             ? callUserInfo[index].profileImage
             : videoPlaceholder;
     };
 
+    // 발화량을 가져오는 함수
     const getUtterance = (index) => {
         return callUserInfo[index]
             ? callUserInfo[index].utterance
@@ -128,13 +157,34 @@ const ReviewPage = () => {
                     />
                 </div>
             </header>
-            <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-10 w-full max-w-md sm:max-w-4xl">
+            <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-4 w-full max-w-md sm:max-w-4xl">
                 <h2 className="text-lg sm:text-2xl font-bold text-center mb-4">
                     통화 시간이 종료되었습니다.
                 </h2>
                 <p className="text-center mb-4 sm:mb-6">
                     즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
                 </p>
+                {topTalker && (
+                    <div className="text-center mb-4 p-2 border border-yellow-400 bg-yellow-50 rounded-lg relative">
+                        <h2 className="text-xl sm:text-2xl font-bold text-yellow-600">
+                            오늘의 수다왕
+                        </h2>
+                        <img
+                            src={crownIcon}
+                            alt="왕관"
+                            className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mt-1"
+                        />
+                        <h3 className="text-lg sm:text-xl font-semibold mt-1">
+                            {topTalker.nickname}님
+                        </h3>
+                        <img
+                            src={celebrationEffect}
+                            alt="축하 이펙트"
+                            className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mt-2"
+                        />
+                    </div>
+                )}
+
                 <div className="space-y-4 sm:space-y-6">
                     {sessionData && sessionData.length > 0 ? (
                         sessionData.map((user, index) => (
