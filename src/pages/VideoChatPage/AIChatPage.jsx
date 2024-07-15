@@ -19,6 +19,7 @@ const AIChatPage = () => {
     const recognitionRef = useRef(null);
     const [remainingTime, setRemainingTime] = useState(300); // 300초 = 5분
     const [aiResponse, setAiResponse] = useState('');
+    const [recommendedTopics, setRecommendedTopics] = useState([]); // 주제 추천 결과 저장
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     const navigate = useNavigate();
     const socketRef = useRef(null);
@@ -67,6 +68,28 @@ const AIChatPage = () => {
 
         socketRef.current.on('AI_RESPONSE_ERROR', (error) => {
             console.error('AI response error:', error);
+        });
+
+        // 주제 추천 결과 이벤트 수신
+        socketRef.current.on('topicRecommendations', (data) => {
+            console.log('Received topic recommendations:', data);
+            setRecommendedTopics((prevTopics) => {
+                if (data === '\n') {
+                    return [...prevTopics, ''];
+                } else {
+                    const updatedTopics = [...prevTopics];
+                    if (updatedTopics.length === 0) {
+                        updatedTopics.push(data);
+                    } else {
+                        updatedTopics[updatedTopics.length - 1] += data;
+                    }
+                    return updatedTopics;
+                }
+            });
+        });
+
+        socketRef.current.on('endOfStream', () => {
+            console.log('Streaming ended');
         });
 
         return () => {
@@ -157,6 +180,15 @@ const AIChatPage = () => {
         }
     };
 
+    // 주제 추천 요청 함수
+    const requestTopicRecommendations = () => {
+        setRecommendedTopics([]); // 기존 추천 주제를 초기화
+        console.log(`${userInfo.username}에서 주제추천 요청`);
+        socketRef.current.emit('requestTopicRecommendationsForAI', {
+            username: userInfo.username,
+        });
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
@@ -203,11 +235,21 @@ const AIChatPage = () => {
                     style={{ height: '200px' }}
                 >
                     <button
-                        onClick={() => console.log('주제 추천 요청')}
+                        onClick={requestTopicRecommendations}
                         className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
                     >
                         주제 추천 Btn
                     </button>
+                    {recommendedTopics.length > 0 && (
+                        <div className="recommended-topics mt-4">
+                            <h3 className="text-lg font-semibold">추천 주제</h3>
+                            <ul className="list-disc list-inside">
+                                {recommendedTopics.map((topic, index) => (
+                                    <li key={index}>{topic}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
