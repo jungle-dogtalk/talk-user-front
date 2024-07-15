@@ -38,13 +38,18 @@ const MainPage = () => {
             <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
                 <div className="flex items-center space-x-4">
-                    <span className="text-white">친구목록</span>
-                    <span className="text-white">|</span>
-                    <a href="/profile" className="text-white">마이 페이지</a>
-                    <span className="text-white">|</span>
-                    <span className="text-white cursor-pointer" onClick={handleLogout}>
+                    <button
+                        className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                        onClick={() => navigate('/profile')}
+                    >
+                        마이 페이지
+                    </button>
+                    <button
+                        className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                        onClick={handleLogout}
+                    >
                         로그아웃
-                    </span>
+                    </button>
                 </div>
             </header>
             <div className="flex flex-col items-center justify-center flex-1 w-full">
@@ -54,46 +59,71 @@ const MainPage = () => {
                         alt="프로필 사진"
                         className="w-48 h-48 rounded-full mb-4"
                     />
-                    <h2 className="text-2xl font-bold mb-4">이름: {userInfo?.name}</h2>
+                    <h2 className="text-2xl font-bold mb-4">
+                        이름: {userInfo?.name}
+                    </h2>
                     <div className="w-2/3 mb-8 ">
                         <div className="flex items-center justify-center mb-4">
-                            <span className="text-gray-700 font-bold text-sm mr-2">발화지수</span>
+                            <span className="text-gray-700 font-bold text-sm mr-2">
+                                발화지수
+                            </span>
                             <div className="w-1/2 bg-red-200 h-6 rounded-full overflow-hidden">
-                                <div className="bg-red-600 h-full rounded-full" style={{ width: '74%' }}></div>
+                                <div
+                                    className="bg-red-600 h-full rounded-full"
+                                    style={{ width: '74%' }}
+                                ></div>
                             </div>
-                            <span className="ml-2 text-gray-700 text-sm">74%</span>
+                            <span className="ml-2 text-gray-700 text-sm">
+                                74%
+                            </span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <span className="text-gray-700 font-bold text-sm mr-2">매너지수</span>
+                            <span className="text-gray-700 font-bold text-sm mr-2">
+                                매너지수
+                            </span>
                             <div className="w-1/2 bg-blue-200 h-6 rounded-full overflow-hidden">
-                                <div className="bg-blue-600 h-full rounded-full" style={{ width: '88%' }}></div>
+                                <div
+                                    className="bg-blue-600 h-full rounded-full"
+                                    style={{ width: '88%' }}
+                                ></div>
                             </div>
-                            <span className="ml-2 text-gray-700 text-sm">88%</span>
+                            <span className="ml-2 text-gray-700 text-sm">
+                                88%
+                            </span>
                         </div>
                     </div>
                 </div>
                 <div className="flex space-x-8 w-full justify-center mb-4">
-                    <button className="flex flex-col items-center justify-center bg-green-100 p-6 rounded-2xl shadow-lg hover:bg-green-200 w-50 h-50 mb-2" 
-                    onClick={() => navigate('/room')}>
-                        <img src={roomIcon} alt="방에서 통화하기" className="w-20 h-20 mb-4" />
-                        <span className="text-lg font-semibold">둘이서 통화하기</span>
+                    <button
+                        className="flex flex-col items-center justify-center bg-green-100 p-6 rounded-2xl shadow-md hover:bg-green-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 mb-2"
+                        onClick={() => navigate('/room')}
+                    >
+                        <img
+                            src={roomIcon}
+                            alt="방에서 통화하기"
+                            className="w-20 h-20 mb-4"
+                        />
+                        <span className="text-lg font-semibold">
+                            둘이서 통화하기
+                        </span>
                     </button>
-                    <button className="flex flex-col items-center justify-center bg-pink-100 p-6 rounded-2xl shadow-lg hover:bg-pink-200 w-50 h-50 mb-2"
-                    onClick={() => navigate('/choose-avatar')}>
-                        <img src={groupIcon} alt="넷이서 통화하기" className="w-20 h-20 mb-4" />
-                        <span className="text-lg font-semibold">넷이서 통화하기</span>
+                    <button
+                        className="flex flex-col items-center justify-center bg-pink-100 p-6 rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 mb-2"
+                        onClick={() => navigate('/choose-avatar')}
+                    >
+                        <img
+                            src={groupIcon}
+                            alt="넷이서 통화하기"
+                            className="w-20 h-20 mb-4"
+                        />
+                        <span className="text-lg font-semibold">
+                            넷이서 통화하기
+                        </span>
                     </button>
                 </div>
             </div>
         </div>
     );
-    
-    
-    
-    
-    
-    
-    
 };
 
 export default MainPage;
