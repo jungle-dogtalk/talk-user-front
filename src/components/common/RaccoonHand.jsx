@@ -126,20 +126,26 @@ function RaccoonHand() {
     return (
         <div
             className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            style={{ position: 'relative', width: '500px', height:30 }}
         >
             <video
                 autoPlay
                 id="video"
-                style={{ width: 640, height: 480 }}
+                style={{
+                    position: 'absolute',
+                    top: -9999,
+                    left: -9999,
+                    pointerEvents: 'none',
+                    width: 640, height: 480
+                }}
             ></video>
-            
+
             <Canvas
                 id="avatar_canvas"
                 style={{
                     position: 'absolute',
-                    top: 0,
-                    left: 0,
+                    top: -9999,
+                    left: -9999,
                     pointerEvents: 'none',
                     width: 640,
                     height: 480,
@@ -216,7 +222,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                        blendshape.categoryName
+                    blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =

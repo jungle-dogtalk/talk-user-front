@@ -557,7 +557,7 @@ const VideoChatPage = () => {
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4">
                     <RaccoonHand></RaccoonHand>
-                    <div className="relative flex-1 p-4 border-2 border-gray-300" style={{ flex: '1 1 auto' }}>
+                    <div className="relative flex-1 p-4 border-2 border-gray-300" style={{ flex: '1 1 auto'}}>
                         {publisher && (
                             <div className="absolute inset-0">
                                 <OpenViduVideo streamManager={publisher} />
