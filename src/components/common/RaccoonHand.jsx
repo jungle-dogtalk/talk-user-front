@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Color, Euler, Matrix4, Vector3 } from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
 import {
@@ -19,7 +19,19 @@ let faceLandmarks = [];
 let transformationMatrix = null;
 let handLandmarks = [];
 
+const models = [
+    '/blue_raccoon.glb',
+    '/jungle_raccoon_head.glb',
+    '/raccoon_head.glb',
+    '/warrior_raccoon_head.glb',
+    '/yellow_raccoon_head.glb',
+    '/yupyup_raccoon_head.glb',
+];
+
 function RaccoonHand() {
+    const [modelPath, setModelPath] = useState(models[0]);
+    const [modelIndex, setModelIndex] = useState(0);
+
     const setup = async () => {
         const vision = await FilesetResolver.forVisionTasks(
             'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
@@ -64,8 +76,6 @@ function RaccoonHand() {
             const faceResult = faceLandmarker.detectForVideo(video, nowInMs);
             const handResult = handLandmarker.detectForVideo(video, nowInMs);
 
-            // console.log(handResult);
-
             // Face result processing
             if (
                 faceResult.facialTransformationMatrixes &&
@@ -99,6 +109,12 @@ function RaccoonHand() {
         setup();
     }, []);
 
+    const changeModel = () => {
+        const nextIndex = (modelIndex + 1) % models.length;
+        setModelIndex(nextIndex);
+        setModelPath(models[nextIndex]);
+    };
+
     return (
         <div
             className="App"
@@ -109,6 +125,7 @@ function RaccoonHand() {
                 id="video"
                 style={{ width: 640, height: 480 }}
             ></video>
+            
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -136,15 +153,18 @@ function RaccoonHand() {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                <Raccoon />
+                <Raccoon modelPath={modelPath} />
                 <Hand />
             </Canvas>
+            <button onClick={changeModel} style={{ position: 'absolute', top: 10, left: 10 }}>
+                Change Raccoon Model
+            </button>
         </div>
     );
 }
 
-function Raccoon() {
-    const { scene, nodes } = useGLTF('/raccoon_head.glb');
+function Raccoon({ modelPath }) {
+    const { scene, nodes } = useGLTF(modelPath);
     const headMeshRef = useRef();
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
@@ -212,6 +232,7 @@ function Raccoon() {
 
     return <primitive object={scene} />;
 }
+
 function Hand() {
     const handRef = useRef();
 
@@ -248,7 +269,7 @@ function Hand() {
                             args={[0.05, 16, 16]}
                         >
                             <meshBasicMaterial
-                                color={handIndex === 0 ? 'white' : 'white'}
+                                color={handIndex === 0 ? 'red' : 'red'}
                             />
                         </Sphere>
                     ))
