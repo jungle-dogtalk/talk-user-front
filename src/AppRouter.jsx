@@ -9,24 +9,17 @@ import ReportPage from './pages/ReportPage/ReportPage';
 import ReviewPage from './pages/ReviewPage/ReviewPage';
 import MatchingPage from './pages/MatchingPage/MatchingPage';
 import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
-import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import VideoChatRoute from './components/VideoChatRoute';
+import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
+
 
 function AppRouter() {
     return (
         <Routes>
             <Route path="/" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
-            <Route path="/videochat" element={<VideoChatPage />} />
-            <Route path="/main" element={<MainPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/report" element={<ReportPage />} />
-            <Route path="/review" element={<ReviewPage />} />
-            <Route path="/matching" element={<MatchingPage />} />
-            <Route path="/choose-avatar" element={<ChooseAvatarPage />} />
-            <Route path="/choose-raccoon" element={<ChooseRaccoonPage />} />
             <Route
                 path="/videochat"
                 element={<ProtectedRoute component={VideoChatPage} />}
@@ -55,9 +48,14 @@ function AppRouter() {
                 path="/choose-avatar"
                 element={<ProtectedRoute component={ChooseAvatarPage} />}
             />
+            <Route
+                path="/choose-raccoon"
+                element={<ProtectedRoute component={ChooseRaccoonPage} />}
+            />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }
 
 export default AppRouter;
+
