@@ -139,38 +139,47 @@ const SignUpPage = () => {
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
             <header className="w-full bg-[#89644C] p-2 flex items-center justify-between">
-                <img src={logo} alt="명톡 로고" className="w-16 h-16" />
+                <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-12 h-12 sm:w-16 sm:h-16"
+                />
             </header>
-            <div className="flex flex-col items-center py-8 flex-1 w-full">
-                <div className="relative mb-8">
-                    <img
-                        src={profileImage}
-                        alt="프로필 사진"
-                        className="w-40 h-40 rounded-full border-2 border-gray-300"
-                    />
-                    <label
-                        htmlFor="file-input"
-                        className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer"
-                    >
+            <div className="flex flex-col items-center py-4 sm:py-8 flex-1 w-full px-4 sm:px-0">
+                <div className="relative mb-6 sm:mb-8 w-full flex justify-center">
+                    <div className="relative ml-4 sm:ml-8 ">
                         <img
-                            src={editIcon}
-                            alt="수정 아이콘"
-                            className="w-6 h-6"
+                            src={profileImage}
+                            alt="프로필 사진"
+                            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-2 border-gray-300"
                         />
-                    </label>
-                    <input
-                        type="file"
-                        id="file-input"
-                        className="hidden"
-                        onChange={handleFileChange}
-                    />
+                        <label
+                            htmlFor="file-input"
+                            className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer"
+                        >
+                            <img
+                                src={editIcon}
+                                alt="수정 아이콘"
+                                className="w-4 h-4 sm:w-6 sm:h-6"
+                            />
+                        </label>
+                        <input
+                            type="file"
+                            id="file-input"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
+                    </div>
                 </div>
                 <form
                     onSubmit={handleSignUp}
-                    className="w-full max-w-xl space-y-6"
+                    className="w-full max-w-xl space-y-4 sm:space-y-6"
                 >
-                    <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="username" className="w-24 text-right">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="username"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
                             아이디
                         </label>
                         <input
@@ -180,18 +189,21 @@ const SignUpPage = () => {
                             onChange={(e) => setUsername(e.target.value)}
                             placeholder="아이디를 입력하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                         <button
                             type="button"
                             onClick={handleUsernameCheck}
-                            className="bg-gray-200 px-4 py-2 rounded-md"
+                            className="bg-gray-200 px-2 py-1 sm:px-4 sm:py-2 rounded-r-md text-xs sm:text-sm whitespace-nowrap"
                         >
                             중복검사
                         </button>
                     </div>
-                    <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="password" className="w-24 text-right">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="password"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
                             비밀번호
                         </label>
                         <input
@@ -201,13 +213,13 @@ const SignUpPage = () => {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="비밀번호를 입력하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
-                    <div className="flex items-center justify-center space-x-4 ml-16">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
                         <label
                             htmlFor="confirm-password"
-                            className="w-22 text-right"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
                         >
                             비밀번호 확인
                         </label>
@@ -218,11 +230,14 @@ const SignUpPage = () => {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="비밀번호를 확인하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
-                    <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="name" className="w-24 text-right">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="name"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
                             이름
                         </label>
                         <input
@@ -232,11 +247,14 @@ const SignUpPage = () => {
                             onChange={(e) => setName(e.target.value)}
                             placeholder="이름을 입력하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
-                    <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="nickname" className="w-24 text-right">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="nickname"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
                             닉네임
                         </label>
                         <input
@@ -246,11 +264,14 @@ const SignUpPage = () => {
                             onChange={(e) => setNickname(e.target.value)}
                             placeholder="닉네임을 입력하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
-                    <div className="flex items-center justify-center space-x-4 ml-16">
-                        <label htmlFor="email" className="w-24 text-right">
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="email"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
                             이메일
                         </label>
                         <input
@@ -260,13 +281,15 @@ const SignUpPage = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="이메일을 입력하세요"
                             required
-                            className="flex-1 px-4 py-2 border rounded-md"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
-                    <hr className="w-full my-8 border-gray-400" />
-                    <div className="text-center mt-8 w-full max-w-4xl mx-auto">
-                        <h2 className="text-xl font-bold mb-4">관심사</h2>
-                        <div className="grid grid-cols-6 gap-4">
+                    <hr className="w-full my-6 sm:my-8 border-gray-400" />
+                    <div className="text-center mt-6 sm:mt-8 w-full max-w-4xl mx-auto">
+                        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+                            관심사
+                        </h2>
+                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -283,13 +306,13 @@ const SignUpPage = () => {
                                 { name: '맛집 투어', icon: '🍔' },
                                 { name: '헬스', icon: '💪🏻' },
                                 { name: '산책', icon: '🌳' },
-                                { name: '수영', icon: '🏊', colSpan: 2 },
-                                { name: '사진 찍기', icon: '📸', colSpan: 2 },
-                                { name: '주식', icon: '📈', colSpan: 2 },
+                                { name: '수영', icon: '🏊' },
+                                { name: '사진 찍기', icon: '📸' },
+                                { name: '주식', icon: '📈' },
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-2 w-20 rounded-xl border cursor-pointer ${
+                                    className={`p-1 sm:p-2 w-full rounded-xl border cursor-pointer ${
                                         interests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -298,10 +321,10 @@ const SignUpPage = () => {
                                         handleInterestChange(interest.name)
                                     }
                                 >
-                                    <span className="block text-center text-2xl">
+                                    <span className="block text-center text-lg sm:text-2xl">
                                         {interest.icon}
                                     </span>
-                                    <span className="block text-center text-sm">
+                                    <span className="block text-center text-xs sm:text-sm">
                                         {interest.name}
                                     </span>
                                 </div>
@@ -309,19 +332,21 @@ const SignUpPage = () => {
                         </div>
                     </div>
                     {error && (
-                        <p className="text-red-500 text-center">{error}</p>
+                        <p className="text-red-500 text-center text-sm sm:text-base">
+                            {error}
+                        </p>
                     )}
-                    <div className="flex w-full justify-center mt-8 ">
-                        <button 
+                    <div className="flex w-full justify-center mt-6 sm:mt-8 space-x-4">
+                        <button
                             type="button"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            className="px-4 py-1 sm:px-6 sm:py-2 bg-[#89644C] text-white rounded-lg text-sm sm:text-base"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                            className="px-4 py-1 sm:px-6 sm:py-2 bg-[#89644C] text-white rounded-lg text-sm sm:text-base"
                         >
                             회원가입
                         </button>
