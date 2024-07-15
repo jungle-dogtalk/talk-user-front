@@ -9,7 +9,7 @@ import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 
 const ReviewPage = () => {
-    const navigate = useNavigate();  // useNavigate 훅 추가
+    const navigate = useNavigate(); // useNavigate 훅 추가
     const [ratings, setRatings] = useState([0, 0, 0]); // 세 명의 사용자 리뷰를 관리
     const [reportingUser, setReportingUser] = useState(null); // 신고할 사용자
 
@@ -86,7 +86,6 @@ const ReviewPage = () => {
             alert('리뷰 제출 중 오류가 발생했습니다.');
         }
     };
-    
 
     const handleReport = (username) => {
         // 신고할 사용자 설정
@@ -125,31 +124,31 @@ const ReviewPage = () => {
                     <img
                         src={logo}
                         alt="명톡 로고"
-                        className="w-24 h-24 ml-2"
-                    />{' '}
+                        className="w-16 h-16 sm:w-24 sm:h-24 ml-2"
+                    />
                 </div>
             </header>
-            <div className="bg-gray-100  rounded-lg p-8 mt-10 w-full max-w-4xl">
-                <h2 className="text-2xl font-bold text-center mb-4">
+            <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-10 w-full max-w-md sm:max-w-4xl">
+                <h2 className="text-lg sm:text-2xl font-bold text-center mb-4">
                     통화 시간이 종료되었습니다.
                 </h2>
-                <p className="text-center mb-6">
+                <p className="text-center mb-4 sm:mb-6">
                     즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
                 </p>
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                     {sessionData && sessionData.length > 0 ? (
                         sessionData.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-50 p-4 rounded-lg shadow-md flex items-center space-x-10"
+                                className="bg-gray-50 p-2 sm:p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
                             >
                                 <img
                                     src={getProfileImage(index)}
                                     alt="프로필"
-                                    className="w-16 h-16 rounded-full"
+                                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
                                 />
-                                <div className="flex-1 mr-6">
-                                    <h3 className="text-xl font-semibold">
+                                <div className="flex-1">
+                                    <h3 className="text-base sm:text-xl font-semibold">
                                         {user.nickname}{' '}
                                         <span className="text-sm text-gray-500">
                                             발화량 {getUtterance(index)}
@@ -159,7 +158,7 @@ const ReviewPage = () => {
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`cursor-pointer text-2xl ${
+                                                className={`cursor-pointer text-xl sm:text-2xl ${
                                                     ratings[index] >= star
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
@@ -177,14 +176,14 @@ const ReviewPage = () => {
                                     </div>
                                 </div>
                                 <button
-                                    className="bg-red-500 text-white px-4 py-2 rounded-full flex items-center space-x-2 ml-4"
+                                    className="bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center space-x-2"
                                     onClick={() => handleReport(user.nickname)}
                                 >
                                     <span>신고하기</span>
                                     <img
                                         src={Declaration}
                                         alt="이모티콘"
-                                        className="w-6 h-6"
+                                        className="w-4 h-4 sm:w-6 sm:h-6"
                                     />
                                 </button>
                             </div>
@@ -193,15 +192,15 @@ const ReviewPage = () => {
                         <p className="text-center">Now Loading..</p>
                     )}
                 </div>
-                <div className="flex justify-center mt-12 space-x-4">
+                <div className="flex justify-center mt-8 sm:mt-12 space-x-4">
                     <button
-                        className="bg-gray-300 text-black px-6 py-3 rounded-full"
+                        className="bg-gray-300 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-full"
                         onClick={() => (window.location.href = '/main')}
                     >
                         SKIP
                     </button>
                     <button
-                        className="bg-green-500 text-white px-6 py-3 rounded-full"
+                        className="bg-green-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full"
                         onClick={handleSubmitReview}
                     >
                         완료
@@ -211,23 +210,23 @@ const ReviewPage = () => {
 
             {reportingUser && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
                         <header className="bg-[#a16e47] text-white p-4 rounded-t-lg flex justify-between items-center">
                             <img
                                 src={logo}
                                 alt="명톡 로고"
-                                className="w-12 h-12"
+                                className="w-8 h-8 sm:w-12 sm:h-12"
                             />
                         </header>
                         <div className="p-6">
-                            <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center">
-                                <h3 className="text-xl font-bold text-center mb-4">
+                            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex flex-col items-center">
+                                <h3 className="text-lg sm:text-xl font-bold text-center mb-4">
                                     {reportingUser}님을 신고합니다
                                 </h3>
                                 <p className="text-gray-700 mb-4 text-center">
                                     신고 사유를 작성해주세요
                                 </p>
-                                <div className="space-y-4 w-full">
+                                <div className="space-y-2 sm:space-y-4 w-full">
                                     {[
                                         '말 없이 대화 종료',
                                         '욕설, 부적절한 발언',
@@ -272,7 +271,7 @@ const ReviewPage = () => {
                                     )}
                                 </div>
                                 <button
-                                    className="bg-red-500 text-white px-4 py-2 rounded-full mt-6"
+                                    className="bg-red-500 text-white px-4 py-2 rounded-full mt-4 sm:mt-6"
                                     onClick={submitReport}
                                 >
                                     신고하기
