@@ -10,7 +10,7 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
-import AvatarApp from '../../components/common/AvatarApp';
+import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 
 const VideoChatPage = () => {
@@ -205,46 +205,45 @@ const VideoChatPage = () => {
 
     const startStreaming = (session, OV, mediaStream) => {
         setTimeout(() => {
-            var videoTrack = mediaStream.getVideoTracks()[0];
-            var video = document.createElement('video');
-            video.srcObject = new MediaStream([videoTrack]);
-
-            // var canvas = document.createElement('canvas');
-
-            var canvas = document
+            const canvasElement = document
                 .getElementById('avatar_canvas')
-                .querySelector('div')
                 .querySelector('canvas');
 
-            console.log('캔버스 -> ', canvas);
-            var ctx = canvas.getContext('2d');
-            console.log('ctx -> ', ctx);
+            const outputCanvas = document.createElement('canvas');
+            const outputCtx = outputCanvas.getContext('2d');
+            outputCanvas.width = canvasElement.width;
+            outputCanvas.height = canvasElement.height;
 
-            // var ctx = canvas.getContext('3d');
-            // console.log('ctx -> ', ctx);
-            // ctx.filter = 'grayscale(100%)';
+            const render = () => {
+                // Set a green background
+                outputCtx.fillStyle = 'green';
+                outputCtx.fillRect(
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+                outputCtx.drawImage(
+                    canvasElement,
+                    0,
+                    0,
+                    outputCanvas.width,
+                    outputCanvas.height
+                );
+                requestAnimationFrame(render);
+            };
 
-            // video.addEventListener('play', () => {
-            //     var loop = () => {
-            //         if (!video.paused && !video.ended) {
-            //             ctx.drawImage(video, 0, 0, 300, 170);
-            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-            //         }
-            //     };
-            //     loop();
-            // });
-            video.play();
-            var videoTrack = canvas
-                .captureStream(FRAME_RATE)
-                .getVideoTracks()[0];
-            var publisher = OV.initPublisher(undefined, {
+            render();
+
+            const canvasStream = outputCanvas.captureStream(FRAME_RATE);
+            const publisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
-                videoSource: videoTrack,
+                videoSource: canvasStream.getVideoTracks()[0],
             });
 
             setPublisher(publisher);
             session.publish(publisher);
-            // 음성인식 시작
+
             startSpeechRecognition(
                 publisher.stream.getMediaStream(),
                 userInfo.username
@@ -253,7 +252,73 @@ const VideoChatPage = () => {
         }, 5000);
     };
 
-    // 세션 참여
+    // 구독자  크로마키 처리 함수
+    const handleSubscriberChromaKey = (stream) => {
+        const videoElement = document.createElement('video');
+        videoElement.style.display = 'none'; // Hide the video element
+        document.body.appendChild(videoElement);
+
+        const canvasElement = document.createElement('canvas');
+        const ctx = canvasElement.getContext('2d');
+        document.body.appendChild(canvasElement);
+
+        const chromaKey = (imageData) => {
+            const data = imageData.data;
+            const threshold = 50; // 이 값을 조절하여 더 정밀한 크로마키 처리 가능
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                if (
+                    g > 100 &&
+                    r < 100 &&
+                    b < 100 &&
+                    g - r > threshold &&
+                    g - b > threshold
+                ) {
+                    data[i + 3] = 0; // 투명하게 설정
+                }
+            }
+            return imageData;
+        };
+
+        const render = () => {
+            ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+            ctx.drawImage(
+                videoElement,
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            const imageData = ctx.getImageData(
+                0,
+                0,
+                canvasElement.width,
+                canvasElement.height
+            );
+            ctx.putImageData(chromaKey(imageData), 0, 0);
+            requestAnimationFrame(render);
+        };
+
+        videoElement.onloadedmetadata = () => {
+            render();
+
+            //크로마키 처리된 스트림을 반환
+            const canvasStream = canvasElement.captureStream(FRAME_RATE);
+            const newPublisher = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: canvasStream.getVideoTracks()[0],
+            });
+
+            session.publish(newPublisher);
+        };
+
+        videoElement.srcObject = stream.getMediaStream();
+        videoElement.play();
+    };
+
+    //세션 참여
     const joinSession = useCallback(
         async (sid) => {
             const OV = new OpenVidu();
@@ -261,14 +326,15 @@ const VideoChatPage = () => {
             setSession(session);
 
             session.on('streamCreated', (event) => {
-                let subscriber = session.subscribe(event.stream, undefined);
+                const subscriber = session.subscribe(event.stream, undefined);
+                handleSubscriberChromaKey(event.stream);
                 setSubscribers((prevSubscribers) => [
                     ...prevSubscribers,
                     subscriber,
                 ]);
             });
 
-            // 세션 연결 종료 시 (타이머 초과에 의한 종료)
+            //세션 연결 종료 시 (타이머 초과에 의한 종료)
             session.on('sessionDisconnected', (event) => {
                 console.log('Session disconnected:', event);
                 leaveSession();
@@ -490,18 +556,19 @@ const VideoChatPage = () => {
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4">
-                    <AvatarApp></AvatarApp>
+                    {/* <AvatarApp></AvatarApp>
+                     */}
+                    <RaccoonHand></RaccoonHand>
                     <div
-                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        // className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        // className="grid grid-cols-1 gap-4 p-4 border-2 border-gray-300 relative"
+                        className="relative flex-1 p-4 border-2 border-gray-300"
                         style={{ flex: '1 1 auto' }}
                     >
                         {publisher && (
-                            <div className="relative border-2 border-gray-300 aspect-video">
-                                <OpenViduVideo
-                                    streamManager={publisher}
-                                    isMirrored={isMirrored}
-                                />
-                                <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
+                            <div className="absolute inset-0">
+                                <OpenViduVideo streamManager={publisher} />
+                                <div className="absolute top-0 left-0 bg-transparent bg-opacity-50 text-white p-2 rounded-md">
                                     {publisher.stream.connection.data}
                                 </div>
                                 <img
@@ -525,7 +592,8 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-2 border-gray-300 aspect-video"
+                                className="absolute inset-0"
+                                style={{ zIndex: index + 1 }}
                             >
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
