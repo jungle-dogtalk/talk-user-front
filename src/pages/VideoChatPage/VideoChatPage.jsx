@@ -556,15 +556,8 @@ const VideoChatPage = () => {
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4">
-                    {/* <AvatarApp></AvatarApp>
-                     */}
                     <RaccoonHand></RaccoonHand>
-                    <div
-                        // className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
-                        // className="grid grid-cols-1 gap-4 p-4 border-2 border-gray-300 relative"
-                        className="relative flex-1 p-4 border-2 border-gray-300"
-                        style={{ flex: '1 1 auto' }}
-                    >
+                    <div className="relative flex-1 p-4 border-2 border-gray-300" style={{ flex: '1 1 auto' }}>
                         {publisher && (
                             <div className="absolute inset-0">
                                 <OpenViduVideo streamManager={publisher} />
@@ -579,41 +572,26 @@ const VideoChatPage = () => {
                                 />
                                 {showSettings && (
                                     <div className="absolute top-10 right-2 w-38 bg-white shadow-lg rounded-lg p-2 z-50">
-                                        <SettingMenu
-                                            publisher={publisher}
-                                            onMirroredChange={
-                                                handleMirrorChange
-                                            }
-                                        />
+                                        <SettingMenu publisher={publisher} onMirroredChange={handleMirrorChange} />
                                     </div>
                                 )}
                             </div>
                         )}
                         {subscribers.map((subscriber, index) => (
-                            <div
-                                key={index}
-                                className="absolute inset-0"
-                                style={{ zIndex: index + 1 }}
-                            >
+                            <div key={index} className="absolute inset-0" style={{ zIndex: index + 1 }}>
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     {subscriber.stream.connection.data}
                                 </div>
                             </div>
                         ))}
-                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
-                            (_, index) => (
-                                <div
-                                    key={index}
-                                    className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
-                                >
-                                    <div className="text-gray-500">
-                                        화면이 나올 공간
-                                    </div>
-                                </div>
-                            )
+                        {subscribers.length === 0 && (
+                            <div className="relative border-2 border-gray-300 aspect-video flex items-center justify-center">
+                                <div className="text-gray-500">화면이 나올 공간</div>
+                            </div>
                         )}
                     </div>
+
                     <div
                         className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
                         style={{ height: '200px' }}
