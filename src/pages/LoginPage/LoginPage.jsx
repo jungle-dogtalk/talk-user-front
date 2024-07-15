@@ -33,9 +33,6 @@ const LoginPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
-            <header className="w-full bg-[#a16e47] p-6 flex items-center">
-                <img src={logo} alt="명톡 로고" className="w-28 h-28" />
-            </header>
             <div className="flex flex-col justify-center items-center flex-1 px-16">
                 <img src={logo} alt="명톡 로고" className="w-96 mb-16" />
                 <form onSubmit={handleLogin} className="space-y-8 w-full max-w-2xl flex flex-col items-center">
