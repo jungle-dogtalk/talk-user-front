@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 const SettingMenu = ({ onMirroredChange, publisher }) => {
-    const [devices, setDevices] = useState([]); // 미디어 장치 목록 상태 관리
+    const [devices, setDevices] = useState({
+        videoDevices: [],
+        audioInputDevices: [],
+        audioOutputDevices: [],
+    }); // 미디어 장치 목록 상태 관리
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
-    const [selectedAudioInputDevice, setSelectedAudioInputDevice] =
-        useState(''); // 선택된 오디오 장치
-    const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] =
-        useState(''); // 선택된 오디오 장치
+    const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState(''); // 선택된 오디오 장치
+    const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState(''); // 선택된 오디오 장치
 
     const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
     const [isVideoActive, setIsVideoActive] = useState(true);
@@ -98,69 +100,94 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
     }, []);
 
     return (
-        <div className="settings-menu">
-            <button onClick={toggleVideo}>
-                {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
-            </button>
-            <button onClick={toggleAudio}>
-                {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
-            </button>
-            <button onClick={toggleMirror}>
-                {isMirrored ? '반전 해제' : '반전 적용'}
-            </button>
-            <div>
-                <label>카메라 선택:</label>
-                <select
-                    onChange={handleVideoDeviceChange}
-                    value={selectedVideoDevice}
+        <div className="p-2 bg-white rounded-lg shadow-md space-y-2 overflow-y-auto" style={{ maxHeight: '200px', width: '100px' }}>
+            <h2 className="text-xs font-bold mb-2">설정</h2>
+            <div className="space-y-2">
+                <button
+                    className={`w-full py-1 px-2 rounded-md ${
+                        isVideoActive
+                            ? 'bg-red-500 text-white'
+                            : 'bg-green-500 text-white'
+                    }`}
+                    onClick={toggleVideo}
+                    style={{ fontSize: '12px' }}
                 >
-                    {devices.videoDevices &&
-                        devices.videoDevices.map((device) => (
-                            <option
-                                key={device.deviceId}
-                                value={device.deviceId}
-                            >
-                                {device.label}
-                            </option>
-                        ))}
-                </select>
-            </div>
-            <div>
-                <label>마이크 선택:</label>
-                <select
-                    onChange={handleAudioInputDeviceChange}
-                    value={selectedAudioInputDevice}
+                    {isVideoActive ? '비디오 끄기' : '비디오 켜기'}
+                </button>
+                <button
+                    className={`w-full py-1 px-2 rounded-md ${
+                        isAudioActive
+                            ? 'bg-red-500 text-white'
+                            : 'bg-green-500 text-white'
+                    }`}
+                    onClick={toggleAudio}
+                    style={{ fontSize: '12px' }}
                 >
-                    {devices.audioInputDevices &&
-                        devices.audioInputDevices.map((device) => (
-                            <option
-                                key={device.deviceId}
-                                value={device.deviceId}
-                            >
-                                {device.label}
-                            </option>
-                        ))}
-                </select>
-            </div>
-            <div>
-                <label>스피커 선택:</label>
-                <select
-                    onChange={handleAudioOutputDeviceChange}
-                    value={selectedAudioOutputDevice}
+                    {isAudioActive ? '오디오 끄기' : '오디오 켜기'}
+                </button>
+                <button
+                    className={`w-full py-1 px-2 rounded-md ${
+                        isMirrored
+                            ? 'bg-gray-500 text-white'
+                            : 'bg-blue-500 text-white'
+                    }`}
+                    onClick={toggleMirror}
+                    style={{ fontSize: '11px' }}
                 >
-                    {devices.audioOutputDevices &&
-                        devices.audioOutputDevices.map((device) => (
-                            <option
-                                key={device.deviceId}
-                                value={device.deviceId}
-                            >
-                                {device.label}
-                            </option>
-                        ))}
-                </select>
+                    {isMirrored ? '반전 해제' : '반전 적용'}
+                </button>
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">카메라 선택:</label>
+                    <select
+                        className="block w-full p-1 border rounded-md text-xs"
+                        onChange={handleVideoDeviceChange}
+                        value={selectedVideoDevice}
+                        style={{ maxWidth: '80px' }}
+                    >
+                        {devices.videoDevices &&
+                            devices.videoDevices.map((device) => (
+                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                    {device.label}
+                                </option>
+                            ))}
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">마이크 선택:</label>
+                    <select
+                        className="block w-full p-1 border rounded-md text-xs"
+                        onChange={handleAudioInputDeviceChange}
+                        value={selectedAudioInputDevice}
+                        style={{ maxWidth: '80px' }}
+                    >
+                        {devices.audioInputDevices &&
+                            devices.audioInputDevices.map((device) => (
+                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                    {device.label}
+                                </option>
+                            ))}
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-xs font-medium text-gray-700">스피커 선택:</label>
+                    <select
+                        className="block w-full p-1 border rounded-md text-xs"
+                        onChange={handleAudioOutputDeviceChange}
+                        value={selectedAudioOutputDevice}
+                        style={{ maxWidth: '80px' }}
+                    >
+                        {devices.audioOutputDevices &&
+                            devices.audioOutputDevices.map((device) => (
+                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                    {device.label}
+                                </option>
+                            ))}
+                    </select>
+                </div>
             </div>
         </div>
     );
+    
 };
 
 export default SettingMenu;

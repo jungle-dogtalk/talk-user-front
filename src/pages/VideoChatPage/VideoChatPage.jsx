@@ -37,7 +37,7 @@ const VideoChatPage = () => {
         return <div>Loading...</div>;
     }
 
-    const [remainingTime, setRemainingTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(300); // 디폴트 타이머 5분
 
     useEffect(() => {
         let timer;
@@ -53,6 +53,10 @@ const VideoChatPage = () => {
                 // fetchTimer 완료 후 setInterval 시작
                 timer = setInterval(() => {
                     setRemainingTime((prevTime) => {
+                        if (prevTime <= 0) {
+                            clearInterval(timer);
+                            return 0;
+                        }
                         return prevTime - 1;
                     });
                 }, 1000);
@@ -186,6 +190,10 @@ const VideoChatPage = () => {
             setSession(undefined);
             setSubscribers([]);
             setPublisher(undefined);
+
+            // 세션 ID를 sessionStorage에 저장
+            sessionStorage.setItem('sessionId', sessionId);
+            sessionStorage.setItem('fromVideoChat', 'true'); // 플래그 설정
 
             window.location.href = '/review';
         } catch (error) {
@@ -340,14 +348,14 @@ const VideoChatPage = () => {
                 );
             });
 
-            //발화 시작 감지
+            // 발화 시작 감지
             session.on('publisherStartSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
             });
 
-            //발화 종료 감지
+            // 발화 종료 감지
             session.on('publisherStopSpeaking', (event) => {
                 console.log(
                     'User ' + event.connection.connectionId + ' stop speaking'
@@ -363,7 +371,7 @@ const VideoChatPage = () => {
                 'sessionH',
             ];
             if (!allowedSessionIdList.includes(sessionId)) {
-                getToken(sid, userInfo._id).then((token) => {
+                getToken(sid, userInfo).then((token) => {
                     session
                         .connect(token)
                         .then(() => {
@@ -458,6 +466,7 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
+        setRecommendedTopics([]); // 기존 추천 주제를 초기화
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
     };
@@ -587,7 +596,7 @@ const VideoChatPage = () => {
                                 style={{ zIndex: index + 1 }}
                             >
                                 <OpenViduVideo streamManager={subscriber} />
-                                <div className="absolute top-0 left-0 bg-transparent bg-opacity-50 text-white p-2 rounded-md">
+                                <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     {subscriber.stream.connection.data}
                                 </div>
                             </div>

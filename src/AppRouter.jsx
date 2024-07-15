@@ -10,6 +10,9 @@ import ReviewPage from './pages/ReviewPage/ReviewPage';
 import MatchingPage from './pages/MatchingPage/MatchingPage';
 import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
 import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
+import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import VideoChatRoute from './components/VideoChatRoute';
 
 function AppRouter() {
     return (
@@ -24,6 +27,35 @@ function AppRouter() {
             <Route path="/matching" element={<MatchingPage />} />
             <Route path="/choose-avatar" element={<ChooseAvatarPage />} />
             <Route path="/choose-raccoon" element={<ChooseRaccoonPage />} />
+            <Route
+                path="/videochat"
+                element={<ProtectedRoute component={VideoChatPage} />}
+            />
+            <Route
+                path="/main"
+                element={<ProtectedRoute component={MainPage} />}
+            />
+            <Route
+                path="/profile"
+                element={<ProtectedRoute component={ProfilePage} />}
+            />
+            <Route
+                path="/report"
+                element={<ProtectedRoute component={ReportPage} />}
+            />
+            <Route
+                path="/review"
+                element={<VideoChatRoute component={ReviewPage} />}
+            />
+            <Route
+                path="/matching"
+                element={<ProtectedRoute component={MatchingPage} />}
+            />
+            <Route
+                path="/choose-avatar"
+                element={<ProtectedRoute component={ChooseAvatarPage} />}
+            />
+            <Route path="*" element={<NotFoundPage />} />
         </Routes>
     );
 }

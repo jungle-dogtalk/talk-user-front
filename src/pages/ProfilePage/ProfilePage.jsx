@@ -107,11 +107,22 @@ const ProfilePage = () => {
         }
     };
 
+    // 매너지수와 발화지수 계산
+    const mannerScore = userInfo?.reviewAverageScore || 0;
+    const utteranceScore = userInfo?.utterance || 0;
+
+    // 매너지수와 발화지수가 0이라면 50으로 설정
+    const displayMannerScore = mannerScore === 0 ? 50 : mannerScore;
+    const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
+
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
+            <header className="w-full bg-[#a16e47] p-1 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
-                <button className="text-white" onClick={handleDeleteAccount}>
+                <button
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
+                    onClick={handleDeleteAccount}
+                >
                     탈퇴하기
                 </button>
             </header>
@@ -142,23 +153,25 @@ const ProfilePage = () => {
                 <h2 className="text-xl font-bold mb-2">
                     이름: {userInfo?.name}
                 </h2>
-                <h3 className="text-xl font-bold mb-4">
+                <h3 className="text-xl font-bold mb-2">
                     닉네임: {userInfo?.username}
                 </h3>
                 <div className="w-full max-w-3xl">
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="w-full mx-auto mb-4">
+                    <div className="flex flex-col items-center mb-4">
+                        <div className="w-full mx-auto mb-2">
                             <span className="block text-left mb-1">
-                                대화지수
+                                발화지수
                             </span>
                             <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
                                 <div
                                     className="h-8 bg-red-500 rounded-full shadow"
-                                    style={{ width: '74%' }}
+                                    style={{
+                                        width: `${displayUtteranceScore}%`,
+                                    }}
                                 ></div>
                             </div>
                             <span className="block text-right text-sm mt-1 font-bold">
-                                74%
+                                {displayUtteranceScore}%
                             </span>
                         </div>
                         <div className="w-full mx-auto">
@@ -168,16 +181,16 @@ const ProfilePage = () => {
                             <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
                                 <div
                                     className="h-8 bg-blue-500 rounded-full shadow"
-                                    style={{ width: '80%' }}
+                                    style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
                             <span className="block text-right text-sm mt-1 font-bold ">
-                                80%
+                                {displayMannerScore}%
                             </span>
                         </div>
                     </div>
-                    <hr className="w-full my-8 border-gray-400" />
-                    <div className="text-center mt-8">
+                    <hr className="w-full my-4 border-gray-400" />
+                    <div className="text-center mt-4">
                         <h2 className="text-xl font-bold mb-4">
                             내가 고른 관심사
                         </h2>
@@ -225,33 +238,35 @@ const ProfilePage = () => {
                         <h2 className="text-xl font-bold mt-8 mb-4">
                             AI 관심사
                         </h2>
-                        
+
                         <div className="flex justify-center">
                             <div className="flex flex-wrap justify-center">
-                                {userInfo?.interests2?.map((interest, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
-                                    >
-                                        <span className="block text-center text-sm">
-                                            {interest}
-                                        </span>
-                                    </div>
-                                ))}
+                                {userInfo?.interests2?.map(
+                                    (interest, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
+                                        >
+                                            <span className="block text-center text-sm">
+                                                {interest}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-8">
+                    <div className="flex justify-center mt-8 space-x-4">
                         <button
                             type="button"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-lg"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
@@ -261,7 +276,6 @@ const ProfilePage = () => {
             </div>
         </div>
     );
-    
 };
 
 export default ProfilePage;

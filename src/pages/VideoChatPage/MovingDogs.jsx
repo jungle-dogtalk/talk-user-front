@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
 
 const MovingDogs = ({ sessionData }) => {
+    const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
+    const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
+
     const [dogPositions, setDogPositions] = useState(
         Array(4).fill({ x: 50, y: 50 })
     );
@@ -10,6 +13,10 @@ const MovingDogs = ({ sessionData }) => {
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null));
     const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
+
+    const [randomInterestIndex, setRandomInterestIndex] = useState(
+        Array(4).fill(0)
+    );
 
     const getRandomPosition = () => ({
         x: Math.random() * 90,
@@ -53,7 +60,12 @@ const MovingDogs = ({ sessionData }) => {
     const handleDogClick = (index, event) => {
         if (!sessionData[index]) return;
 
-        const { nickname, interests } = sessionData[index];
+        const { nickname, aiInterests } = sessionData[index];
+
+        const randomIndex = Math.floor(Math.random() * 5); // 0에서 4 사이의 랜덤 인덱스 생성
+        setRandomInterestIndex((prev) =>
+            prev.map((v, i) => (i === index ? randomIndex : v))
+        );
 
         if (bubbleTimers[index]) {
             clearTimeout(bubbleTimers[index]);
@@ -104,29 +116,37 @@ const MovingDogs = ({ sessionData }) => {
                         transition: 'all 0.05s linear',
                     }}
                 >
-                    <img
-                        src={dogWalkGif}
-                        alt={`Dog ${index + 1}`}
-                        className="w-14 h-14 cursor-pointer"
-                        onClick={(event) => handleDogClick(index, event)}
-                    />
-                    {showBubble[index] && (
-                        <div
-                            className="absolute bg-white p-2 rounded-md shadow-md"
-                            style={{
-                                top: pos.y < 50 ? '100%' : 'auto',
-                                bottom: pos.y >= 50 ? '100%' : 'auto',
-                                left: pos.x < 50 ? '0' : 'auto',
-                                right: pos.x >= 50 ? '0' : 'auto',
-                                width: '150px',
-                            }}
-                        >
-                            <h3 className="text-sm font-semibold">
-                                {sessionData[index]?.nickname} 관심사
-                            </h3>
-                            <p>{sessionData[index]?.interests[0]}</p>
+                    <div className="relative">
+                        {showBubble[index] && (
+                            <div
+                                className="absolute bg-white p-1 rounded-md shadow-md text-[0.65rem]"
+                                style={{
+                                    bottom: '100%', // 항상 강아지 위에 위치
+                                    left: '50%', // 중앙 정렬
+                                    transform: 'translateX(-50%)', // 정확한 중앙 정렬을 위해
+                                    width: '100px',
+                                    maxWidth: '100%',
+                                    marginBottom: '-14px', // 강아지와의 간격
+                                }}
+                            >
+                                <p>
+                                    {safeSessionData[index]?.aiInterests?.[
+                                        randomInterestIndex[index]
+                                    ] || '정보 없음'}
+                                </p>
+                            </div>
+                        )}
+                        <img
+                            src={dogWalkGif}
+                            alt={`Dog ${index + 1}`}
+                            className="w-14 h-14 cursor-pointer"
+                            onClick={(event) => handleDogClick(index, event)}
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 text-center text-xs bg-white bg-opacity-70 rounded-sm">
+                            {safeSessionData[index]?.nickname ||
+                                `Dog ${index + 1}`}
                         </div>
-                    )}
+                    </div>
                 </div>
             ))}
         </div>
