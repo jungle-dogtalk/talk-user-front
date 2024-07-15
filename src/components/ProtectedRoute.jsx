@@ -1,13 +1,12 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ component: Component }) => {
-    const token = Cookies.get('token');
-    const user = Cookies.get('user');
+    const isAuthenticated = useSelector((state) => state.user.token);
     
-    if (!token || !user) {
+    if (!isAuthenticated) {
         alert('로그인 하세요!');
         return <Navigate to="/" replace />;
     }
