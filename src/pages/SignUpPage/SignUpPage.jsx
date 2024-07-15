@@ -138,7 +138,7 @@ const SignUpPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#89644C] p-4 flex items-center justify-between">
+            <header className="w-full bg-[#89644C] p-2 flex items-center justify-between">
                 <img src={logo} alt="명톡 로고" className="w-16 h-16" />
             </header>
             <div className="flex flex-col items-center py-8 flex-1 w-full">
@@ -146,7 +146,7 @@ const SignUpPage = () => {
                     <img
                         src={profileImage}
                         alt="프로필 사진"
-                        className="w-56 h-56 rounded-full border-2 border-gray-300"
+                        className="w-40 h-40 rounded-full border-2 border-gray-300"
                     />
                     <label
                         htmlFor="file-input"
@@ -167,7 +167,7 @@ const SignUpPage = () => {
                 </div>
                 <form
                     onSubmit={handleSignUp}
-                    className="w-full max-w-lg space-y-6"
+                    className="w-full max-w-xl space-y-6"
                 >
                     <div className="flex items-center justify-center space-x-4 ml-16">
                         <label htmlFor="username" className="w-24 text-right">
@@ -264,9 +264,9 @@ const SignUpPage = () => {
                         />
                     </div>
                     <hr className="w-full my-8 border-gray-400" />
-                    <div className="text-center mt-8">
+                    <div className="text-center mt-8 w-full max-w-4xl mx-auto">
                         <h2 className="text-xl font-bold mb-4">관심사</h2>
-                        <div className="grid grid-cols-4 gap-4">
+                        <div className="grid grid-cols-6 gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -283,13 +283,13 @@ const SignUpPage = () => {
                                 { name: '맛집 투어', icon: '🍔' },
                                 { name: '헬스', icon: '💪🏻' },
                                 { name: '산책', icon: '🌳' },
-                                { name: '수영', icon: '🏊' },
-                                { name: '사진 찍기', icon: '📸' },
-                                { name: '주식', icon: '📈' },
+                                { name: '수영', icon: '🏊', colSpan: 2 },
+                                { name: '사진 찍기', icon: '📸', colSpan: 2 },
+                                { name: '주식', icon: '📈', colSpan: 2 },
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-2 w-28 rounded-xl border cursor-pointer ${
+                                    className={`p-2 w-20 rounded-xl border cursor-pointer ${
                                         interests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -311,8 +311,8 @@ const SignUpPage = () => {
                     {error && (
                         <p className="text-red-500 text-center">{error}</p>
                     )}
-                    <div className="flex w-full justify-center mt-8">
-                        <button
+                    <div className="flex w-full justify-center mt-8 ">
+                        <button 
                             type="button"
                             className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
                             onClick={() => navigate(-1)}
