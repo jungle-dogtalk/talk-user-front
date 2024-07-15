@@ -9,6 +9,7 @@ import ReportPage from './pages/ReportPage/ReportPage';
 import ReviewPage from './pages/ReviewPage/ReviewPage';
 import MatchingPage from './pages/MatchingPage/MatchingPage';
 import ChooseAvatarPage from './pages/ChooseAvatarPage/ChooseAvatarPage';
+import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
 
 function AppRouter() {
     return (
@@ -22,6 +23,7 @@ function AppRouter() {
             <Route path="/review" element={<ReviewPage />} />
             <Route path="/matching" element={<MatchingPage />} />
             <Route path="/choose-avatar" element={<ChooseAvatarPage />} />
+            <Route path="/choose-raccoon" element={<ChooseRaccoonPage />} />
         </Routes>
     );
 }
