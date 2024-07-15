@@ -29,7 +29,7 @@ const ReviewPage = () => {
             return;
         }
 
-        sessionStorage.removeItem('fromVideoChat'); // 초기화
+        // sessionStorage.removeItem('fromVideoChat'); // 초기화
 
         // sessionStorage에서 세션 ID를 가져옴
         const savedSessionId = sessionStorage.getItem('sessionId');
@@ -70,12 +70,23 @@ const ReviewPage = () => {
         setRatings(newRatings);
     };
 
-    const handleSubmitReview = () => {
-        // 리뷰 제출 로직
-        console.log('제출된 리뷰:', ratings);
-        alert('리뷰가 제출되었습니다.');
-        window.location.href = '/main';
+    const handleSubmitReview = async () => {
+        try {
+            await apiCall(API_LIST.SUBMIT_REVIEW, {
+                sessionId,
+                reviews: sessionData.map((user, index) => ({
+                    username: user.userId, // userId를 username으로 변경
+                    rating: ratings[index],
+                })),
+            });
+            alert('리뷰가 제출되었습니다.');
+            // window.location.href = '/main';
+        } catch (error) {
+            console.error('Error submitting reviews:', error);
+            alert('리뷰 제출 중 오류가 발생했습니다.');
+        }
     };
+    
 
     const handleReport = (username) => {
         // 신고할 사용자 설정
