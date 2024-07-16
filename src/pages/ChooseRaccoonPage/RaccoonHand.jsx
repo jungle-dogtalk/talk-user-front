@@ -125,8 +125,8 @@ function RaccoonHand() {
 
     return (
         <div
-            className="App"
-            style={{ position: 'relative', width: 480, height: 360 }}
+            className="App w-full max-w-[480px] mx-auto"
+            style={{ position: 'relative', aspectRatio: '4 / 3' }}
         >
             <Canvas
                 id="avatar_canvas"
@@ -135,8 +135,8 @@ function RaccoonHand() {
                     top: 0,
                     left: 0,
                     pointerEvents: 'none',
-                    width: 480,
-                    height: 360,
+                    width: '100%',
+                    height: '100%',
                     backgroundColor: 'white',
                 }}
                 camera={{
@@ -158,12 +158,20 @@ function RaccoonHand() {
                 <Raccoon modelPath={modelPath} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
-            <button onClick={changeModel} style={{ position: 'absolute', top: 10, left: 10 }}>
-                Change Face
-            </button>
-            <button onClick={changeHandColor} style={{ position: 'absolute', top: 10, right: 30 }}>
-                Change Hand Color
-            </button>
+            <div className="absolute top-2 left-2 right-2 flex justify-between">
+                <button
+                    onClick={changeModel}
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
+                >
+                    Change Face
+                </button>
+                <button
+                    onClick={changeHandColor}
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
+                >
+                    Change Hand Color
+                </button>
+            </div>
         </div>
     );
 }
