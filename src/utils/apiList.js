@@ -86,6 +86,11 @@ const API_LIST = {
         path: '/api/review/submit',
         desc: '리뷰 제출',
     },
+    GET_RANDOM_QUESTION: {
+        method: GET,
+        path: '/api/questions/random',
+        desc: 'Get a random question',
+    },
     
 };
 

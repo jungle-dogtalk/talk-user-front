@@ -3,15 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/barking-talk.png';
 import { fetchUserProfile } from '../../redux/slices/userSlice';
-
-const questionsList = [
-    'What is your favorite book?',
-    'What do you like to do in your free time?',
-    'What is your dream job?',
-    'What is your favorite movie?',
-    'What is your favorite place to visit?',
-    'What is your favorite hobby?',
-];
+import { apiCall } from '../../utils/apiCall';
+import { API_LIST } from '../../utils/apiList';
 
 const QuestionPage = () => {
     const dispatch = useDispatch();
@@ -25,9 +18,18 @@ const QuestionPage = () => {
             navigate('/');
         } else {
             dispatch(fetchUserProfile());
-            setRandomQuestion();
+            fetchRandomQuestion();
         }
     }, [dispatch, navigate, token]);
+
+    const fetchRandomQuestion = async () => {
+        try {
+            const response = await apiCall(API_LIST.GET_RANDOM_QUESTION);
+            setQuestion(response.text);
+        } catch (error) {
+            console.error('Failed to fetch question:', error);
+        }
+    };
 
     const setRandomQuestion = () => {
         const randomQuestion =
@@ -67,7 +69,7 @@ const QuestionPage = () => {
             <main className="flex flex-1 flex-col items-center justify-start w-full p-4">
                 <div className="w-full max-w-3xl p-6 rounded-lg bg-[#f7f3e9] space-y-6 mt-20">
                     <h2 className="text-2xl font-bold mb-4 text-center">
-                        질문 페이지
+                        도입 질문
                     </h2>
                     <div className="flex flex-col items-center">
                         <div className="bg-[#e4d7c7] p-4 rounded-lg mb-4 w-full text-center">
@@ -77,7 +79,7 @@ const QuestionPage = () => {
                         </div>
                         <button
                             className="bg-[#a16e47] text-[#f7f3e9] py-2 px-4 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] hover:text-[#a16e47] transition duration-300 ease-in-out mb-4 text-xs sm:text-base"
-                            onClick={setRandomQuestion}
+                            onClick={fetchRandomQuestion}
                         >
                             질문 새로고침
                         </button>
