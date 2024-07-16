@@ -117,42 +117,51 @@ const ChooseRaccoonPage = () => {
     };
 
     return (
-        <div className="avatar-page">
-            <div className="header">
-                <img src={logo} alt="명톡 로고" className="logo" />
-            </div>
-            <div className="content">
-                <div className="section">
-                    <h2>나의 모습</h2>
+        <div className="flex flex-col h-screen bg-gray-100">
+            <header className="w-full bg-[#a16e47] p-2 flex items-center">
+                <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-12 h-12 sm:w-16 sm:h-16"
+                />
+            </header>
+            <div className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-2 sm:gap-1 p-2 sm:p-4">
+                <div className="w-full lg:flex-1 flex flex-col items-center justify-center mb-4 lg:mb-0">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
+                        나의 모습
+                    </h2>
                     <video
                         ref={webcamRef}
                         autoPlay
                         id="video"
-                        className="video-box"
+                        className="w-full max-w-[480px] h-auto max-h-[360px] border rounded"
                     ></video>
                 </div>
-                <div className="section">
-                    <h2>내 마스크</h2>
-                    <RaccoonHand></RaccoonHand>
+                <div className="w-full lg:flex-1 flex flex-col items-center justify-center">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
+                        내 마스크
+                    </h2>
+                    <div className="relative w-full max-w-[480px] h-auto max-h-[360px] bg-white border rounded">
+                        <RaccoonHand />
+                    </div>
                 </div>
             </div>
-            <div className="buttons">
+            <div className="flex justify-center space-x-4 py-2 mb-2">
                 <button
-                    className="action-button"
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
                     onClick={() => window.history.back()}
                 >
                     뒤로가기
                 </button>
-                <button className="action-button" onClick={handleRetry}>
-                    다시 추천
-                </button>
-                <button className="action-button" onClick={handleSelect}>
+                <button
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
+                    onClick={handleSelect}
+                >
                     선택
                 </button>
             </div>
         </div>
     );
 };
-
 
 export default ChooseRaccoonPage;
