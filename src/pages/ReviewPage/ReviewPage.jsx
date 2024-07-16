@@ -43,6 +43,7 @@ const ReviewPage = () => {
 
     // 세션 데이터를 가져오는 함수
     const fetchSessionData = async (sessionId) => {
+        sessionId = 'ses_QUzEYMbRAT';
         try {
             const response = await apiCall(API_LIST.GET_SESSION_DATA, {
                 sessionId,
@@ -50,37 +51,46 @@ const ReviewPage = () => {
             if (response.data && response.data.length > 0) {
                 console.log('fetchSessionData - response.data:', response.data);
 
-                // 사용자 본인을 제외한 데이터 필터링
-                const filteredSessionData = response.data.filter(
-                    (user) => user.userId !== userInfo.username
-                );
-                setSessionData(filteredSessionData); // 필터링한 데이터를 상태에 저장
-
                 // 통화 유저 정보 가져오기
-                const usernames = filteredSessionData.map(
-                    (user) => user.userId
-                );
+                const usernames = response.data.map((user) => user.userId);
                 const callUserInfoResponse = await apiCall(
                     API_LIST.GET_CALL_USER_INFO,
                     { usernames }
                 );
 
-                setCallUserInfo(callUserInfoResponse.data);
-                setRatings(new Array(filteredSessionData.length).fill(0)); // 리뷰 초기화
+                // 사용자 정보 병합 및 필터링 (본인 제외)
+                const mergedData = callUserInfoResponse.data
+                    .filter((user) => user._id !== userInfo._id)
+                    .map((user) => ({
+                        ...user,
+                        userId: user.username,
+                        nickname: user.nickname || user.username,
+                        profileImage: user.profileImage || videoPlaceholder,
+                        utterance: user.utterance || 0,
+                    }));
 
-                // 발화량이 가장 많은 사용자 찾기
+                /// 발화량이 가장 많은 사용자 찾기 (본인 포함)
                 const allUsers = [
                     ...callUserInfoResponse.data,
                     {
-                        userId: userInfo.username,
+                        username: userInfo.username,
                         nickname: userInfo.nickname,
-                        utterance: userInfo.utterance,
+                        utterance: userInfo.utterance || 0,
+                        profileImage: userInfo.profileImage || videoPlaceholder,
                     },
                 ];
                 const topTalker = allUsers.reduce((prev, current) =>
-                    prev.utterance > current.utterance ? prev : current
+                    (prev.utterance || 0) > (current.utterance || 0)
+                        ? prev
+                        : current
                 );
                 setTopTalker(topTalker);
+
+                setSessionData(mergedData);
+                setCallUserInfo(mergedData);
+                setRatings(new Array(mergedData.length).fill(0));
+
+                console.log('Top Talker:', topTalker);
             } else {
                 console.error('No session data found');
             }
@@ -102,7 +112,7 @@ const ReviewPage = () => {
             await apiCall(API_LIST.SUBMIT_REVIEW, {
                 sessionId,
                 reviews: sessionData.map((user, index) => ({
-                    username: user.userId, // userId를 username으로 변경
+                    userId: user._id, // userId를 username으로 변경
                     rating: ratings[index],
                 })),
             });
@@ -128,20 +138,6 @@ const ReviewPage = () => {
         console.log('신고된 사용자:', reportingUser);
         alert(`${reportingUser}님을 신고했습니다.`);
         setReportingUser(null);
-    };
-
-    // 프로필 이미지 가져오는 함수
-    const getProfileImage = (index) => {
-        return callUserInfo[index]
-            ? callUserInfo[index].profileImage
-            : videoPlaceholder;
-    };
-
-    // 발화량을 가져오는 함수
-    const getUtterance = (index) => {
-        return callUserInfo[index]
-            ? callUserInfo[index].utterance
-            : '발화량 정보 없음';
     };
 
     const username = userInfo?.username || '사용자';
@@ -177,6 +173,9 @@ const ReviewPage = () => {
                         <h3 className="text-lg sm:text-xl font-semibold mt-1">
                             {topTalker.nickname}님
                         </h3>
+                        <p className="text-sm sm:text-base text-gray-600 mt-1">
+                            발화량: {topTalker.utterance}
+                        </p>
                         <img
                             src={celebrationEffect}
                             alt="축하 이펙트"
@@ -193,7 +192,7 @@ const ReviewPage = () => {
                                 className="bg-gray-50 p-2 sm:p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
                             >
                                 <img
-                                    src={getProfileImage(index)}
+                                    src={user.profileImage}
                                     alt="프로필"
                                     className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
                                 />
@@ -201,7 +200,7 @@ const ReviewPage = () => {
                                     <h3 className="text-base sm:text-xl font-semibold">
                                         {user.nickname}{' '}
                                         <span className="text-sm text-gray-500">
-                                            발화량 {getUtterance(index)}
+                                            발화량 {user.utterance || 0}
                                         </span>
                                     </h3>
                                     <div className="flex space-x-1 mt-2">
