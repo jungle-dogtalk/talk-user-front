@@ -265,7 +265,7 @@ const VideoChatPage = () => {
                 userInfo.username
             );
             socket.current.emit('joinSession', sessionId);
-        }, 5000);
+        }, 1000);
     };
 
     const updatePublisherWithNewPitch = (pitchValue) => {
