@@ -103,20 +103,20 @@ function RaccoonHand() {
         maxX = 2,
         minY = -1.5,
         maxY = 1.5; // 바운더리 설정
-    
+
     /* 퀴즈 실행 */
     const performQuiz = () => {
-        console.log("퀴즈 시작");
+        console.log('퀴즈 시작');
         // TODO: 퀴즈 미션 로직 수행
 
         // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
         let isVictory = true;
-        if(isVictory){
+        if (isVictory) {
             changeVictoryModel();
         } else {
-            console.log("얼음 미션 수행");
+            console.log('얼음 미션 수행');
         }
-    }
+    };
 
     const predict = () => {
         const nowInMs = Date.now();
@@ -215,12 +215,12 @@ function RaccoonHand() {
         setModelPath(models[nextIndex]);
     };
 
-    // TODO: 왕관 모델로 변경   
+    // TODO: 왕관 모델로 변경
     const changeVictoryModel = () => {
         const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
         setModelIndex(nextIndex);
         setModelPath(victoryModels[nextIndex]);
-    }
+    };
 
     const changeHandColor = () => {
         const nextColorIndex = (handColorIndex + 1) % handColors.length;
@@ -230,7 +230,11 @@ function RaccoonHand() {
     return (
         <div
             className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            style={{
+                position: 'absolute',
+                left: '-9999px',
+                top: '-9999px',
+            }}
         >
             <video
                 autoPlay
