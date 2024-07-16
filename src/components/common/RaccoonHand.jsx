@@ -1,5 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { startMission, stopMission } from '../../redux/slices/missionSlice';
 import {
     Color,
     Euler,
@@ -9,7 +11,6 @@ import {
     CanvasTexture,
 } from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
-
 import {
     FaceLandmarker,
     HandLandmarker,
@@ -41,17 +42,19 @@ const models = [
 ];
 
 const victoryModels = [
-    '/blue_raccoon_crown.glb',
     '/jungle_raccoon_crown.glb',
     '/raccoon_crown.glb',
     '/warrior_raccoon_crown.glb',
     '/yellow_raccoon_crown.glb',
     '/yupyup_raccoon_crown.glb',
+    '/blue_raccoon_crown.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function RaccoonHand() {
+    const dispatch = useDispatch();
+
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [victoryModelPath, setVictoryModelPath] = useState(victoryModels[0]);
@@ -59,6 +62,7 @@ function RaccoonHand() {
     const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
+    const [clearedPercentage, setClearedPercentage] = useState(0);
 
     useEffect(() => {
         const updateHandPositions = () => {
@@ -129,14 +133,17 @@ function RaccoonHand() {
     /* 퀴즈 실행 */
     const performQuiz = () => {
         console.log('퀴즈 시작');
+        dispatch(startMission());
         // TODO: 퀴즈 미션 로직 수행
 
         // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
         let isVictory = true;
         if (isVictory) {
             changeVictoryModel();
+            // dispatch(stopMission());
         } else {
             console.log('얼음 미션 수행');
+            // dispatch(startMission());
         }
     };
 
@@ -295,10 +302,25 @@ function RaccoonHand() {
                 />
                 <Raccoon modelPath={modelPath} />
                 {iceBreakingActive && (
-                    <IceBreakingBackground handPositions={handPositions} />
+                    <IceBreakingBackground
+                        handPositions={handPositions}
+                        onPercentageChange={setClearedPercentage}
+                    />
                 )}
                 {/* <Hand handColor={handColors[handColorIndex]} /> */}
             </Canvas>
+            <div
+                style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                    color: 'white',
+                    fontSize: '20px',
+                    fontWeight: 'bold',
+                }}
+            >
+                Cleared: {clearedPercentage.toFixed(2)}%
+            </div>
             <button
                 onClick={changeModel}
                 style={{ position: 'absolute', top: 10, left: 10 }}
@@ -320,11 +342,17 @@ function RaccoonHand() {
         </div>
     );
 }
-function IceBreakingBackground({ handPositions }) {
+
+function IceBreakingBackground({ handPositions, onPercentageChange }) {
     const meshRef = useRef();
     const canvasRef = useRef();
     const textureRef = useRef();
     const [canvasTexture, setCanvasTexture] = useState(null);
+    const [clearedPercentage, setClearedPercentage] = useState(0);
+    const originalImageData = useRef(null);
+    const erasedPixels = useRef(new Set());
+    const lastEraseTime = useRef({});
+    const REGENERATION_DELAY = 3000; // 2초 후 재생성 시작
 
     useEffect(() => {
         const canvas = document.createElement('canvas');
@@ -340,52 +368,171 @@ function IceBreakingBackground({ handPositions }) {
             const newTexture = new CanvasTexture(canvas);
             setCanvasTexture(newTexture);
             textureRef.current = texture;
+            originalImageData.current = ctx.getImageData(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
         });
 
         canvasRef.current = canvas;
     }, []);
 
-    const previousPositions = useRef([]);
+    // 이징 함수
+    const easeInOutCubic = (t) =>
+        t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
     useFrame(() => {
         if (
             canvasRef.current &&
             canvasTexture &&
             meshRef.current &&
-            textureRef.current
+            textureRef.current &&
+            originalImageData.current
         ) {
             const ctx = canvasRef.current.getContext('2d');
+            const imageData = ctx.getImageData(
+                0,
+                0,
+                canvasRef.current.width,
+                canvasRef.current.height
+            );
+            const data = imageData.data;
+            const originalData = originalImageData.current.data;
+            const currentTime = Date.now();
 
-            // 손 위치가 있을 때만 캔버스를 수정합니다
+            // 얼음 재생성
+            for (let i = 0; i < data.length; i += 4) {
+                const pixelIndex = i / 4;
+                if (erasedPixels.current.has(pixelIndex)) {
+                    const timeSinceErase =
+                        currentTime - lastEraseTime.current[pixelIndex];
+                    if (timeSinceErase > REGENERATION_DELAY) {
+                        const regenerationProgress = Math.min(
+                            (timeSinceErase - REGENERATION_DELAY) / 2000,
+                            1
+                        );
+                        const easedProgress =
+                            easeInOutCubic(regenerationProgress);
+
+                        // 주변 픽셀과의 블렌딩
+                        const x = pixelIndex % canvasRef.current.width;
+                        const y = Math.floor(
+                            pixelIndex / canvasRef.current.width
+                        );
+                        let sumR = 0,
+                            sumG = 0,
+                            sumB = 0,
+                            sumA = 0,
+                            count = 0;
+
+                        for (let dx = -1; dx <= 1; dx++) {
+                            for (let dy = -1; dy <= 1; dy++) {
+                                const nx = x + dx;
+                                const ny = y + dy;
+                                if (
+                                    nx >= 0 &&
+                                    nx < canvasRef.current.width &&
+                                    ny >= 0 &&
+                                    ny < canvasRef.current.height
+                                ) {
+                                    const neighborIndex =
+                                        (ny * canvasRef.current.width + nx) * 4;
+                                    sumR += data[neighborIndex];
+                                    sumG += data[neighborIndex + 1];
+                                    sumB += data[neighborIndex + 2];
+                                    sumA += data[neighborIndex + 3];
+                                    count++;
+                                }
+                            }
+                        }
+
+                        // 랜덤성 추가
+                        const randomFactor = 0.9 + Math.random() * 0.2;
+
+                        // 복원 적용
+                        for (let j = 0; j < 3; j++) {
+                            const blendedValue =
+                                (sumR + sumG + sumB) / (count * 3);
+                            data[i + j] =
+                                (originalData[i + j] * easedProgress +
+                                    blendedValue * (1 - easedProgress)) *
+                                randomFactor;
+                        }
+                        data[i + 3] =
+                            (originalData[i + 3] * easedProgress +
+                                (sumA / count) * (1 - easedProgress)) *
+                            randomFactor;
+
+                        if (regenerationProgress === 1) {
+                            erasedPixels.current.delete(pixelIndex);
+                        }
+                    }
+                }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
             if (handPositions.length > 0) {
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-                ctx.globalAlpha = 1.0; // 부드럽게 지우기 위해 투명도 조절
+                ctx.globalAlpha = 1; // 완전히 투명하게 지우기
 
-                handPositions.forEach((hand, handIndex) => {
-                    const pos = hand[9]; // 손바닥 중심부 관절 (9번 관절) 사용
-                    const x = pos.x * canvasRef.current.width;
-                    const y = (1 - pos.y) * canvasRef.current.height;
+                handPositions.forEach((hand) => {
+                    const palmCenter = hand[9];
+                    const x = palmCenter.x * canvasRef.current.width;
+                    const y = (1 - palmCenter.y) * canvasRef.current.height;
+                    const radius = 20;
 
-                    // 이전 위치와 현재 위치를 연결하여 부드럽게 지우기
-                    if (previousPositions.current[handIndex]) {
-                        const prevX = previousPositions.current[handIndex].x;
-                        const prevY = previousPositions.current[handIndex].y;
-                        ctx.beginPath();
-                        ctx.moveTo(prevX, prevY);
-                        ctx.lineTo(x, y);
-                        ctx.lineWidth = 20; // 지우개 크기
-                        ctx.lineCap = 'round'; // 부드러운 테두리
-                        ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    // 지워진 픽셀 기록
+                    for (
+                        let px = Math.max(0, Math.floor(x - radius));
+                        px <
+                        Math.min(
+                            canvasRef.current.width,
+                            Math.ceil(x + radius)
+                        );
+                        px++
+                    ) {
+                        for (
+                            let py = Math.max(0, Math.floor(y - radius));
+                            py <
+                            Math.min(
+                                canvasRef.current.height,
+                                Math.ceil(y + radius)
+                            );
+                            py++
+                        ) {
+                            if (
+                                Math.sqrt((px - x) ** 2 + (py - y) ** 2) <=
+                                radius
+                            ) {
+                                const pixelIndex =
+                                    py * canvasRef.current.width + px;
+                                erasedPixels.current.add(pixelIndex);
+                                lastEraseTime.current[pixelIndex] = currentTime;
+                            }
+                        }
                     }
-
-                    previousPositions.current[handIndex] = { x, y };
                 });
 
                 canvasTexture.needsUpdate = true;
-            } else {
-                previousPositions.current = [];
             }
+
+            // 지워진 영역 계산
+            let clearedPixels = erasedPixels.current.size;
+            const newClearedPercentage =
+                (clearedPixels /
+                    (canvasRef.current.width * canvasRef.current.height)) *
+                100;
+            setClearedPercentage(newClearedPercentage);
+            onPercentageChange(newClearedPercentage);
+            cibsike, kig;
 
             meshRef.current.material.map = canvasTexture;
             meshRef.current.material.needsUpdate = true;
@@ -398,7 +545,7 @@ function IceBreakingBackground({ handPositions }) {
             <meshBasicMaterial
                 map={canvasTexture}
                 transparent={true}
-                opacity={0.9}
+                opacity={0.8}
             />
         </mesh>
     );
