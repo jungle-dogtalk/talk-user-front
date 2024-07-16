@@ -13,7 +13,7 @@ import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import VideoChatRoute from './components/VideoChatRoute';
 import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
-
+import QuestionPage from './pages/QuestionPage/QuestionPage';
 
 function AppRouter() {
     return (
@@ -51,6 +51,10 @@ function AppRouter() {
             <Route
                 path="/choose-raccoon"
                 element={<ProtectedRoute component={ChooseRaccoonPage} />}
+            />
+            <Route
+                path="/questions"
+                element={<ProtectedRoute component={QuestionPage} />}
             />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>
