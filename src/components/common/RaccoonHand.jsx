@@ -88,6 +88,11 @@ function RaccoonHand() {
             });
     };
 
+    const minX = -2,
+        maxX = 2,
+        minY = -1.5,
+        maxY = 1.5; // 바운더리 설정
+
     const predict = () => {
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
@@ -139,16 +144,28 @@ function RaccoonHand() {
                 const moveSpeed = 0.1;
                 switch (currentGesture) {
                     case 'Thumb_Up':
-                        avatarPosition.y += moveSpeed;
+                        avatarPosition.y = Math.min(
+                            avatarPosition.y + moveSpeed,
+                            maxY
+                        );
                         break;
                     case 'Thumb_Down':
-                        avatarPosition.y -= moveSpeed;
+                        avatarPosition.y = Math.max(
+                            avatarPosition.y - moveSpeed,
+                            minY
+                        );
                         break;
                     case 'Closed_Fist':
-                        avatarPosition.x -= moveSpeed;
+                        avatarPosition.x = Math.max(
+                            avatarPosition.x - moveSpeed,
+                            minX
+                        );
                         break;
                     case 'Open_Palm':
-                        avatarPosition.x += moveSpeed;
+                        avatarPosition.x = Math.min(
+                            avatarPosition.x + moveSpeed,
+                            maxX
+                        );
                         break;
 
                     default:
@@ -316,8 +333,8 @@ function Hand({ handColor }) {
                     const joint = handRef.current.children[index * 21 + i];
                     if (joint) {
                         joint.position.set(
-                            (landmark.x - 0.5) * 2,
-                            -(landmark.y - 0.5) * 2,
+                            (landmark.x - 0.5) * 2 + avatarPosition.x,
+                            -(landmark.y - 0.5) * 2 + avatarPosition.y,
                             landmark.z
                         );
                     }
