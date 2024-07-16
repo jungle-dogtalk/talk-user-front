@@ -31,12 +31,6 @@ const QuestionPage = () => {
         }
     };
 
-    const setRandomQuestion = () => {
-        const randomQuestion =
-            questionsList[Math.floor(Math.random() * questionsList.length)];
-        setQuestion(randomQuestion);
-    };
-
     const handleBack = () => {
         navigate(-1); // 이전 페이지로 이동
     };
@@ -48,7 +42,13 @@ const QuestionPage = () => {
     const handleAnswerSubmit = () => {
         // 답변 제출 로직
         console.log(`Answer Submitted: ${answer}`);
-        setAnswer('');
+        
+        // 세션 스토리지에 질문과 답변 저장
+        sessionStorage.setItem('question', question);
+        sessionStorage.setItem('answer', answer);
+        
+        // 매칭 페이지로 이동
+        navigate('/matching');
     };
 
     return (
