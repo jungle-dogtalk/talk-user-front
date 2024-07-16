@@ -130,6 +130,7 @@ function RaccoonHand() {
                 handLandmarks = [];
             }
 
+            //TODO: 제스처 결과 수정 필요
             // Gesture result processing
             if (
                 gestureResult &&
@@ -212,7 +213,6 @@ function RaccoonHand() {
                     pointerEvents: 'none',
                     width: 640,
                     height: 480,
-                    backgroundColor: 'green',
                 }}
                 camera={{
                     fov: 20,
@@ -255,6 +255,7 @@ function Raccoon({ modelPath }) {
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
+    const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
 
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
@@ -292,7 +293,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                        blendshape.categoryName
+                    blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
@@ -303,6 +304,15 @@ function Raccoon({ modelPath }) {
 
         if (faceLandmarks.length > 0) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
+
+
+            // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
+            const scaleFactor =  1.8;
+
+            // 새로운 스케일 설정
+            setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
+
+
             const facePosition = new Vector3(
                 (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
                 -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
@@ -314,13 +324,15 @@ function Raccoon({ modelPath }) {
                         ref.current.position
                             .copy(facePosition)
                             .add(avatarPosition);
+                        // 스케일 적용
+                        ref.current.scale.copy(modelScale);
                     }
                 }
             );
         }
     });
 
-    return <primitive object={scene} />;
+    return <primitive object={scene} scale={modelScale} />;
 }
 
 function Hand({ handColor }) {
