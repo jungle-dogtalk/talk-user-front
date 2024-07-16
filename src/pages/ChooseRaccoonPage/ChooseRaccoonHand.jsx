@@ -34,7 +34,7 @@ const models = [
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
-function RaccoonHand() {
+function ChooseRaccoonHand() {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
@@ -293,7 +293,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                        blendshape.categoryName
+                    blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
@@ -376,4 +376,4 @@ function Hand({ handColor }) {
     );
 }
 
-export default RaccoonHand;
+export default ChooseRaccoonHand;
