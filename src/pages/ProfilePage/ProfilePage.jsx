@@ -107,29 +107,44 @@ const ProfilePage = () => {
         }
     };
 
+    // 매너지수와 발화지수 계산
+    const mannerScore = userInfo?.reviewAverageScore || 0;
+    const utteranceScore = userInfo?.utterance || 0;
+
+    // 매너지수와 발화지수가 0이라면 50으로 설정
+    const displayMannerScore = mannerScore === 0 ? 50 : mannerScore;
+    const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
+
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
-                <img src={logo} alt="명톡 로고" className="w-16 h-16" />
-                <button className="text-white" onClick={handleDeleteAccount}>
+            <header className="w-full bg-[#a16e47] p-1 sm:p-1 flex items-center justify-between">
+                <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-12 h-12 sm:w-16 sm:h-16"
+                />
+                <button
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                    onClick={handleDeleteAccount}
+                >
                     탈퇴하기
                 </button>
             </header>
-            <div className="flex flex-col items-center py-8 flex-1 w-full">
-                <div className="relative mb-8">
+            <div className="flex flex-col items-center py-4 sm:py-8 flex-1 w-full px-4 sm:px-0">
+                <div className="relative mb-4 sm:mb-8">
                     <img
                         src={profileImage}
                         alt="프로필 사진"
-                        className="w-40 h-40 rounded-full border-2 border-gray-300"
+                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-2 border-gray-300"
                     />
                     <label
                         htmlFor="file-input"
-                        className="absolute bottom-0 right-0 bg-white p-2 rounded-full cursor-pointer"
+                        className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer"
                     >
                         <img
                             src={editIcon}
                             alt="수정 아이콘"
-                            className="w-6 h-6"
+                            className="w-4 h-4 sm:w-6 sm:h-6"
                         />
                     </label>
                     <input
@@ -139,49 +154,51 @@ const ProfilePage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <h2 className="text-xl font-bold mb-2">
+                <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">
                     이름: {userInfo?.name}
                 </h2>
-                <h3 className="text-xl font-bold mb-4">
+                <h3 className="text-lg sm:text-xl font-bold mb-2">
                     닉네임: {userInfo?.username}
                 </h3>
                 <div className="w-full max-w-3xl">
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="w-full mx-auto mb-4">
-                            <span className="block text-left mb-1">
-                                대화지수
+                    <div className="flex flex-col items-center mb-4">
+                        <div className="w-full mx-auto mb-2">
+                            <span className="block text-left mb-1 text-sm sm:text-base">
+                                발화지수
                             </span>
-                            <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner">
                                 <div
-                                    className="h-8 bg-red-500 rounded-full shadow"
-                                    style={{ width: '74%' }}
+                                    className="h-6 sm:h-8 bg-red-500 rounded-full shadow"
+                                    style={{
+                                        width: `${displayUtteranceScore}%`,
+                                    }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm mt-1 font-bold">
-                                74%
+                            <span className="block text-right text-xs sm:text-sm mt-1 font-bold">
+                                {displayUtteranceScore}%
                             </span>
                         </div>
                         <div className="w-full mx-auto">
-                            <span className="block text-left mb-1">
+                            <span className="block text-left mb-1 text-sm sm:text-base">
                                 매너지수
                             </span>
-                            <div className="w-full h-8 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner">
                                 <div
-                                    className="h-8 bg-blue-500 rounded-full shadow"
-                                    style={{ width: '80%' }}
+                                    className="h-6 sm:h-8 bg-blue-500 rounded-full shadow"
+                                    style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm mt-1 font-bold ">
-                                80%
+                            <span className="block text-right text-xs sm:text-sm mt-1 font-bold">
+                                {displayMannerScore}%
                             </span>
                         </div>
                     </div>
-                    <hr className="w-full my-8 border-gray-400" />
-                    <div className="text-center mt-8">
-                        <h2 className="text-xl font-bold mb-4">
+                    <hr className="w-full my-3 sm:my-4 border-gray-400" />
+                    <div className="text-center mt-3 sm:mt-4">
+                        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
                             내가 고른 관심사
                         </h2>
-                        <div className="grid grid-cols-6 gap-4">
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -204,7 +221,7 @@ const ProfilePage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-2 w-28 rounded-xl border cursor-pointer flex items-center ${
+                                    className={`p-1 sm:p-2 w-full sm:w-28 rounded-xl border cursor-pointer flex items-center ${
                                         clickedInterests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -213,45 +230,46 @@ const ProfilePage = () => {
                                         handleInterestClick(interest.name)
                                     }
                                 >
-                                    <span className=" text-2xl mr-1">
+                                    <span className="text-xl sm:text-2xl mr-1">
                                         {interest.icon}
                                     </span>
-                                    <span className="text-xs leading-tight">
+                                    <span className="text-xs sm:text-sm leading-tight">
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <h2 className="text-xl font-bold mt-8 mb-4">
+                        <h2 className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4">
                             AI 관심사
                         </h2>
-                        
                         <div className="flex justify-center">
                             <div className="flex flex-wrap justify-center">
-                                {userInfo?.interests2?.map((interest, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 w-28 rounded-xl border flex items-center justify-center bg-white m-2"
-                                    >
-                                        <span className="block text-center text-sm">
-                                            {interest}
-                                        </span>
-                                    </div>
-                                ))}
+                                {userInfo?.interests2?.map(
+                                    (interest, index) => (
+                                        <div
+                                            key={index}
+                                            className="p-1 sm:p-2 w-24 sm:w-28 rounded-xl border flex items-center justify-center bg-white m-1 sm:m-2"
+                                        >
+                                            <span className="block text-center text-xs sm:text-sm">
+                                                {interest}
+                                            </span>
+                                        </div>
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-8">
+                    <div className="flex justify-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
                         <button
                             type="button"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg mr-4"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-[#89644C] text-white rounded-lg"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
@@ -261,7 +279,6 @@ const ProfilePage = () => {
             </div>
         </div>
     );
-    
 };
 
 export default ProfilePage;

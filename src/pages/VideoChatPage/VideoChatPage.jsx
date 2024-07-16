@@ -11,6 +11,7 @@ import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
+import RaccoonHand from '../ChooseRaccoonPage/RaccoonHand';
 import MovingDogs from './MovingDogs';
 
 const VideoChatPage = () => {
@@ -30,6 +31,7 @@ const VideoChatPage = () => {
     const [interests, setInterests] = useState([]); // 관심사 결과 저장
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
+    const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
@@ -37,7 +39,7 @@ const VideoChatPage = () => {
         return <div>Loading...</div>;
     }
 
-    const [remainingTime, setRemainingTime] = useState(0);
+    const [remainingTime, setRemainingTime] = useState(300); // 디폴트 타이머 5분
 
     useEffect(() => {
         let timer;
@@ -53,6 +55,10 @@ const VideoChatPage = () => {
                 // fetchTimer 완료 후 setInterval 시작
                 timer = setInterval(() => {
                     setRemainingTime((prevTime) => {
+                        if (prevTime <= 0) {
+                            clearInterval(timer);
+                            return 0;
+                        }
                         return prevTime - 1;
                     });
                 }, 1000);
@@ -186,9 +192,11 @@ const VideoChatPage = () => {
             setSession(undefined);
             setSubscribers([]);
             setPublisher(undefined);
+            setOV(null);
 
             // 세션 ID를 sessionStorage에 저장
             sessionStorage.setItem('sessionId', sessionId);
+            sessionStorage.setItem('fromVideoChat', 'true'); // 플래그 설정
 
             window.location.href = '/review';
         } catch (error) {
@@ -198,60 +206,124 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-    const startStreaming = (session, OV, mediaStream) => {
+    const startStreaming = (session, OV, mediaStream, pitchValue) => {
         setTimeout(() => {
-            var videoTrack = mediaStream.getVideoTracks()[0];
-            var video = document.createElement('video');
-            video.srcObject = new MediaStream([videoTrack]);
+            // 비디오 엘리먼트 생성 및 설정
+            const video = document.createElement('video');
+            video.srcObject = mediaStream;
+            video.autoplay = true;
+            video.playsInline = true;
 
-            // var canvas = document.createElement('canvas');
-
-            var canvas = document
+            // 너구리 캔버스 가져오기
+            const avatarCanvas = document
                 .getElementById('avatar_canvas')
                 .querySelector('div')
                 .querySelector('canvas');
 
-            console.log('캔버스 -> ', canvas);
-            var ctx = canvas.getContext('2d');
-            console.log('ctx -> ', ctx);
+            // 합성 캔버스 생성
+            const compositeCanvas = document.createElement('canvas');
+            compositeCanvas.width = 640; // 원하는 크기로 설정
+            compositeCanvas.height = 480;
+            const ctx = compositeCanvas.getContext('2d');
 
-            // var ctx = canvas.getContext('3d');
-            // console.log('ctx -> ', ctx);
-            // ctx.filter = 'grayscale(100%)';
+            // 렌더링 함수
+            const render = () => {
+                // 비디오 그리기
+                ctx.drawImage(
+                    video,
+                    0,
+                    0,
+                    compositeCanvas.width,
+                    compositeCanvas.height
+                );
 
-            // video.addEventListener('play', () => {
-            //     var loop = () => {
-            //         if (!video.paused && !video.ended) {
-            //             ctx.drawImage(video, 0, 0, 300, 170);
-            //             setTimeout(loop, 1000 / FRAME_RATE); // Drawing at 10 fps
-            //         }
-            //     };
-            //     loop();
-            // });
-            video.play();
-            var videoTrack = canvas
-                .captureStream(FRAME_RATE)
-                .getVideoTracks()[0];
-            var publisher = OV.initPublisher(undefined, {
-                audioSource: undefined,
-                videoSource: videoTrack,
+                // 너구리 캔버스 그리기
+                ctx.drawImage(
+                    avatarCanvas,
+                    0,
+                    0,
+                    compositeCanvas.width,
+                    compositeCanvas.height
+                );
+
+                requestAnimationFrame(render);
+            };
+
+            // 비디오 로드 완료 후 렌더링 시작
+            video.onloadedmetadata = () => {
+                video.play();
+                render();
+            };
+
+            if (!pitchValue) {
+                pitchValue = 1.0;
+            }
+
+            var filterOptions = {
+                type: 'GStreamerFilter',
+                options: {
+                    command:
+                        // 'audioecho delay=50000000 intensity=0.6 feedback=0.4', // 음성 echo 설정
+                        `pitch pitch=${pitchValue}`,
+                },
+            };
+
+            // 합성 캔버스의 스트림 가져오기
+            const compositeStream = compositeCanvas.captureStream(FRAME_RATE);
+
+            // OpenVidu publisher 초기화 및 게시
+            const publisher = OV.initPublisher(undefined, {
+                audioSource: mediaStream.getAudioTracks()[0],
+                videoSource: compositeStream.getVideoTracks()[0],
+                filter: filterOptions,
             });
 
             setPublisher(publisher);
             session.publish(publisher);
-            // 음성인식 시작
+
+            // 음성 인식 시작
             startSpeechRecognition(
                 publisher.stream.getMediaStream(),
                 userInfo.username
             );
+
             socket.current.emit('joinSession', sessionId);
-        }, 5000);
+        }, 1000);
+    };
+
+    const updatePublisherWithNewPitch = (pitchValue) => {
+        if (publisher && session) {
+            // 기존 퍼블리셔 스트림 중지 및 새로운 피치 값으로 새롭게 퍼블리시
+            if (publisher.stream) {
+                session
+                    .unpublish(publisher)
+                    .then(() => {
+                        startStreaming(
+                            session,
+                            OV,
+                            publisher.stream.getMediaStream(),
+                            pitchValue
+                        );
+                    })
+                    .catch((error) => {
+                        console.error('Error unpublishing:', error);
+                    });
+            } else {
+                startStreaming(
+                    session,
+                    OV,
+                    publisher.stream.getMediaStream(),
+                    pitchValue
+                );
+            }
+        }
     };
 
     // 세션 참여
     const joinSession = useCallback(
         async (sid) => {
             const OV = new OpenVidu();
+            setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
             setSession(session);
 
@@ -485,7 +557,8 @@ const VideoChatPage = () => {
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4">
-                    <AvatarApp></AvatarApp>
+                    <RaccoonHand></RaccoonHand>
+                    {/* <AvatarApp></AvatarApp> */}
                     <div
                         className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
                         style={{ flex: '1 1 auto' }}
@@ -568,6 +641,26 @@ const VideoChatPage = () => {
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
+                    <div className="flex justify-center mt-2">
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(1.0)}
+                        >
+                            1
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(0.5)}
+                        >
+                            2
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(1.5)}
+                        >
+                            3
+                        </button>
+                    </div>
                     <MovingDogs sessionData={sessionData} />
                 </div>
             </div>

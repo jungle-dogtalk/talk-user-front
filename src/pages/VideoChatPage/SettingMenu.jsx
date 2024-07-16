@@ -7,8 +7,10 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
         audioOutputDevices: [],
     }); // 미디어 장치 목록 상태 관리
     const [selectedVideoDevice, setSelectedVideoDevice] = useState(''); // 선택된 비디오 장치
-    const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState(''); // 선택된 오디오 장치
-    const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState(''); // 선택된 오디오 장치
+    const [selectedAudioInputDevice, setSelectedAudioInputDevice] =
+        useState(''); // 선택된 오디오 장치
+    const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] =
+        useState(''); // 선택된 오디오 장치
 
     const [isMirrored, setIsMirrored] = useState(false); // 좌우 반전 상태 관리
     const [isVideoActive, setIsVideoActive] = useState(true);
@@ -100,7 +102,10 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
     }, []);
 
     return (
-        <div className="p-2 bg-white rounded-lg shadow-md space-y-2 overflow-y-auto" style={{ maxHeight: '200px', width: '100px' }}>
+        <div
+            className="p-2 bg-white rounded-lg shadow-md space-y-2 overflow-y-auto"
+            style={{ maxHeight: '200px', width: '100px' }}
+        >
             <h2 className="text-xs font-bold mb-2">설정</h2>
             <div className="space-y-2">
                 <button
@@ -137,7 +142,9 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
                     {isMirrored ? '반전 해제' : '반전 적용'}
                 </button>
                 <div>
-                    <label className="block text-xs font-medium text-gray-700">카메라 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">
+                        카메라 선택:
+                    </label>
                     <select
                         className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleVideoDeviceChange}
@@ -146,14 +153,20 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
                     >
                         {devices.videoDevices &&
                             devices.videoDevices.map((device) => (
-                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                <option
+                                    key={device.deviceId}
+                                    value={device.deviceId}
+                                    style={{ fontSize: '10px' }}
+                                >
                                     {device.label}
                                 </option>
                             ))}
                     </select>
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-gray-700">마이크 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">
+                        마이크 선택:
+                    </label>
                     <select
                         className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleAudioInputDeviceChange}
@@ -162,14 +175,20 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
                     >
                         {devices.audioInputDevices &&
                             devices.audioInputDevices.map((device) => (
-                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                <option
+                                    key={device.deviceId}
+                                    value={device.deviceId}
+                                    style={{ fontSize: '10px' }}
+                                >
                                     {device.label}
                                 </option>
                             ))}
                     </select>
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-gray-700">스피커 선택:</label>
+                    <label className="block text-xs font-medium text-gray-700">
+                        스피커 선택:
+                    </label>
                     <select
                         className="block w-full p-1 border rounded-md text-xs"
                         onChange={handleAudioOutputDeviceChange}
@@ -178,7 +197,11 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
                     >
                         {devices.audioOutputDevices &&
                             devices.audioOutputDevices.map((device) => (
-                                <option key={device.deviceId} value={device.deviceId} style={{ fontSize: '10px' }}>
+                                <option
+                                    key={device.deviceId}
+                                    value={device.deviceId}
+                                    style={{ fontSize: '10px' }}
+                                >
                                     {device.label}
                                 </option>
                             ))}
@@ -187,7 +210,6 @@ const SettingMenu = ({ onMirroredChange, publisher }) => {
             </div>
         </div>
     );
-    
 };
 
 export default SettingMenu;

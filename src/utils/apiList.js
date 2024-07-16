@@ -75,7 +75,18 @@ const API_LIST = {
         method: GET,
         path: `/api/openvidu/session/timer`,
         desc: '세션 남은시간 조회'
-    }
+    },
+    GET_CALL_USER_INFO: {
+        method: POST,
+        path: `/api/user/call-user-info`,
+        desc: '통화 유저 정보 조회'
+    },
+    SUBMIT_REVIEW: {
+        method: POST,
+        path: '/api/review/submit',
+        desc: '리뷰 제출',
+    },
+
 };
 
 // OPEN API 목록
