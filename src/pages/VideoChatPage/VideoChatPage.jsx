@@ -11,7 +11,7 @@ import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
-import RaccoonHand from '../ChooseRaccoonPage/RaccoonHand';
+import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 
 const VideoChatPage = () => {
