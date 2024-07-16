@@ -1,7 +1,15 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useState } from 'react';
-import { Color, Euler, Matrix4, Vector3 } from 'three';
+import {
+    Color,
+    Euler,
+    Matrix4,
+    Vector3,
+    TextureLoader,
+    CanvasTexture,
+} from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
+
 import {
     FaceLandmarker,
     HandLandmarker,
@@ -49,6 +57,20 @@ function RaccoonHand() {
     const [victoryModelPath, setVictoryModelPath] = useState(victoryModels[0]);
     const [victoryModelIndex, setVictoryModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
+    const [iceBreakingActive, setIceBreakingActive] = useState(false);
+    const [handPositions, setHandPositions] = useState([]);
+
+    useEffect(() => {
+        const updateHandPositions = () => {
+            if (handLandmarks.length > 0) {
+                setHandPositions([...handLandmarks]);
+            }
+        };
+
+        const intervalId = setInterval(updateHandPositions, 16); // 약 60fps
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     const setup = async () => {
         const vision = await FilesetResolver.forVisionTasks(
@@ -151,6 +173,8 @@ function RaccoonHand() {
             // Hand result processing
             if (handResult.landmarks) {
                 handLandmarks = handResult.landmarks;
+                setHandPositions(handResult.landmarks); // // 손의 위치 업데이트
+                // console.log(handResult.landmarks);
             } else {
                 handLandmarks = [];
             }
@@ -164,10 +188,11 @@ function RaccoonHand() {
             ) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
-                console.log('Current Gesture:', currentGesture);
+                // console.log('Current Gesture:', currentGesture);
 
                 // Update avatar position based on gesture
                 const moveSpeed = 0.1;
+
                 switch (currentGesture) {
                     // case 'Thumb_Up':
                     //     avatarPosition.y = Math.min(
@@ -227,6 +252,10 @@ function RaccoonHand() {
         setHandColorIndex(nextColorIndex);
     };
 
+    const handleIceBreaking = () => {
+        setIceBreakingActive(!iceBreakingActive);
+    };
+
     return (
         <div
             className="App"
@@ -241,7 +270,6 @@ function RaccoonHand() {
                 id="video"
                 style={{ width: 640, height: 480 }}
             ></video>
-
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -253,7 +281,7 @@ function RaccoonHand() {
                     height: 480,
                 }}
                 camera={{
-                    fov: 20,
+                    fov: 10,
                     position: [0, 0, 10],
                 }}
             >
@@ -269,7 +297,10 @@ function RaccoonHand() {
                     intensity={0.5}
                 />
                 <Raccoon modelPath={modelPath} />
-                <Hand handColor={handColors[handColorIndex]} />
+                {iceBreakingActive && (
+                    <IceBreakingBackground handPositions={handPositions} />
+                )}
+                {/* <Hand handColor={handColors[handColorIndex]} /> */}
             </Canvas>
             <button
                 onClick={changeModel}
@@ -277,13 +308,86 @@ function RaccoonHand() {
             >
                 Change Raccoon Face
             </button>
-            <button
+            {/* <button
                 onClick={changeHandColor}
                 style={{ position: 'absolute', top: 10, right: 30 }}
             >
                 Change Raccoon Hand Color
+            </button> */}
+            <button
+                onClick={handleIceBreaking}
+                style={{ position: 'absolute', top: 10, right: 30 }}
+            >
+                ICE BREAKING
             </button>
         </div>
+    );
+}
+
+function IceBreakingBackground({ handPositions }) {
+    const meshRef = useRef();
+    const canvasRef = useRef();
+    const textureRef = useRef();
+    const [canvasTexture, setCanvasTexture] = useState(null);
+
+    useEffect(() => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 640;
+        canvas.height = 480;
+        const ctx = canvas.getContext('2d');
+        const textureLoader = new TextureLoader();
+
+        textureLoader.load('/ice.jpg', (texture) => {
+            ctx.drawImage(texture.image, 0, 0, canvas.width, canvas.height);
+            const newTexture = new CanvasTexture(canvas);
+            setCanvasTexture(newTexture);
+            textureRef.current = texture;
+        });
+
+        canvasRef.current = canvas;
+    }, []);
+
+    useFrame(() => {
+        if (
+            canvasRef.current &&
+            canvasTexture &&
+            meshRef.current &&
+            textureRef.current
+        ) {
+            const ctx = canvasRef.current.getContext('2d');
+
+            // 손 위치가 있을 때만 캔버스를 수정합니다
+            if (handPositions.length > 0) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+
+                handPositions.forEach((hand) => {
+                    hand.forEach((pos) => {
+                        const x = pos.x * canvasRef.current.width;
+                        const y = (1 - pos.y) * canvasRef.current.height;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 15, 0, Math.PI * 2); // 지우개 크기를 조절할 수 있습니다
+                        ctx.fill();
+                    });
+                });
+
+                canvasTexture.needsUpdate = true;
+            }
+
+            meshRef.current.material.map = canvasTexture;
+            meshRef.current.material.needsUpdate = true;
+        }
+    });
+
+    return (
+        <mesh ref={meshRef} position={[0, 0, 1]}>
+            <planeGeometry args={[10, 10]} />
+            <meshBasicMaterial
+                map={canvasTexture}
+                transparent={true}
+                opacity={0.9}
+            />
+        </mesh>
     );
 }
 
