@@ -43,7 +43,6 @@ const ReviewPage = () => {
 
     // 세션 데이터를 가져오는 함수
     const fetchSessionData = async (sessionId) => {
-        sessionId = 'ses_QUzEYMbRAT';
         try {
             const response = await apiCall(API_LIST.GET_SESSION_DATA, {
                 sessionId,
