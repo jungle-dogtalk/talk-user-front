@@ -206,12 +206,9 @@ function RaccoonHand() {
                     //         minY
                     //     );
                     //     break;
-                    // case 'Closed_Fist':
-                    //     avatarPosition.x = Math.max(
-                    //         avatarPosition.x - moveSpeed,
-                    //         minX
-                    //     );
-                    //     break;
+                    case 'Closed_Fist':
+                        handleIceBreaking();
+                        break;
                     // case 'Open_Palm':
                     //     avatarPosition.x = Math.min(
                     //         avatarPosition.x + moveSpeed,
@@ -323,7 +320,6 @@ function RaccoonHand() {
         </div>
     );
 }
-
 function IceBreakingBackground({ handPositions }) {
     const meshRef = useRef();
     const canvasRef = useRef();
@@ -335,8 +331,10 @@ function IceBreakingBackground({ handPositions }) {
         canvas.width = 640;
         canvas.height = 480;
         const ctx = canvas.getContext('2d');
+
         const textureLoader = new TextureLoader();
 
+        // 이미지 로드
         textureLoader.load('/ice.jpg', (texture) => {
             ctx.drawImage(texture.image, 0, 0, canvas.width, canvas.height);
             const newTexture = new CanvasTexture(canvas);
@@ -346,6 +344,8 @@ function IceBreakingBackground({ handPositions }) {
 
         canvasRef.current = canvas;
     }, []);
+
+    const previousPositions = useRef([]);
 
     useFrame(() => {
         if (
@@ -360,18 +360,31 @@ function IceBreakingBackground({ handPositions }) {
             if (handPositions.length > 0) {
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+                ctx.globalAlpha = 1.0; // 부드럽게 지우기 위해 투명도 조절
 
-                handPositions.forEach((hand) => {
-                    hand.forEach((pos) => {
-                        const x = pos.x * canvasRef.current.width;
-                        const y = (1 - pos.y) * canvasRef.current.height;
+                handPositions.forEach((hand, handIndex) => {
+                    const pos = hand[9]; // 손바닥 중심부 관절 (9번 관절) 사용
+                    const x = pos.x * canvasRef.current.width;
+                    const y = (1 - pos.y) * canvasRef.current.height;
+
+                    // 이전 위치와 현재 위치를 연결하여 부드럽게 지우기
+                    if (previousPositions.current[handIndex]) {
+                        const prevX = previousPositions.current[handIndex].x;
+                        const prevY = previousPositions.current[handIndex].y;
                         ctx.beginPath();
-                        ctx.arc(x, y, 15, 0, Math.PI * 2); // 지우개 크기를 조절할 수 있습니다
-                        ctx.fill();
-                    });
+                        ctx.moveTo(prevX, prevY);
+                        ctx.lineTo(x, y);
+                        ctx.lineWidth = 20; // 지우개 크기
+                        ctx.lineCap = 'round'; // 부드러운 테두리
+                        ctx.stroke();
+                    }
+
+                    previousPositions.current[handIndex] = { x, y };
                 });
 
                 canvasTexture.needsUpdate = true;
+            } else {
+                previousPositions.current = [];
             }
 
             meshRef.current.material.map = canvasTexture;
@@ -448,7 +461,7 @@ function Raccoon({ modelPath }) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
 
             // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
-            const scaleFactor = 1.8;
+            const scaleFactor = 1.3;
 
             // 새로운 스케일 설정
             setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
