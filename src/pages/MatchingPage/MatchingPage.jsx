@@ -30,6 +30,9 @@ const MatchingPage = () => {
         socket.on('matched', (data) => {
             console.log('Matched event received:', data);
             if (data.sessionId) {
+                // 질문과 답변을 세션 스토리지에서 삭제
+                sessionStorage.removeItem('question');
+                sessionStorage.removeItem('answer');
                 location.href = '/videochat?sessionId=' + data.sessionId;
             } else {
                 console.error('No sessionId in matched event data');
