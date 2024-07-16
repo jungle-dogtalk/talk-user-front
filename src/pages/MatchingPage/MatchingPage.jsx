@@ -15,11 +15,16 @@ const MatchingPage = () => {
 
     // 사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {
+        const storedQuestion = sessionStorage.getItem('question');
+        const storedAnswer = sessionStorage.getItem('answer');
+
         socket.emit('userDetails', {
             userId: userInfo.username,
             userInterests: userInfo.interests,
             aiInterests: userInfo.interests2,
             nickname: userInfo.nickname,
+            question: storedQuestion,
+            answer: storedAnswer,
         });
 
         socket.on('matched', (data) => {
@@ -36,7 +41,7 @@ const MatchingPage = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [userInfo, socket]);
 
     const handleCancelClick = () => {
         navigate('/main');
