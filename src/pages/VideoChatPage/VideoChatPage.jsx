@@ -30,6 +30,7 @@ const VideoChatPage = () => {
     const [interests, setInterests] = useState([]); // 관심사 결과 저장
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
+    const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
@@ -190,6 +191,7 @@ const VideoChatPage = () => {
             setSession(undefined);
             setSubscribers([]);
             setPublisher(undefined);
+            setOV(null);
 
             // 세션 ID를 sessionStorage에 저장
             sessionStorage.setItem('sessionId', sessionId);
@@ -203,7 +205,7 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.username, location.search, isLeaving]);
 
-    const startStreaming = (session, OV, mediaStream) => {
+    const startStreaming = (session, OV, mediaStream, pitchValue) => {
         setTimeout(() => {
             const canvasElement = document
                 .getElementById('avatar_canvas')
@@ -235,10 +237,24 @@ const VideoChatPage = () => {
 
             render();
 
+            if (!pitchValue) {
+                pitchValue = 1.0;
+            }
+
+            var filterOptions = {
+                type: 'GStreamerFilter',
+                options: {
+                    command:
+                        // 'audioecho delay=50000000 intensity=0.6 feedback=0.4', // 음성 echo 설정
+                        `pitch pitch=${pitchValue}`,
+                },
+            };
+
             const canvasStream = outputCanvas.captureStream(FRAME_RATE);
             const publisher = OV.initPublisher(undefined, {
                 audioSource: undefined,
                 videoSource: canvasStream.getVideoTracks()[0],
+                filter: filterOptions,
             });
 
             setPublisher(publisher);
@@ -249,7 +265,35 @@ const VideoChatPage = () => {
                 userInfo.username
             );
             socket.current.emit('joinSession', sessionId);
-        }, 5000);
+        }, 1000);
+    };
+
+    const updatePublisherWithNewPitch = (pitchValue) => {
+        if (publisher && session) {
+            // 기존 퍼블리셔 스트림 중지 및 새로운 피치 값으로 새롭게 퍼블리시
+            if (publisher.stream) {
+                session
+                    .unpublish(publisher)
+                    .then(() => {
+                        startStreaming(
+                            session,
+                            OV,
+                            publisher.stream.getMediaStream(),
+                            pitchValue
+                        );
+                    })
+                    .catch((error) => {
+                        console.error('Error unpublishing:', error);
+                    });
+            } else {
+                startStreaming(
+                    session,
+                    OV,
+                    publisher.stream.getMediaStream(),
+                    pitchValue
+                );
+            }
+        }
     };
 
     // 구독자  크로마키 처리 함수
@@ -322,6 +366,7 @@ const VideoChatPage = () => {
     const joinSession = useCallback(
         async (sid) => {
             const OV = new OpenVidu();
+            setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
             setSession(session);
 
@@ -622,6 +667,26 @@ const VideoChatPage = () => {
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
+                    <div className="flex justify-center mt-2">
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(1.0)}
+                        >
+                            1
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(0.5)}
+                        >
+                            2
+                        </button>
+                        <button
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                            onClick={() => updatePublisherWithNewPitch(1.5)}
+                        >
+                            3
+                        </button>
+                    </div>
                     <MovingDogs sessionData={sessionData} />
                 </div>
             </div>

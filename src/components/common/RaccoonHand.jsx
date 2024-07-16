@@ -5,12 +5,14 @@ import { useGLTF, Sphere } from '@react-three/drei';
 import {
     FaceLandmarker,
     HandLandmarker,
+    GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
 
 let video;
 let faceLandmarker;
 let handLandmarker;
+let gestureRecognizer;
 let lastVideoTime = -1;
 
 let rotation = null;
@@ -18,6 +20,8 @@ let blendshapes = [];
 let faceLandmarks = [];
 let transformationMatrix = null;
 let handLandmarks = [];
+let avatarPosition = new Vector3(0, 0, 0);
+let currentGesture = '';
 
 const models = [
     '/blue_raccoon.glb',
@@ -60,6 +64,19 @@ function RaccoonHand() {
             numHands: 2,
         });
 
+        //Gesture
+        gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+            baseOptions: {
+                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
+                delegate: 'GPU',
+            },
+            runningMode: 'VIDEO',
+            minHandDetectionConfidence: 0.5,
+            minHandPresenceConfidence: 0.5,
+            minTrackingConfidence: 0.5,
+        });
+
+        //////
         video = document.getElementById('video');
         navigator.mediaDevices
             .getUserMedia({
@@ -78,6 +95,10 @@ function RaccoonHand() {
 
             const faceResult = faceLandmarker.detectForVideo(video, nowInMs);
             const handResult = handLandmarker.detectForVideo(video, nowInMs);
+            const gestureResult = gestureRecognizer.recognizeForVideo(
+                video,
+                nowInMs
+            );
 
             // Face result processing
             if (
@@ -103,8 +124,39 @@ function RaccoonHand() {
             } else {
                 handLandmarks = [];
             }
-        }
 
+            // Gesture result processing
+            if (
+                gestureResult &&
+                gestureResult.gestures &&
+                gestureResult.gestures.length > 0
+            ) {
+                const gesture = gestureResult.gestures[0][0];
+                currentGesture = gesture.categoryName;
+                console.log('Current Gesture:', currentGesture);
+
+                // Update avatar position based on gesture
+                const moveSpeed = 0.1;
+                switch (currentGesture) {
+                    case 'Thumb_Up':
+                        avatarPosition.y += moveSpeed;
+                        break;
+                    case 'Thumb_Down':
+                        avatarPosition.y -= moveSpeed;
+                        break;
+                    case 'Closed_Fist':
+                        avatarPosition.x -= moveSpeed;
+                        break;
+                    case 'Open_Palm':
+                        avatarPosition.x += moveSpeed;
+                        break;
+
+                    default:
+                        // No movement for other gestures
+                        break;
+                }
+            }
+        }
         requestAnimationFrame(predict);
     };
 
@@ -170,10 +222,16 @@ function RaccoonHand() {
                 <Raccoon modelPath={modelPath} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
-            <button onClick={changeModel} style={{ position: 'absolute', top: 10, left: 10 }}>
+            <button
+                onClick={changeModel}
+                style={{ position: 'absolute', top: 10, left: 10 }}
+            >
                 Change Raccoon Face
             </button>
-            <button onClick={changeHandColor} style={{ position: 'absolute', top: 10, right: 30 }}>
+            <button
+                onClick={changeHandColor}
+                style={{ position: 'absolute', top: 10, right: 30 }}
+            >
                 Change Raccoon Hand Color
             </button>
         </div>
@@ -213,7 +271,8 @@ function Raccoon({ modelPath }) {
             position.setFromMatrixPosition(transformationMatrix);
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
-                    if (ref.current) ref.current.position.copy(position);
+                    if (ref.current)
+                        ref.current.position.copy(position).add(avatarPosition);
                 }
             );
         }
@@ -233,15 +292,18 @@ function Raccoon({ modelPath }) {
 
         if (faceLandmarks.length > 0) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
-            const avatarPosition = new Vector3(
+            const facePosition = new Vector3(
                 (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
                 -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
                 noseLandmark.z // z 좌표
             );
-
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
-                    if (ref.current) ref.current.position.copy(avatarPosition);
+                    if (ref.current) {
+                        ref.current.position
+                            .copy(facePosition)
+                            .add(avatarPosition);
+                    }
                 }
             );
         }
