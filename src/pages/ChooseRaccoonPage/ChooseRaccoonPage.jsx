@@ -5,7 +5,7 @@ import { Color, Euler, Matrix4 } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { useNavigate } from 'react-router-dom';
-import RaccoonHand from './RaccoonHand.jsx';
+import ChooseRaccoonHand from './ChooseRaccoonHand.jsx';
 
 let video;
 let faceLandmarker;
@@ -141,7 +141,7 @@ const ChooseRaccoonPage = () => {
                         내 마스크
                     </h2>
                     <div className="relative w-full max-w-[480px] h-auto max-h-[360px] bg-white border rounded">
-                        <RaccoonHand />
+                        <ChooseRaccoonHand />
                     </div>
                 </div>
             </div>

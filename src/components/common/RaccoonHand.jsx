@@ -32,11 +32,22 @@ const models = [
     '/yupyup_raccoon_head.glb',
 ];
 
+const victoryModels = [
+    '/blue_raccoon_crown.glb',
+    '/jungle_raccoon_crown.glb',
+    '/raccoon_crown.glb',
+    '/warrior_raccoon_crown.glb',
+    '/yellow_raccoon_crown.glb',
+    '/yupyup_raccoon_crown.glb',
+];
+
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function RaccoonHand() {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
+    const [victoryModelPath, setVictoryModelPath] = useState(victoryModels[0]);
+    const [victoryModelIndex, setVictoryModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
 
     const setup = async () => {
@@ -76,7 +87,7 @@ function RaccoonHand() {
             minTrackingConfidence: 0.5,
         });
 
-        //////
+        // Setup video
         video = document.getElementById('video');
         navigator.mediaDevices
             .getUserMedia({
@@ -92,6 +103,20 @@ function RaccoonHand() {
         maxX = 2,
         minY = -1.5,
         maxY = 1.5; // 바운더리 설정
+    
+    /* 퀴즈 실행 */
+    const performQuiz = () => {
+        console.log("퀴즈 시작");
+        // TODO: 퀴즈 미션 로직 수행
+
+        // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
+        let isVictory = true;
+        if(isVictory){
+            changeVictoryModel();
+        } else {
+            console.log("얼음 미션 수행");
+        }
+    }
 
     const predict = () => {
         const nowInMs = Date.now();
@@ -144,31 +169,33 @@ function RaccoonHand() {
                 // Update avatar position based on gesture
                 const moveSpeed = 0.1;
                 switch (currentGesture) {
-                    case 'Thumb_Up':
-                        avatarPosition.y = Math.min(
-                            avatarPosition.y + moveSpeed,
-                            maxY
-                        );
+                    // case 'Thumb_Up':
+                    //     avatarPosition.y = Math.min(
+                    //         avatarPosition.y + moveSpeed,
+                    //         maxY
+                    //     );
+                    //     break;
+                    // case 'Thumb_Down':
+                    //     avatarPosition.y = Math.max(
+                    //         avatarPosition.y - moveSpeed,
+                    //         minY
+                    //     );
+                    //     break;
+                    // case 'Closed_Fist':
+                    //     avatarPosition.x = Math.max(
+                    //         avatarPosition.x - moveSpeed,
+                    //         minX
+                    //     );
+                    //     break;
+                    // case 'Open_Palm':
+                    //     avatarPosition.x = Math.min(
+                    //         avatarPosition.x + moveSpeed,
+                    //         maxX
+                    //     );
+                    //     break;
+                    case 'Victory':
+                        performQuiz();
                         break;
-                    case 'Thumb_Down':
-                        avatarPosition.y = Math.max(
-                            avatarPosition.y - moveSpeed,
-                            minY
-                        );
-                        break;
-                    case 'Closed_Fist':
-                        avatarPosition.x = Math.max(
-                            avatarPosition.x - moveSpeed,
-                            minX
-                        );
-                        break;
-                    case 'Open_Palm':
-                        avatarPosition.x = Math.min(
-                            avatarPosition.x + moveSpeed,
-                            maxX
-                        );
-                        break;
-
                     default:
                         // No movement for other gestures
                         break;
@@ -187,6 +214,13 @@ function RaccoonHand() {
         setModelIndex(nextIndex);
         setModelPath(models[nextIndex]);
     };
+
+    // TODO: 왕관 모델로 변경   
+    const changeVictoryModel = () => {
+        const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
+        setModelIndex(nextIndex);
+        setModelPath(victoryModels[nextIndex]);
+    }
 
     const changeHandColor = () => {
         const nextColorIndex = (handColorIndex + 1) % handColors.length;
