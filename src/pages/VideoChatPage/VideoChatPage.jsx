@@ -514,11 +514,8 @@ const VideoChatPage = () => {
                         ...prevResults,
                         transcript,
                     ]);
-                    console.log('in onresult QuizMode: ', quizMode);
+
                     // 퀴즈 모드일 때만 testString 검사
-                    console.log(
-                        `transcript: ${transcript}, testString: ${testString}`
-                    );
                     if (quizModeRef.current) {
                         if (boyerMooreSearch(transcript, testString)) {
                             console.log('정답입니다!');
@@ -585,28 +582,16 @@ const VideoChatPage = () => {
             let j = m - 1;
 
             while (j >= 0 && pattern[j] === text[s + j]) {
-                console.log(
-                    `matching: pattern[${j}] = ${pattern[j]}, text[${
-                        s + j
-                    }] = ${text[s + j]}`
-                );
                 j--;
             }
 
             if (j < 0) {
-                console.log('Pattern found at position', s);
                 return true;
             } else {
                 const charCode = text.charCodeAt(s + j);
                 const badCharShift =
                     badChar[charCode] !== -1 ? j - badChar[charCode] : 1;
                 s += Math.max(1, badCharShift);
-                console.log(
-                    `No match, shifting pattern by ${Math.max(
-                        1,
-                        badCharShift
-                    )} to position ${s}`
-                );
             }
         }
 
