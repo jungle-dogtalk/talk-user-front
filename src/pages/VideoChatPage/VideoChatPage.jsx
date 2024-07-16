@@ -21,6 +21,8 @@ const VideoChatPage = () => {
     const recognitionRef = useRef(null);
     const socket = useRef(null);
 
+    const testString = '제주도'; // Quiz Test 문자열
+
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
@@ -32,6 +34,9 @@ const VideoChatPage = () => {
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
     const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
+    const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태 추가
+
+    const quizModeRef = useRef(quizMode);
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     // userInfo가 null인 경우 처리
@@ -509,6 +514,17 @@ const VideoChatPage = () => {
                         ...prevResults,
                         transcript,
                     ]);
+
+                    // 퀴즈 모드일 때만 testString 검사
+                    if (quizModeRef.current) {
+                        if (boyerMooreSearch(transcript, testString)) {
+                            console.log('정답입니다!');
+                        } else {
+                            console.log('오답입니다!');
+                        }
+                        setQuizMode(false); // 퀴즈 모드 해제
+                        quizModeRef.current = false; // ref 상태 업데이트
+                    }
                 }
             }
         };
@@ -542,6 +558,51 @@ const VideoChatPage = () => {
         } catch (error) {
             console.error('Error starting speech recognition:', error);
         }
+    };
+
+    function boyerMooreSearch(text, pattern) {
+        // text 공백 전처리
+        text = text.trim();
+        pattern = pattern.trim();
+
+        const m = pattern.length;
+        const n = text.length;
+
+        if (m === 0) return true;
+
+        const badChar = Array(256).fill(-1);
+
+        for (let i = 0; i < m; i++) {
+            badChar[pattern.charCodeAt(i)] = i;
+        }
+
+        let s = 0;
+
+        while (s <= n - m) {
+            let j = m - 1;
+
+            while (j >= 0 && pattern[j] === text[s + j]) {
+                j--;
+            }
+
+            if (j < 0) {
+                return true;
+            } else {
+                const charCode = text.charCodeAt(s + j);
+                const badCharShift =
+                    badChar[charCode] !== -1 ? j - badChar[charCode] : 1;
+                s += Math.max(1, badCharShift);
+            }
+        }
+
+        return false;
+    }
+
+    // 퀴즈 음성인식 결과를 체크하는 함수
+    const checkAnswer = () => {
+        setQuizMode(true); // 퀴즈 모드 활성화
+        quizModeRef.current = true; // ref 상태 업데이트
+        console.log('Quiz 모드: ', quizModeRef.current);
     };
 
     return (
@@ -659,6 +720,12 @@ const VideoChatPage = () => {
                             onClick={() => updatePublisherWithNewPitch(1.5)}
                         >
                             3
+                        </button>
+                        <button
+                            onClick={checkAnswer}
+                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                        >
+                            Quiz Test
                         </button>
                     </div>
                     <MovingDogs sessionData={sessionData} />

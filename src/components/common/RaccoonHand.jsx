@@ -40,11 +40,22 @@ const models = [
     '/yupyup_raccoon_head.glb',
 ];
 
+const victoryModels = [
+    '/blue_raccoon_crown.glb',
+    '/jungle_raccoon_crown.glb',
+    '/raccoon_crown.glb',
+    '/warrior_raccoon_crown.glb',
+    '/yellow_raccoon_crown.glb',
+    '/yupyup_raccoon_crown.glb',
+];
+
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function RaccoonHand() {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
+    const [victoryModelPath, setVictoryModelPath] = useState(victoryModels[0]);
+    const [victoryModelIndex, setVictoryModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
@@ -98,7 +109,7 @@ function RaccoonHand() {
             minTrackingConfidence: 0.5,
         });
 
-        //////
+        // Setup video
         video = document.getElementById('video');
         navigator.mediaDevices
             .getUserMedia({
@@ -114,6 +125,20 @@ function RaccoonHand() {
         maxX = 2,
         minY = -1.5,
         maxY = 1.5; // 바운더리 설정
+
+    /* 퀴즈 실행 */
+    const performQuiz = () => {
+        console.log('퀴즈 시작');
+        // TODO: 퀴즈 미션 로직 수행
+
+        // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
+        let isVictory = true;
+        if (isVictory) {
+            changeVictoryModel();
+        } else {
+            console.log('얼음 미션 수행');
+        }
+    };
 
     const predict = () => {
         const nowInMs = Date.now();
@@ -154,6 +179,7 @@ function RaccoonHand() {
                 handLandmarks = [];
             }
 
+            //TODO: 제스처 결과 수정 필요
             // Gesture result processing
             if (
                 gestureResult &&
@@ -166,36 +192,39 @@ function RaccoonHand() {
 
                 // Update avatar position based on gesture
                 const moveSpeed = 0.1;
-                // switch (currentGesture) {
-                //     case 'Thumb_Up':
-                //         avatarPosition.y = Math.min(
-                //             avatarPosition.y + moveSpeed,
-                //             maxY
-                //         );
-                //         break;
-                //     case 'Thumb_Down':
-                //         avatarPosition.y = Math.max(
-                //             avatarPosition.y - moveSpeed,
-                //             minY
-                //         );
-                //         break;
-                //     case 'Closed_Fist':
-                //         avatarPosition.x = Math.max(
-                //             avatarPosition.x - moveSpeed,
-                //             minX
-                //         );
-                //         break;
-                //     case 'Open_Palm':
-                //         avatarPosition.x = Math.min(
-                //             avatarPosition.x + moveSpeed,
-                //             maxX
-                //         );
-                //         break;
 
-                //     default:
-                //         // No movement for other gestures
-                //         break;
-                // }
+                switch (currentGesture) {
+                    // case 'Thumb_Up':
+                    //     avatarPosition.y = Math.min(
+                    //         avatarPosition.y + moveSpeed,
+                    //         maxY
+                    //     );
+                    //     break;
+                    // case 'Thumb_Down':
+                    //     avatarPosition.y = Math.max(
+                    //         avatarPosition.y - moveSpeed,
+                    //         minY
+                    //     );
+                    //     break;
+                    // case 'Closed_Fist':
+                    //     avatarPosition.x = Math.max(
+                    //         avatarPosition.x - moveSpeed,
+                    //         minX
+                    //     );
+                    //     break;
+                    // case 'Open_Palm':
+                    //     avatarPosition.x = Math.min(
+                    //         avatarPosition.x + moveSpeed,
+                    //         maxX
+                    //     );
+                    //     break;
+                    case 'Victory':
+                        performQuiz();
+                        break;
+                    default:
+                        // No movement for other gestures
+                        break;
+                }
             }
         }
         requestAnimationFrame(predict);
@@ -211,6 +240,13 @@ function RaccoonHand() {
         setModelPath(models[nextIndex]);
     };
 
+    // TODO: 왕관 모델로 변경
+    const changeVictoryModel = () => {
+        const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
+        setModelIndex(nextIndex);
+        setModelPath(victoryModels[nextIndex]);
+    };
+
     const changeHandColor = () => {
         const nextColorIndex = (handColorIndex + 1) % handColors.length;
         setHandColorIndex(nextColorIndex);
@@ -223,7 +259,11 @@ function RaccoonHand() {
     return (
         <div
             className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            style={{
+                position: 'absolute',
+                left: '-9999px',
+                top: '-9999px',
+            }}
         >
             <video
                 autoPlay
@@ -357,6 +397,7 @@ function Raccoon({ modelPath }) {
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
+    const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
 
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
@@ -405,6 +446,13 @@ function Raccoon({ modelPath }) {
 
         if (faceLandmarks.length > 0) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
+
+            // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
+            const scaleFactor = 1.8;
+
+            // 새로운 스케일 설정
+            setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
+
             const facePosition = new Vector3(
                 (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
                 -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
@@ -416,13 +464,15 @@ function Raccoon({ modelPath }) {
                         ref.current.position
                             .copy(facePosition)
                             .add(avatarPosition);
+                        // 스케일 적용
+                        ref.current.scale.copy(modelScale);
                     }
                 }
             );
         }
     });
 
-    return <primitive object={scene} />;
+    return <primitive object={scene} scale={modelScale} />;
 }
 
 function Hand({ handColor }) {
