@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import { apiCall, apiCallWithFileData } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
@@ -10,7 +9,6 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
-import AvatarApp from '../../components/common/AvatarApp';
 import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
@@ -35,37 +33,76 @@ const VideoChatPage = () => {
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
     const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
-    const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태
     const [quizTime, setQuizTime] = useState(0); // 퀴즈 타이머 상태
+    const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태 추가
+    const [quizChallenger, setQuizChallenger] = useState(''); // 퀴즈 도전자
+    const [quizResult, setQuizResult] = useState(''); // 퀴즈미션 결과 (성공/실패)
+    const [quizResultTrigger, setQuizResultTrigger] = useState(0);
+    const [isChallengeCompleted, setIsChallengeCompleted] = useState(false); // 미션 종료 여부
+    const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
+        useState(0);
 
     const [showInitialModal, setShowInitialModal] = useState(true);
 
     const quizModeRef = useRef(quizMode);
 
-    const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
-    const isMissionActive = useSelector(
-        (state) => state.mission.isMissionActive
-    ); // Redux에서 isMissionActive 상태 가져오기
+    let ovSocket = null;
+
+    const handleQuizInProgress = (data) => {
+        console.log('자식에서 넘겨받은 데이터 -> ', data);
+        console.log('세션정보 -> ', session);
+        ovSocket
+            .signal({
+                data: JSON.stringify({
+                    userId: userInfo.username,
+                    message: `${userInfo.username} 유저가 미션을 시작합니다.`,
+                }),
+                to: [],
+                type: 'quizStart',
+            })
+            .then(() => {
+                console.log('시그널 성공적으로 전송');
+            })
+            .catch((error) => {
+                console.error('시그널 도중 에러 발생 -> ', error);
+            });
+        console.log('스타트 퀴즈 미션');
+    };
+
+    const finishQuizMission = () => {
+        console.log('세션정보 -> ', session);
+        session
+            .signal({
+                data: JSON.stringify({
+                    userId: userInfo.username,
+                    message: `${userInfo.username} 유저가 미션을 종료합니다.`,
+                }),
+                to: [],
+                type: 'quizEnd',
+            })
+            .then(() => {
+                console.log('시그널 성공적으로 전송');
+            })
+            .catch((error) => {
+                console.error('시그널 도중 에러 발생 -> ', error);
+            });
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
             setShowInitialModal(false);
-        }, 5000); // 10초 후 모달 닫기
+        }, 5000); // 5초 후 모달 닫기
 
         return () => clearTimeout(timer);
     }, []);
 
     useEffect(() => {
-        if (isMissionActive) {
-            // 미션이 활성화된 경우 수행할 작업
-            console.log('미션이 활성화되었습니다.');
-            // 필요한 작업을 여기에 추가합니다.
-        } else {
-            // 미션이 비활성화된 경우 수행할 작업
-            console.log('미션이 비활성화되었습니다.');
-            // 필요한 작업을 여기에 추가합니다.
+        if (quizChallenger && quizChallenger === userInfo.username) {
+            checkAnswer();
         }
-    }, [isMissionActive]);
+    }, [quizChallenger]);
+
+    const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
 
     // userInfo가 null인 경우 처리
     if (!userInfo) {
@@ -359,6 +396,7 @@ const VideoChatPage = () => {
             setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
             setSession(session);
+            ovSocket = session;
 
             session.on('streamCreated', (event) => {
                 let subscriber = session.subscribe(event.stream, undefined);
@@ -366,6 +404,40 @@ const VideoChatPage = () => {
                     ...prevSubscribers,
                     subscriber,
                 ]);
+            });
+
+            // 퀴즈 미션 시작
+            session.on('signal:quizStart', (event) => {
+                const data = JSON.parse(event.data);
+                console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
+
+                setQuizChallenger((prevQuizChallenger) => {
+                    if (prevQuizChallenger === '') {
+                        return data.userId;
+                    }
+                    return prevQuizChallenger;
+                });
+            });
+
+            // 퀴즈 미션 종료
+            session.on('signal:quizEnd', (event) => {
+                const data = JSON.parse(event.data);
+                console.log('quizEnd 시그널 전달받음, 내용은? -> ', data);
+
+                setIsChallengeCompleted(true);
+                setIsChallengeCompletedTrigger((prev) => prev + 1);
+                setQuizChallenger(''); // 퀴즈 도전자 초기화
+                if (data.userId === userInfo.username) {
+                    if (data.result) {
+                        // 미션성공
+                        setQuizResult('success');
+                        setQuizResultTrigger((prev) => prev + 1);
+                    } else {
+                        // 미션실패
+                        setQuizResult('failure');
+                        setQuizResultTrigger((prev) => prev + 1);
+                    }
+                }
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -545,6 +617,15 @@ const VideoChatPage = () => {
                             setQuizMode(false); // 퀴즈 모드 해제
                             quizModeRef.current = false; // ref 상태 업데이트
                             setQuizTime(0); // 타이머 초기화
+                            ovSocket.signal({
+                                data: JSON.stringify({
+                                    userId: userInfo.username,
+                                    message: `${userInfo.username} 유저 미션 종료`,
+                                    result: true,
+                                }),
+                                to: [],
+                                type: 'quizEnd',
+                            });
                         }
                     }
                 }
@@ -634,6 +715,7 @@ const VideoChatPage = () => {
                     clearInterval(intervalId);
                     if (quizModeRef.current) {
                         console.log('오답입니다!');
+                        finishQuizMission();
                         setQuizMode(false);
                         quizModeRef.current = false;
                     }
@@ -682,10 +764,24 @@ const VideoChatPage = () => {
                 >
                     중단하기
                 </button>
+                {quizChallenger && (
+                    <h1 className="text-yellow-500 text-4xl">
+                        현재 {quizChallenger} 유저가 미션 수행중
+                    </h1>
+                )}
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
-                    <RaccoonHand />
+                    <RaccoonHand
+                        onQuizEvent={handleQuizInProgress}
+                        quizResult={quizResult}
+                        quizResultTrigger={quizResultTrigger}
+                        isChallengeCompleted={isChallengeCompleted}
+                        isChallengeCompletedTrigger={
+                            isChallengeCompletedTrigger
+                        }
+                    />
+                    {/* <AvatarApp></AvatarApp> */}
                     <div
                         className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}

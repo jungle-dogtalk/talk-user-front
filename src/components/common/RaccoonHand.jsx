@@ -52,7 +52,7 @@ const victoryModels = [
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
-function RaccoonHand() {
+function RaccoonHand(props) {
     const dispatch = useDispatch();
 
     const [modelPath, setModelPath] = useState(models[0]);
@@ -63,6 +63,25 @@ function RaccoonHand() {
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
     const [clearedPercentage, setClearedPercentage] = useState(0);
+    const isQuizCompletedRef = useRef(false);
+    const quizInProgressRef = useRef(false);
+
+    useEffect(() => {
+        if (props.quizResult === 'success') {
+            isQuizCompletedRef.current = true;
+            changeVictoryModel();
+        }
+
+        if (props.quizResult === 'failure') {
+            handleIceBreaking();
+        }
+    }, [props.quizResult, props.quizResultTrigger]);
+
+    useEffect(() => {
+        if (props.isChallengeCompleted) {
+            quizInProgressRef.current = false;
+        }
+    }, [props.isChallengeCompleted, props.isChallengeCompletedTrigger]);
 
     useEffect(() => {
         const updateHandPositions = () => {
@@ -132,19 +151,13 @@ function RaccoonHand() {
 
     /* 퀴즈 실행 */
     const performQuiz = () => {
-        console.log('퀴즈 시작');
-        dispatch(startMission());
-        // TODO: 퀴즈 미션 로직 수행
+        console.log('자식컴포넌트 퀴즈 시작');
+        quizInProgressRef.current = true;
+        const data = {
+            quizInProgress: true,
+        };
 
-        // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
-        let isVictory = true;
-        if (isVictory) {
-            changeVictoryModel();
-            // dispatch(stopMission());
-        } else {
-            console.log('얼음 미션 수행');
-            // dispatch(startMission());
-        }
+        props.onQuizEvent(data);
     };
 
     const predict = () => {
@@ -213,9 +226,12 @@ function RaccoonHand() {
                     //         minY
                     //     );
                     //     break;
-                    case 'Open_Palm':
-                        handleIceBreaking();
-                        break;
+                    // case 'Closed_Fist':
+                    //     handleIceBreaking();
+                    //     break;
+                    // case 'Open_Palm':
+                    //     handleIceBreaking();
+                    //     break;
                     // case 'Open_Palm':
                     //     avatarPosition.x = Math.min(
                     //         avatarPosition.x + moveSpeed,
@@ -223,7 +239,13 @@ function RaccoonHand() {
                     //     );
                     //     break;
                     case 'Victory':
-                        performQuiz();
+                        console.log('브이감지');
+                        if (isQuizCompletedRef.current) {
+                            return;
+                        }
+                        if (!quizInProgressRef.current) {
+                            performQuiz();
+                        }
                         break;
                     default:
                         // No movement for other gestures
