@@ -741,7 +741,8 @@ const VideoChatPage = () => {
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
                     <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
                     <p className="mb-4">
-                        "{sessionData[targetUserIndex].nickname}" 님에 대한 질문의 답변을 맞춰보세요
+                        "{sessionData[targetUserIndex].nickname}" 님에 대한
+                        질문의 답변을 맞춰보세요
                     </p>
                     <p className="mb-4 font-bold">
                         "{sessionData[targetUserIndex].question}"
@@ -756,7 +757,7 @@ const VideoChatPage = () => {
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-1 flex items-center justify-between">
-            <img
+                <img
                     src={logo}
                     alt="명톡 로고"
                     className="w-12 h-12 sm:w-16 sm:h-16"
@@ -784,17 +785,17 @@ const VideoChatPage = () => {
                 </div>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
+            <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
                     <RaccoonHand
-                        onQuizEvent={handleQuizInProgress}
-                        quizResult={quizResult}
-                        quizResultTrigger={quizResultTrigger}
-                        isChallengeCompleted={isChallengeCompleted}
-                        isChallengeCompletedTrigger={
-                            isChallengeCompletedTrigger
-                        }
-                    />
-                    {/* <AvatarApp></AvatarApp> */}
+                            onQuizEvent={handleQuizInProgress}
+                            quizResult={quizResult}
+                            quizResultTrigger={quizResultTrigger}
+                            isChallengeCompleted={isChallengeCompleted}
+                            isChallengeCompletedTrigger={
+                                isChallengeCompletedTrigger
+                            }
+                        />
+                   {/* <AvatarApp></AvatarApp> */}
                     <div
                         className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}
