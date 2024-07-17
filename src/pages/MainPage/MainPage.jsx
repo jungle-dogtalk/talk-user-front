@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logoutUser, fetchUserProfile } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
@@ -7,12 +7,15 @@ import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경�
 import GLTFModel from '../../components/GLTFModel.jsx';
 import SpeechBubble from '../../components/SpeechBubble.jsx';
 import '../../styles.css';
+import axios from 'axios';
+import { API_LIST } from '../../utils/apiList.js';
 
 const MainPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
     const token = useSelector((state) => state.user.token);
     const navigate = useNavigate(); // useNavigate 훅 사용
     const dispatch = useDispatch();
+    const [topInterests, setTopInterests] = useState([]);
 
     console.log(userInfo);
 
@@ -31,6 +34,25 @@ const MainPage = () => {
         // Redux를 사용하여 사용자 정보를 가져오는 함수
         dispatch(fetchUserProfile());
     }, [dispatch]);
+
+    useEffect(() => {
+        const fetchTopInterests = async () => {
+            try {
+                console.log('Fetching top interests from API');
+                // 상위 5개 관심사 가져와 상태 저장
+                const response = await axios.get(
+                    API_LIST.GET_TOP_INTERESTS.path
+                );
+                console.log('Top interests response:', response.data);
+                setTopInterests(response.data.topInterests || []);
+            } catch (error) {
+                console.error('Failed to fetch top interests:', error);
+                setTopInterests([]);
+            }
+        };
+
+        fetchTopInterests();
+    }, []);
 
     // 매너지수와 발화지수 계산
     const mannerScore = userInfo?.reviewAverageScore || 0;
@@ -145,61 +167,29 @@ const MainPage = () => {
                     >
                         사람들이 가장 관심있어 해요!
                     </h2>
-                    <div
-                        className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
-                        style={{ maxWidth: '300px', height: '55px' }}
-                    >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                            style={{ fontSize: '20px', marginBottom: '0' }}
-                        >
-                            1. 여행
-                        </h2>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
-                        style={{ maxWidth: '300px', height: '55px' }}
-                    >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                            style={{ fontSize: '20px', marginBottom: '0' }}
-                        >
-                            2. 맛집
-                        </h2>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
-                        style={{ maxWidth: '300px', height: '55px' }}
-                    >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                            style={{ fontSize: '20px', marginBottom: '0' }}
-                        >
-                            3. 운동
-                        </h2>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
-                        style={{ maxWidth: '300px', height: '55px' }}
-                    >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                            style={{ fontSize: '20px', marginBottom: '0' }}
-                        >
-                            4. 사진
-                        </h2>
-                    </div>
-                    <div
-                        className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg"
-                        style={{ maxWidth: '300px', height: '55px' }}
-                    >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                            style={{ fontSize: '20px', marginBottom: '0' }}
-                        >
-                            5. mbti
-                        </h2>
-                    </div>
+                    {Array.isArray(topInterests) && topInterests.length > 0 ? (
+                        topInterests.map((interest, index) => (
+                            <div
+                                key={index}
+                                className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
+                                style={{ maxWidth: '300px', height: '55px' }}
+                            >
+                                <h2
+                                    className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
+                                    style={{
+                                        fontSize: '20px',
+                                        marginBottom: '0',
+                                    }}
+                                >
+                                    {index + 1}. {interest}
+                                </h2>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-500">
+                            관심사를 불러오는 중...
+                        </p>
+                    )}
                 </div>
             </div>
             <div className="speech-bubble-container">
