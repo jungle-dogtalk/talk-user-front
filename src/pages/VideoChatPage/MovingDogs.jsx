@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
+import dogHouseImage from '../../assets/doghouse.jpg';
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
@@ -17,6 +18,13 @@ const MovingDogs = ({ sessionData }) => {
     const [randomInterestIndex, setRandomInterestIndex] = useState(
         Array(4).fill(0)
     );
+
+    const dogHouses = [
+        { x: 10, y: 10 }, // 왼쪽 위
+        { x: 90, y: 10 }, // 오른쪽 위
+        { x: 10, y: 90 }, // 왼쪽 아래
+        { x: 90, y: 90 }, // 오른쪽 아래
+    ];
 
     const getRandomPosition = () => ({
         x: Math.random() * 90,
@@ -106,6 +114,19 @@ const MovingDogs = ({ sessionData }) => {
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
+            {dogHouses.map((house, index) => (
+                <img
+                    key={`house-${index}`}
+                    src={dogHouseImage}
+                    alt={`Dog house ${index + 1}`}
+                    className="absolute w-12 h-12"
+                    style={{
+                        left: `${house.x}%`,
+                        top: `${house.y}%`,
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                />
+            ))}
             {dogPositions.map((pos, index) => (
                 <div
                     key={index}
@@ -139,7 +160,7 @@ const MovingDogs = ({ sessionData }) => {
                         <img
                             src={dogWalkGif}
                             alt={`Dog ${index + 1}`}
-                            className="w-14 h-14 cursor-pointer"
+                            className="w-20 h-20 cursor-pointer"
                             onClick={(event) => handleDogClick(index, event)}
                         />
                         <div className="absolute bottom-0 left-0 right-0 text-center text-xs bg-white bg-opacity-70 rounded-sm">
