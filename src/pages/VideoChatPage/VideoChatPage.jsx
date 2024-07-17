@@ -740,7 +740,7 @@ const VideoChatPage = () => {
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
                     <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
                     <p className="mb-4">
-                        {sessionData[targetUserIndex].userId}이 답변한 질문을
+                        "{sessionData[targetUserIndex].nickname}" 님이 답변한 질문을
                         맞춰보세요:
                     </p>
                     <p className="mb-4 font-bold">
@@ -757,18 +757,27 @@ const VideoChatPage = () => {
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
                 <h1 className="text-white text-4xl">멍톡</h1>
-                <button
-                    onClick={leaveSession}
-                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-300"
-                    style={{ fontSize: '25px' }}
-                >
-                    중단하기
-                </button>
-                {quizChallenger && (
-                    <h1 className="text-yellow-500 text-4xl">
-                        현재 {quizChallenger} 유저가 미션 수행중
-                    </h1>
-                )}
+                <div className="flex items-center">
+                    <h2
+                        className="text-white text-lg font-bold bg-opacity-70 rounded-md"
+                        style={{ fontSize: '25px', marginRight: '20px' }}
+                    >
+                        남은 시간: {Math.floor(remainingTime / 60)}분{' '}
+                        {remainingTime % 60}초
+                    </h2>
+                    <button
+                        onClick={leaveSession}
+                        className="text-white text-lg bg-red-600 px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-300"
+                        style={{ fontSize: '25px' }}
+                    >
+                        중단하기
+                    </button>
+                    {quizChallenger && (
+                        <h1 className="text-yellow-500 text-4xl">
+                            현재 {quizChallenger} 유저가 미션 수행중
+                        </h1>
+                    )}
+                </div>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
@@ -802,7 +811,9 @@ const VideoChatPage = () => {
                                     <div className="absolute top-10 right-2 w-38 bg-white shadow-lg rounded-lg p-2 z-50">
                                         <SettingMenu
                                             publisher={publisher}
-                                            onMirroredChange={handleMirrorChange}
+                                            onMirroredChange={
+                                                handleMirrorChange
+                                            }
                                         />
                                     </div>
                                 )}
@@ -881,13 +892,6 @@ const VideoChatPage = () => {
                         backgroundPosition: 'center',
                     }}
                 >
-                    <h2
-                        className="text-lg font-bold mb-2 text-center bg-white p-2 rounded-md bg-opacity-70"
-                        style={{ fontSize: '28px' }}
-                    >
-                        남은 시간: {Math.floor(remainingTime / 60)}분{' '}
-                        {remainingTime % 60}초
-                    </h2>
                     <MovingDogs sessionData={sessionData} />
                     <div className="flex justify-center items-center mt-4">
                         <button
@@ -926,6 +930,5 @@ const VideoChatPage = () => {
             {showInitialModal && <InitialQuestionModal />}
         </div>
     );
-    
 };
 export default VideoChatPage;
