@@ -5,7 +5,7 @@ import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
-import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
+import defaultProfileImage from '../../assets/profile.png'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
 
 const SignUpPage = () => {
@@ -150,8 +150,8 @@ const SignUpPage = () => {
                     <div className="relative ml-4 sm:ml-8 ">
                         <img
                             src={profileImage}
-                            alt="프로필 사진"
-                            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-2 border-gray-300"
+                            alt="Profile"
+                            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full  "
                         />
                         <label
                             htmlFor="file-input"
