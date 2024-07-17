@@ -68,35 +68,38 @@ const MatchingPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#FFFAE8]">
+        <div className="h-screen flex flex-col bg-[#FFFAE8] overflow-hidden">
             <header className="w-full bg-[#a16e47] p-2 flex justify-between items-center">
                 <img src={logo} alt="로고" className="w-16 h-16" />
             </header>
             <div className="flex flex-col items-center justify-center flex-1 w-full px-4 sm:px-8">
                 <div className="bg-[#FFFAE8] rounded-lg p-8 w-full max-w-5xl flex flex-col items-center">
-                    <div className="text-center">
+                    <div className="text-center mb-8 mt-6">
+                        {' '}
                         <h2
                             className="text-3xl sm:text-5xl font-bold bouncing-text"
                             style={{ fontSize: '50px' }}
                         >
                             {createBouncingText('매칭 중 . . .')}
                         </h2>
-
                         <p
-                            className="text-gray-700 mt-6 text-lg sm:text-2xl"
+                            className="text-gray-700 mt-4 text-lg sm:text-2xl" // mt-4로 조정
                             style={{ fontSize: '20px' }}
                         >
                             나의 관심사 : {userInfo.interests.join(', ')}
                         </p>
                     </div>
                     <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />
-                    <div className="flex justify-center mt-16">
+                    <p className="mt-4"> 상: 👍 하: 👎 좌: 🖐️ 우: ✊</p>
+                    <div className="flex justify-center mt-4">
+                        {' '}
+                        {/* mt-4로 조정 */}
                         <button
                             className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleCancelClick}
                             style={{ fontSize: '25px' }}
                         >
-                            취소하기
+                            돌아가기
                         </button>
                     </div>
                 </div>

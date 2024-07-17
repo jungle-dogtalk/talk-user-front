@@ -196,25 +196,25 @@ const PuppyGame = () => {
                     case 'Thumb_Up':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            y: Math.max(prev.y - CHARACTER_SPEED, 0),
+                            y: (prev.y - CHARACTER_SPEED + 600) % 600,
                         }));
                         break;
                     case 'Thumb_Down':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            y: Math.min(prev.y + CHARACTER_SPEED, 600),
+                            y: (prev.y + CHARACTER_SPEED) % 600,
                         }));
                         break;
                     case 'Closed_Fist':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            x: Math.max(prev.x - CHARACTER_SPEED, 0),
+                            x: (prev.x - CHARACTER_SPEED + 800) % 800,
                         }));
                         break;
                     case 'Open_Palm':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            x: Math.min(prev.x + CHARACTER_SPEED, 800),
+                            x: (prev.x + CHARACTER_SPEED) % 800,
                         }));
                         break;
                     default:
