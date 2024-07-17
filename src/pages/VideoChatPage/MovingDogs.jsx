@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
-import dogHouseImage from '../../assets/doghouse.jpg';
+import dogHouseImage1 from '../../assets/doghouse.jpg';
+import dogHouseImage2 from '../../assets/doghouse.jpg';
+import dogHouseImage3 from '../../assets/doghouse.jpg';
+import dogHouseImage4 from '../../assets/doghouse.jpg';
+
+const dogHouseImages = [
+    dogHouseImage1,
+    dogHouseImage2,
+    dogHouseImage3,
+    dogHouseImage4,
+];
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
@@ -20,11 +30,17 @@ const MovingDogs = ({ sessionData }) => {
     );
 
     const dogHouses = [
-        { x: 10, y: 10 }, // 왼쪽 위
-        { x: 90, y: 10 }, // 오른쪽 위
-        { x: 10, y: 90 }, // 왼쪽 아래
-        { x: 90, y: 90 }, // 오른쪽 아래
+        { x: 20, y: 10 }, // 왼쪽 위
+        { x: 80, y: 10 }, // 오른쪽 위
+        { x: 20, y: 90 }, // 왼쪽 아래
+        { x: 80, y: 90 }, // 오른쪽 아래
     ];
+
+    // 강아지 집과 사용자 데이터를 매핑합니다.
+    const dogHouseMapping = dogHouses.map((house, index) => ({
+        house,
+        data: safeSessionData[index] || { nickname: `User ${index + 1}` },
+    }));
 
     const getRandomPosition = () => ({
         x: Math.random() * 90,
@@ -114,18 +130,27 @@ const MovingDogs = ({ sessionData }) => {
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
-            {dogHouses.map((house, index) => (
-                <img
+            {dogHouseMapping.map(({ house, data }, index) => (
+                <div
                     key={`house-${index}`}
-                    src={dogHouseImage}
-                    alt={`Dog house ${index + 1}`}
-                    className="absolute w-12 h-12"
+                    className="absolute"
                     style={{
                         left: `${house.x}%`,
                         top: `${house.y}%`,
                         transform: 'translate(-50%, -50%)',
                     }}
-                />
+                >
+                    <div className="relative w-20 h-20">
+                        <div className="absolute top-0 left-0 w-full text-center text-xs bg-white bg-opacity-70 rounded-sm">
+                            {data.nickname}의 집
+                        </div>
+                        <img
+                            src={dogHouseImages[index % dogHouseImages.length]}
+                            alt={`Dog house ${index + 1}`}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                </div>
             ))}
             {dogPositions.map((pos, index) => (
                 <div
