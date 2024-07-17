@@ -1,11 +1,11 @@
 import React from 'react';
-import SlideImage from '../../assets/Slide4.png';
+import SlideImage from '../../assets/Slide44.png';
 
 const Slide4 = () => (
     <div className="content">
         <h2
             className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center mt-10"
-            style={{ fontSize: '35px', marginBottom: '0' }}
+            style={{ fontSize: '40px', marginBottom: '0' }}
         >
             각 기능 사용법을 알려드릴게요!
         </h2>
