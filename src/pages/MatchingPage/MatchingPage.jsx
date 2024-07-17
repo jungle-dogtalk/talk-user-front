@@ -99,7 +99,7 @@ const MatchingPage = () => {
                             onClick={handleCancelClick}
                             style={{ fontSize: '25px' }}
                         >
-                            취소하기
+                            돌아가기
                         </button>
                     </div>
                 </div>
