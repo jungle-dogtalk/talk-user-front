@@ -920,7 +920,7 @@ const VideoChatPage = () => {
                                 </ul>
                             </div>
                         )} */}
-                        {recommendedTopics.length > 0 && (
+                        {recommendedTopics.length > 0 && !quizChallenger && !quizResult && (
                             <div className="recommended-topics mt-4">
                                 <h3
                                     className="text-2xl font-semibold"
@@ -969,24 +969,24 @@ const VideoChatPage = () => {
                             </div>
                         )}
 
-                        {quizResult && (
+                        {showQuizSuccess && (
                             <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
                                 <div className="p-6 rounded-lg  w-full max-w-3xl">
-                                    {showQuizSuccess && (
-                                        <>
-                                            <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
-                                                미션 성공 !!
-                                            </h1>
-                                            <h2 className="text-gray-800 text-2xl font-semibold text-center">
-                                                정답은 "{quizAnswerRef.current}"
-                                            </h2>
-                                        </>
-                                    )}
-                                    {showQuizFailure && (
-                                        <h1 className="text-blue-500 text-4xl font-bold text-center">
-                                            미션 실패 ..
-                                        </h1>
-                                    )}
+                                    <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
+                                        미션 성공 !!
+                                    </h1>
+                                    <h2 className="text-gray-800 text-2xl font-semibold text-center">
+                                        정답은 "{quizAnswerRef.current}"
+                                    </h2>
+                                </div>
+                            </div>
+                        )}
+                        {showQuizFailure && (
+                            <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
+                                <div className="p-6 rounded-lg  w-full max-w-3xl">
+                                    <h1 className="text-blue-500 text-4xl font-bold text-center">
+                                        미션 실패 ..
+                                    </h1>
                                 </div>
                             </div>
                         )}
