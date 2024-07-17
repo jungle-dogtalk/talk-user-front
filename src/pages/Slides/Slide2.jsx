@@ -13,7 +13,7 @@ const Slide2 = () => (
             src={SlideImage}
             alt="Slide2"
             style={{
-                width: '1200px',
+                width: '1100px',
                 height: 'auto',
                 objectFit: 'cover',
             }}

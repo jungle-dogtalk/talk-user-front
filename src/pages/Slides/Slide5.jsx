@@ -9,7 +9,6 @@ const Slide5 = () => (
         >
             '마이페이지에 보이는 건 뭐예요?'
         </h2>
-        <br></br>
         <img
             src={SlideImage}
             alt="Slide5"
