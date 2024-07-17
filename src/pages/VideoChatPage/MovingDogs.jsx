@@ -143,6 +143,17 @@ const MovingDogs = ({ sessionData }) => {
         setSelectedUser(null);
     };
 
+    // 모달이 열렸을 때 5초 후에 자동으로 닫히도록 설정
+    useEffect(() => {
+        if (showModal) {
+            const timer = setTimeout(() => {
+                closeModal();
+            }, 5000); // 5초 후에 모달 닫기
+
+            return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
+        }
+    }, [showModal]);
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouseMapping.map(({ house, data }, index) => (
@@ -214,25 +225,26 @@ const MovingDogs = ({ sessionData }) => {
                 </div>
             ))}
             {showModal && selectedUser && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
-                        <header className="bg-[#a16e47] text-white p-4 rounded-t-lg flex justify-between items-center">
-                            <h2 className="text-lg">
-                                {selectedUser.nickname}의 질문
-                            </h2>
-                            <button onClick={closeModal} className="text-white">
-                                X
-                            </button>
-                        </header>
-                        <div className="p-6">
-                            <p>{selectedUser.question}</p>
-                            <button
-                                className="mt-4 bg-red-500 text-white px-4 py-2 rounded-full"
-                                onClick={closeModal}
-                            >
-                                닫기
-                            </button>
-                        </div>
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg w-full max-w-xs z-50">
+                    <header className="bg-[#a16e47] text-white p-2 rounded-t-lg flex justify-between items-center">
+                        <h2 className="text-sm text-center w-full">
+                            {selectedUser.nickname}의 질문
+                        </h2>
+                        <button
+                            onClick={closeModal}
+                            className="absolute right-2 text-white"
+                        >
+                            X
+                        </button>
+                    </header>
+                    <div className="p-4 text-center">
+                        <p>{selectedUser.question}</p>
+                        <button
+                            className="mt-2 bg-red-500 text-white px-2 py-1 rounded-full mx-auto"
+                            onClick={closeModal}
+                        >
+                            닫기
+                        </button>
                     </div>
                 </div>
             )}
