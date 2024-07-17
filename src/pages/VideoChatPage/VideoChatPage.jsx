@@ -21,8 +21,6 @@ const VideoChatPage = () => {
     const recognitionRef = useRef(null);
     const socket = useRef(null);
 
-    const testString = '제주도'; // Quiz Test 문자열
-
     const [session, setSession] = useState(undefined);
     const [subscribers, setSubscribers] = useState([]);
     const [publisher, setPublisher] = useState(undefined);
@@ -42,10 +40,12 @@ const VideoChatPage = () => {
     const [isChallengeCompleted, setIsChallengeCompleted] = useState(false); // 미션 종료 여부
     const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
         useState(0);
+    const quizAnswerRef = useRef('');
 
     const [showInitialModal, setShowInitialModal] = useState(true);
 
     const quizModeRef = useRef(quizMode);
+    const targetUserIndexRef = useRef(0);
 
     let ovSocket = null;
 
@@ -77,6 +77,7 @@ const VideoChatPage = () => {
                 data: JSON.stringify({
                     userId: userInfo.username,
                     message: `${userInfo.username} 유저가 미션을 종료합니다.`,
+                    result: false,
                 }),
                 to: [],
                 type: 'quizEnd',
@@ -428,6 +429,7 @@ const VideoChatPage = () => {
                 setIsChallengeCompleted(true);
                 setIsChallengeCompletedTrigger((prev) => prev + 1);
                 setQuizChallenger(''); // 퀴즈 도전자 초기화
+
                 if (data.userId === userInfo.username) {
                     if (data.result) {
                         // 미션성공
@@ -438,6 +440,9 @@ const VideoChatPage = () => {
                         setQuizResult('failure');
                         setQuizResultTrigger((prev) => prev + 1);
                     }
+                    setTimeout(() => {
+                        setQuizResult('');
+                    }, 10000);
                 }
             });
 
@@ -611,9 +616,11 @@ const VideoChatPage = () => {
                         transcript,
                     ]);
 
-                    // 퀴즈 모드일 때만 testString 검사
+                    // 퀴즈 모드일 때만 quizAnswer 검사
                     if (quizModeRef.current) {
-                        if (boyerMooreSearch(transcript, testString)) {
+                        if (
+                            boyerMooreSearch(transcript, quizAnswerRef.current)
+                        ) {
                             console.log('정답입니다!');
                             setQuizMode(false); // 퀴즈 모드 해제
                             quizModeRef.current = false; // ref 상태 업데이트
@@ -734,18 +741,22 @@ const VideoChatPage = () => {
         const currentUserIndex = sessionData.findIndex(
             (user) => user.userId === userInfo.username
         );
-        const targetUserIndex = (currentUserIndex + 1) % 4;
+        targetUserIndexRef.current = (currentUserIndex + 1) % 4;
+
+        const answer = sessionData[targetUserIndexRef.current].answer;
+        quizAnswerRef.current = answer;
+        console.log('answer는? -> ', quizAnswerRef.current);
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
                     <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
                     <p className="mb-4">
-                        "{sessionData[targetUserIndex].nickname}" 님에 대한
-                        질문의 답변을 맞춰보세요
+                        "{sessionData[targetUserIndexRef.current].nickname}"
+                        님에 대한 질문의 답변을 맞춰보세요
                     </p>
                     <p className="mb-4 font-bold">
-                        "{sessionData[targetUserIndex].question}"
+                        "{sessionData[targetUserIndexRef.current].question}"
                     </p>
                     <p className="text-sm text-gray-500">
                         이 창은 5초 후 자동으로 닫힙니다.
@@ -777,25 +788,20 @@ const VideoChatPage = () => {
                     >
                         중단하기
                     </button>
-                    {quizChallenger && (
-                        <h1 className="text-yellow-500 text-4xl">
-                            현재 {quizChallenger} 유저가 미션 수행중
-                        </h1>
-                    )}
                 </div>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
-            <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
+                <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
                     <RaccoonHand
-                            onQuizEvent={handleQuizInProgress}
-                            quizResult={quizResult}
-                            quizResultTrigger={quizResultTrigger}
-                            isChallengeCompleted={isChallengeCompleted}
-                            isChallengeCompletedTrigger={
-                                isChallengeCompletedTrigger
-                            }
-                        />
-                   {/* <AvatarApp></AvatarApp> */}
+                        onQuizEvent={handleQuizInProgress}
+                        quizResult={quizResult}
+                        quizResultTrigger={quizResultTrigger}
+                        isChallengeCompleted={isChallengeCompleted}
+                        isChallengeCompletedTrigger={
+                            isChallengeCompletedTrigger
+                        }
+                    />
+                    {/* <AvatarApp></AvatarApp> */}
                     <div
                         className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}
@@ -924,6 +930,42 @@ const VideoChatPage = () => {
                                 </ul>
                             </div>
                         )}
+                        {quizChallenger && (
+                            <div>
+                                <h1 className="text-yellow-500 text-4xl">
+                                    현재 {quizChallenger} 유저가 퀴즈 미션
+                                    수행중!
+                                </h1>
+                                <h2>
+                                    {
+                                        sessionData[targetUserIndexRef.current]
+                                            .nickname
+                                    }
+                                    님이 답변한 질문
+                                </h2>
+                                <h2>
+                                    {
+                                        sessionData[targetUserIndexRef.current]
+                                            .question
+                                    }
+                                </h2>
+                            </div>
+                        )}
+                        {quizResult &&
+                            (quizResult !== '' && quizResult === 'success' ? (
+                                <div>
+                                    <h1 className="text-red-500 text-6xl">
+                                        미션 성공 !!
+                                    </h1>
+                                    <h1 className="text-4xl">
+                                        정답은 "{quizAnswerRef.current}"
+                                    </h1>
+                                </div>
+                            ) : (
+                                <h1 className="text-blue-500 text-6xl">
+                                    미션 실패 ..
+                                </h1>
+                            ))}
                     </div>
                 </div>
                 <div
