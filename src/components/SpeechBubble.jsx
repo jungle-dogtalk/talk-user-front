@@ -21,7 +21,7 @@ const SpeechBubble = () => {
     return (
         <div className="speech-bubble relative">
             {slides[currentSlide]}
-            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute left-5 top-1/2 transform -translate-y-1/2 z-10">
                 <button
                     onClick={() =>
                         setCurrentSlide(
@@ -29,18 +29,20 @@ const SpeechBubble = () => {
                         )
                     }
                     className="text-3xl font-bold"
+                    style={{ fontSize: '50px' }}
                 >
-                    {'<'}
+                    {'<<'}
                 </button>
             </div>
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute right-5 top-1/2 transform -translate-y-1/2 z-10">
                 <button
                     onClick={() =>
                         setCurrentSlide((prev) => (prev + 1) % slides.length)
                     }
                     className="text-3xl font-bold"
+                    style={{ fontSize: '50px' }}
                 >
-                    {'>'}
+                    {'>>'}
                 </button>
             </div>
         </div>

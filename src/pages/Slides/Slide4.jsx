@@ -1,12 +1,26 @@
 import React from 'react';
-import serviceImage1 from '../../assets/service1.png';
-import serviceImage2 from '../../assets/service2.png';
-import serviceImage3 from '../../assets/service3.png';
-import serviceImage4 from '../../assets/service4.png';
+import SlideImage from '../../assets/Slide4.png';
 
 const Slide4 = () => (
     <div className="content">
-        <h2>Slide4</h2>
+        <h2
+            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center mt-10"
+            style={{ fontSize: '35px', marginBottom: '0' }}
+        >
+            각 기능 사용법을 알려드릴게요!
+        </h2>
+        <br></br>
+        <br></br>
+        <br></br>
+        <img
+            src={SlideImage}
+            alt="Slide4"
+            style={{
+                width: '1200px',
+                height: 'auto',
+                objectFit: 'cover',
+            }}
+        />
     </div>
 );
 

@@ -5,9 +5,9 @@ const Slide2 = () => (
     <div className="content">
         <h2
             className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center mt-10"
-            style={{ fontSize: '35px', marginBottom: '0' }}
+            style={{ fontSize: '38px', marginBottom: '0' }}
         >
-            - 질문 미션 기능 -
+            '미션은 어떻게 진행하나요?'
         </h2>
         <img
             src={SlideImage}

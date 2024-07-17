@@ -7,7 +7,6 @@ import serviceImage4 from '../../assets/service4.png';
 const Slide1 = () => (
     <div className="content">
         <br></br>
-        <br></br>
         <h2
             className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center mt-10"
             style={{ fontSize: '35px', marginBottom: '0' }}
