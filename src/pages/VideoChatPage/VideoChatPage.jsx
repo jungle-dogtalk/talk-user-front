@@ -931,13 +931,13 @@ const VideoChatPage = () => {
                             </div>
                         )}
                         {quizChallenger && (
-                            <div className="bg-yellow-100 w-full h-full flex items-center justify-center">
+                            <div className="bg-[#e7d4b5] w-full h-full flex items-center justify-center">
                                 <div className="p-6 rounded-lg shadow-lg w-full">
-                                    <h1 className="text-yellow-500 text-4xl font-bold mb-4 text-center">
+                                    <h1 className="text-[#7a5c47] text-4xl font-bold mb-4 text-center">
                                         현재 {quizChallenger} 유저가 퀴즈 미션
                                         수행중!
                                     </h1>
-                                    <div className="bg-white p-4 rounded-md shadow-md w-full">
+                                    <div className="bg-[#f7f3e9] p-4 rounded-md shadow-md w-full">
                                         <h2 className="text-gray-800 text-2xl mb-2 font-semibold text-center">
                                             {
                                                 sessionData[
@@ -959,8 +959,8 @@ const VideoChatPage = () => {
                         )}
 
                         {quizResult && (
-                            <div className="bg-yellow-100 w-full flex items-center justify-center mt-4">
-                                <div className="p-6 rounded-lg  w-full max-w-3xl">
+                            <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
+                                <div className="p-6 rounded-lg shadow-lg w-full max-w-3xl">
                                     {quizResult === 'success' ? (
                                         <>
                                             <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
