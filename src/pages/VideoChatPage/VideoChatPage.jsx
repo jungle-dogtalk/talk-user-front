@@ -931,41 +931,53 @@ const VideoChatPage = () => {
                             </div>
                         )}
                         {quizChallenger && (
-                            <div>
-                                <h1 className="text-yellow-500 text-4xl">
-                                    현재 {quizChallenger} 유저가 퀴즈 미션
-                                    수행중!
-                                </h1>
-                                <h2>
-                                    {
-                                        sessionData[targetUserIndexRef.current]
-                                            .nickname
-                                    }
-                                    님이 답변한 질문
-                                </h2>
-                                <h2>
-                                    {
-                                        sessionData[targetUserIndexRef.current]
-                                            .question
-                                    }
-                                </h2>
+                            <div className="bg-yellow-100 w-full h-full flex items-center justify-center">
+                                <div className="p-6 rounded-lg shadow-lg w-full">
+                                    <h1 className="text-yellow-500 text-4xl font-bold mb-4 text-center">
+                                        현재 {quizChallenger} 유저가 퀴즈 미션
+                                        수행중!
+                                    </h1>
+                                    <div className="bg-white p-4 rounded-md shadow-md w-full">
+                                        <h2 className="text-gray-800 text-2xl mb-2 font-semibold text-center">
+                                            {
+                                                sessionData[
+                                                    targetUserIndexRef.current
+                                                ].nickname
+                                            }{' '}
+                                            님이 답변한 질문
+                                        </h2>
+                                        <p className="text-gray-700 text-xl text-center">
+                                            {
+                                                sessionData[
+                                                    targetUserIndexRef.current
+                                                ].question
+                                            }
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         )}
-                        {quizResult &&
-                            (quizResult !== '' && quizResult === 'success' ? (
-                                <div>
-                                    <h1 className="text-red-500 text-6xl">
-                                        미션 성공 !!
-                                    </h1>
-                                    <h1 className="text-4xl">
-                                        정답은 "{quizAnswerRef.current}"
-                                    </h1>
+
+                        {quizResult && (
+                            <div className="bg-yellow-100 w-full flex items-center justify-center mt-4">
+                                <div className="p-6 rounded-lg  w-full max-w-3xl">
+                                    {quizResult === 'success' ? (
+                                        <>
+                                            <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
+                                                미션 성공 !!
+                                            </h1>
+                                            <h2 className="text-gray-800 text-2xl font-semibold text-center">
+                                                정답은 "{quizAnswerRef.current}"
+                                            </h2>
+                                        </>
+                                    ) : (
+                                        <h1 className="text-blue-500 text-4xl font-bold text-center">
+                                            미션 실패 ..
+                                        </h1>
+                                    )}
                                 </div>
-                            ) : (
-                                <h1 className="text-blue-500 text-6xl">
-                                    미션 실패 ..
-                                </h1>
-                            ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div
