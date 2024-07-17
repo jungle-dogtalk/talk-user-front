@@ -29,6 +29,10 @@ const MovingDogs = ({ sessionData }) => {
         Array(4).fill(0)
     );
 
+    // 모달 상태와 선택된 사용자 상태 추가
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+
     const dogHouses = [
         { x: 20, y: 10 }, // 왼쪽 위
         { x: 80, y: 10 }, // 오른쪽 위
@@ -128,6 +132,17 @@ const MovingDogs = ({ sessionData }) => {
         }
     };
 
+    // 강아지 집 클릭 핸들러 추가
+    const handleDogHouseClick = (index) => {
+        setSelectedUser(sessionData[index]);
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setSelectedUser(null);
+    };
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouseMapping.map(({ house, data }, index) => (
@@ -140,7 +155,10 @@ const MovingDogs = ({ sessionData }) => {
                         transform: 'translate(-50%, -50%)',
                     }}
                 >
-                    <div className="relative w-20 h-20">
+                    <div
+                        className="relative w-20 h-20"
+                        onClick={() => handleDogHouseClick(index)}
+                    >
                         <div className="absolute top-0 left-0 w-full text-center text-xs bg-white bg-opacity-70 rounded-sm">
                             {data.nickname}의 집
                         </div>
@@ -195,6 +213,29 @@ const MovingDogs = ({ sessionData }) => {
                     </div>
                 </div>
             ))}
+            {showModal && selectedUser && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md">
+                        <header className="bg-[#a16e47] text-white p-4 rounded-t-lg flex justify-between items-center">
+                            <h2 className="text-lg">
+                                {selectedUser.nickname}의 질문
+                            </h2>
+                            <button onClick={closeModal} className="text-white">
+                                X
+                            </button>
+                        </header>
+                        <div className="p-6">
+                            <p>{selectedUser.question}</p>
+                            <button
+                                className="mt-4 bg-red-500 text-white px-4 py-2 rounded-full"
+                                onClick={closeModal}
+                            >
+                                닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
