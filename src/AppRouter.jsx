@@ -14,12 +14,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import VideoChatRoute from './components/VideoChatRoute';
 import ChooseRaccoonPage from './pages/ChooseRaccoonPage/ChooseRaccoonPage';
 import QuestionPage from './pages/QuestionPage/QuestionPage';
+import LandingPage from './pages/LandingPage/LandingPage';
 
 function AppRouter() {
     return (
         <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
+
             <Route
                 path="/videochat"
                 element={<ProtectedRoute component={VideoChatPage} />}
