@@ -13,6 +13,7 @@ import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
 import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
+import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
@@ -683,15 +684,14 @@ const VideoChatPage = () => {
                 </button>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="flex flex-col w-3/4">
-                    <RaccoonHand></RaccoonHand>
-                    {/* <AvatarApp></AvatarApp> */}
+                <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
+                    <RaccoonHand />
                     <div
-                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}
                     >
                         {publisher && (
-                            <div className="relative border-2 border-gray-300 aspect-video">
+                            <div className="relative border border-gray-300 rounded-lg shadow-md aspect-video">
                                 <OpenViduVideo streamManager={publisher} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     {publisher.stream.connection.data}
@@ -717,7 +717,7 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-2 border-gray-300 aspect-video"
+                                className="relative border border-gray-300 rounded-lg shadow-md aspect-video"
                             >
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
@@ -729,7 +729,7 @@ const VideoChatPage = () => {
                             (_, index) => (
                                 <div
                                     key={index}
-                                    className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
+                                    className="relative border border-gray-300 rounded-lg shadow-md aspect-video flex items-center justify-center"
                                 >
                                     <div className="text-gray-500 flex flex-col items-center">
                                         <svg
@@ -762,14 +762,47 @@ const VideoChatPage = () => {
                         className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
                         style={{ height: '200px' }}
                     >
-                        <button
-                            onClick={requestTopicRecommendations}
-                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
-                            style={{ fontSize: '28px' }}
-                        >
-                            주제 추천 Btn
-                        </button>
-
+                        <div className="flex justify-center items-center mb-4">
+                            <button
+                                onClick={requestTopicRecommendations}
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4"
+                                style={{ fontSize: '28px' }}
+                            >
+                                주제 추천 Btn
+                            </button>
+                            <div className="flex space-x-2">
+                                <button
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                                    onClick={() =>
+                                        updatePublisherWithNewPitch(1.0)
+                                    }
+                                >
+                                    1
+                                </button>
+                                <button
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                                    onClick={() =>
+                                        updatePublisherWithNewPitch(0.5)
+                                    }
+                                >
+                                    2
+                                </button>
+                                <button
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                                    onClick={() =>
+                                        updatePublisherWithNewPitch(1.5)
+                                    }
+                                >
+                                    3
+                                </button>
+                                <button
+                                    onClick={checkAnswer}
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
+                                >
+                                    Quiz Test
+                                </button>
+                            </div>
+                        </div>
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
                                 <h3
@@ -787,40 +820,21 @@ const VideoChatPage = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
+                <div
+                    className="w-1/4 flex flex-col p-4"
+                    style={{
+                        backgroundImage: `url(${forestBackground})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                >
                     <h2
-                        className="text-lg font-bold mb-2 text-center"
+                        className="text-lg font-bold mb-2 text-center bg-white p-2 rounded-md bg-opacity-70"
                         style={{ fontSize: '28px' }}
                     >
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
-                    <div className="flex justify-center mt-2">
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(1.0)}
-                        >
-                            1
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(0.5)}
-                        >
-                            2
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(1.5)}
-                        >
-                            3
-                        </button>
-                        <button
-                            onClick={checkAnswer}
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                        >
-                            Quiz Test
-                        </button>
-                    </div>
                     <MovingDogs sessionData={sessionData} />
                 </div>
             </div>
