@@ -195,8 +195,8 @@ function ChooseRaccoonHand() {
 
     return (
         <div
-            className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            className="App w-full max-w-[480px] mx-auto"
+            style={{ position: 'relative', aspectRatio: '4 / 3' }}
         >
             <video
                 autoPlay
@@ -211,8 +211,8 @@ function ChooseRaccoonHand() {
                     top: 0,
                     left: 0,
                     pointerEvents: 'none',
-                    width: 640,
-                    height: 480,
+                    width: '100%',
+                    height: '100%',
                 }}
                 camera={{
                     fov: 20,
@@ -233,18 +233,20 @@ function ChooseRaccoonHand() {
                 <Raccoon modelPath={modelPath} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
-            <button
-                onClick={changeModel}
-                style={{ position: 'absolute', top: 10, left: 10 }}
-            >
-                Change Raccoon Face
-            </button>
-            <button
-                onClick={changeHandColor}
-                style={{ position: 'absolute', top: 10, right: 30 }}
-            >
-                Change Raccoon Hand Color
-            </button>
+            <div className="absolute top-2 left-2 right-2 flex justify-between">
+                <button
+                    onClick={changeModel}
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
+                >
+                    Change Face
+                </button>
+                <button
+                    onClick={changeHandColor}
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
+                >
+                    Change Hand Color
+                </button>
+            </div>
         </div>
     );
 }
@@ -256,6 +258,7 @@ function Raccoon({ modelPath }) {
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
     const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
+    const [modelPosition, setModelPosition] = useState(new Vector3(0, 0.5, 0)); // y 좌표 조정
 
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
@@ -283,8 +286,9 @@ function Raccoon({ modelPath }) {
             position.setFromMatrixPosition(transformationMatrix);
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
-                    if (ref.current)
+                    if (ref.current) {
                         ref.current.position.copy(position).add(avatarPosition);
+                    }
                 }
             );
         }
@@ -293,7 +297,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                    blendshape.categoryName
+                        blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
@@ -305,10 +309,8 @@ function Raccoon({ modelPath }) {
         if (faceLandmarks.length > 0) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
 
-            // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
-            const scaleFactor = 1.8;
+            const scaleFactor = 1.0;
 
-            // 새로운 스케일 설정
             setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
 
             const facePosition = new Vector3(
@@ -322,8 +324,8 @@ function Raccoon({ modelPath }) {
                         ref.current.position
                             .copy(facePosition)
                             .add(avatarPosition);
-                        // 스케일 적용
-                        ref.current.scale.copy(modelScale);
+                        ref.current.position.add(modelPosition); // 모델 위치 조정
+                        ref.current.scale.copy(modelScale); // 스케일 적용
                     }
                 }
             );
