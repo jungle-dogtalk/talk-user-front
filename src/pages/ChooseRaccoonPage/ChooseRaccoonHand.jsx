@@ -29,7 +29,7 @@ const models = [
     '/raccoon_head.glb',
     '/warrior_raccoon_head.glb',
     '/yellow_raccoon_head.glb',
-    '/yupyup_raccoon_head.glb',
+    // '/yupyup_raccoon_head.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -88,10 +88,10 @@ function ChooseRaccoonHand() {
             });
     };
 
-    const minX = -2,
-        maxX = 2,
-        minY = -1.5,
-        maxY = 1.5; // 바운더리 설정
+    const minX = -0.8,
+        maxX = 1,
+        minY = -0.5,
+        maxY = 0.5; // 바운더리 설정
 
     const predict = () => {
         const nowInMs = Date.now();
@@ -139,7 +139,7 @@ function ChooseRaccoonHand() {
             ) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
-                console.log('Current Gesture:', currentGesture);
+                // console.log('Current Gesture:', currentGesture);
 
                 // Update avatar position based on gesture
                 const moveSpeed = 0.1;
@@ -213,9 +213,10 @@ function ChooseRaccoonHand() {
                     pointerEvents: 'none',
                     width: '100%',
                     height: '100%',
+                    backgroundColor: 'transparent',
                 }}
                 camera={{
-                    fov: 20,
+                    fov: 16,
                     position: [0, 0, 10],
                 }}
             >
@@ -234,18 +235,24 @@ function ChooseRaccoonHand() {
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
             <div className="absolute top-2 left-2 right-2 flex justify-between">
-                <button
+                {/* <button
                     onClick={changeModel}
                     className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
                 >
-                    Change Face
-                </button>
+                    Change
+                </button> */}
                 <button
+                    onClick={changeModel}
+                    className="bg-[white] text-[#5b484a] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#5b484a] shadow-md hover:bg-[white] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
+                >
+                    Change
+                </button>
+                {/* <button
                     onClick={changeHandColor}
                     className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
                 >
                     Change Hand Color
-                </button>
+                </button> */}
             </div>
         </div>
     );
@@ -338,24 +345,33 @@ function Raccoon({ modelPath }) {
 function Hand({ handColor }) {
     const handRef = useRef();
 
+    const minX = -1.5,
+        maxX = 1.5,
+        minY = -0.6,
+        maxY = 0.6; // 바운더리 설정
+
     useFrame(() => {
         if (handLandmarks.length > 0 && handRef.current) {
             handLandmarks.forEach((hand, index) => {
                 hand.forEach((landmark, i) => {
                     const joint = handRef.current.children[index * 21 + i];
                     if (joint) {
+                        const x = (landmark.x - 0.5) * 2 + avatarPosition.x;
+                        const y = -(landmark.y - 0.5) * 2 + avatarPosition.y;
+
                         joint.position.set(
-                            (landmark.x - 0.5) * 2 + avatarPosition.x,
-                            -(landmark.y - 0.5) * 2 + avatarPosition.y,
+                            Math.max(minX, Math.min(maxX, x)),
+                            Math.max(minY, Math.min(maxY, y)),
                             landmark.z
                         );
+                        joint.scale.set(0.5, 0.5, 0.5); // 손의 크기 조정
                     }
                 });
             });
         } else if (handRef.current) {
             // 손 랜드마크가 없을 때 위치 초기화
             handRef.current.children.forEach((joint) => {
-                joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
+                joint.position.set(0, 0, -1000000); // 화면 밖의 좌표로 설정하여 보이지 않게 함
             });
         }
     });
@@ -368,9 +384,10 @@ function Hand({ handColor }) {
                     .map((_, i) => (
                         <Sphere
                             key={`hand-${handIndex}-${i}`}
-                            args={[0.05, 16, 16]}
+                            args={[0.018, 16, 16]} // 손의 크기
                         >
-                            <meshBasicMaterial color={handColor} />
+                            {/* <meshBasicMaterial color={handColor} /> */}
+                            <meshBasicMaterial color={'#5b484a'} />
                         </Sphere>
                     ))
             )}
