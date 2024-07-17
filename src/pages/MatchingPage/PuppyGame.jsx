@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Stage, Layer, Rect, Image as KonvaImage } from 'react-konva';
+import { Stage, Layer, Image as KonvaImage } from 'react-konva';
 import {
     FaceLandmarker,
     HandLandmarker,
@@ -7,11 +7,13 @@ import {
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Sphere } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import { Vector3, Euler, Matrix4 } from 'three';
+import './PuppyGame.css';
 
 const CHARACTER_SPEED = 10;
 const OBSTACLE_SPEED = 5;
+const OBSTACLE_COUNT = 5;
 
 let faceLandmarker;
 let handLandmarker;
@@ -23,26 +25,34 @@ let blendshapes = [];
 let faceLandmarks = [];
 let transformationMatrix = null;
 let handLandmarks = [];
-let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
-const models = [
-    '/blue_raccoon.glb',
-    '/jungle_raccoon_head.glb',
-    '/raccoon_head.glb',
-    '/warrior_raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
-    '/yupyup_raccoon_head.glb',
+const models = ['/raccoon_crown.glb'];
+const objectImages = [
+    '/cake.gif',
+    '/star.gif',
+    'cat.gif',
+    'dog4.gif',
+    'turtle.gif',
 ];
 
 const PuppyGame = () => {
-    const [raccoonPosition, setRaccoonPosition] = useState({ x: 0, y: 0 });
-    const [obstaclePosition, setObstaclePosition] = useState({ x: 800, y: Math.random() * 550 });
-    const [characterImage, setCharacterImage] = useState(null);
-    const [objectImage, setObjectImage] = useState(null);
-    const [collision, setCollision] = useState(false);
-    const [modelPath, setModelPath] = useState(models[0]);
+    const [raccoonPosition, setRaccoonPosition] = useState({ x: 400, y: 300 });
+    const [obstacles, setObstacles] = useState([]);
+    const [modelPath] = useState(models[0]);
+    const [heartImage, setHeartImage] = useState(null);
+
     const videoRef = useRef(null);
+    const obstaclesRef = useRef([]);
+    const raccoonPositionRef = useRef({ x: 400, y: 300 });
+
+    useEffect(() => {
+        obstaclesRef.current = obstacles;
+    }, [obstacles]);
+
+    useEffect(() => {
+        raccoonPositionRef.current = raccoonPosition;
+    }, [raccoonPosition]);
 
     useEffect(() => {
         const loadImage = (src) => {
@@ -54,10 +64,26 @@ const PuppyGame = () => {
         };
 
         const loadImages = async () => {
-            const characterImg = await loadImage('public/fat_cat.png'); // 이미지 경로를 실제 경로로 변경하세요
-            const objectImg = await loadImage('public/fat_cat.png'); // 이미지 경로를 실제 경로로 변경하세요
-            setCharacterImage(characterImg);
-            setObjectImage(objectImg);
+            const heartImg = await loadImage('/heart.gif');
+            setHeartImage(heartImg);
+
+            const initialObstacles = await Promise.all(
+                Array(OBSTACLE_COUNT)
+                    .fill()
+                    .map(async (_, index) => ({
+                        id: index,
+                        position: {
+                            x: 800 + index * 200,
+                            y: Math.random() * 550,
+                        },
+                        image: await loadImage(
+                            objectImages[index % objectImages.length]
+                        ),
+                        showHeart: false,
+                    }))
+            );
+            setObstacles(initialObstacles);
+            obstaclesRef.current = initialObstacles;
         };
 
         loadImages();
@@ -89,16 +115,19 @@ const PuppyGame = () => {
                 numHands: 2,
             });
 
-            gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-                baseOptions: {
-                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
-                    delegate: 'GPU',
-                },
-                runningMode: 'VIDEO',
-                minHandDetectionConfidence: 0.5,
-                minHandPresenceConfidence: 0.5,
-                minTrackingConfidence: 0.5,
-            });
+            gestureRecognizer = await GestureRecognizer.createFromOptions(
+                vision,
+                {
+                    baseOptions: {
+                        modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
+                        delegate: 'GPU',
+                    },
+                    runningMode: 'VIDEO',
+                    minHandDetectionConfidence: 0.5,
+                    minHandPresenceConfidence: 0.5,
+                    minTrackingConfidence: 0.5,
+                }
+            );
 
             videoRef.current = document.getElementById('video');
             navigator.mediaDevices
@@ -119,11 +148,19 @@ const PuppyGame = () => {
         if (lastVideoTime !== videoRef.current.currentTime) {
             lastVideoTime = videoRef.current.currentTime;
 
-            const faceResult = faceLandmarker.detectForVideo(videoRef.current, nowInMs);
-            const handResult = handLandmarker.detectForVideo(videoRef.current, nowInMs);
-            const gestureResult = gestureRecognizer.recognizeForVideo(videoRef.current, nowInMs);
+            const faceResult = faceLandmarker.detectForVideo(
+                videoRef.current,
+                nowInMs
+            );
+            const handResult = handLandmarker.detectForVideo(
+                videoRef.current,
+                nowInMs
+            );
+            const gestureResult = gestureRecognizer.recognizeForVideo(
+                videoRef.current,
+                nowInMs
+            );
 
-            // Face result processing
             if (
                 faceResult.facialTransformationMatrixes &&
                 faceResult.facialTransformationMatrixes.length > 0 &&
@@ -141,24 +178,44 @@ const PuppyGame = () => {
                 transformationMatrix = matrix;
             }
 
-            // Hand result processing
             if (handResult.landmarks) {
                 handLandmarks = handResult.landmarks;
             } else {
                 handLandmarks = [];
             }
 
-            // Gesture result processing
-            if (gestureResult && gestureResult.gestures && gestureResult.gestures.length > 0) {
+            if (
+                gestureResult &&
+                gestureResult.gestures &&
+                gestureResult.gestures.length > 0
+            ) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
 
                 switch (currentGesture) {
-                    case 'Thumb_Down':
-                        setRaccoonPosition((prev) => ({ ...prev, y: Math.max(prev.y - CHARACTER_SPEED, 0) }));
-                        break;
                     case 'Thumb_Up':
-                        setRaccoonPosition((prev) => ({ ...prev, y: Math.min(prev.y + CHARACTER_SPEED, 600) }));
+                        setRaccoonPosition((prev) => ({
+                            ...prev,
+                            y: Math.max(prev.y - CHARACTER_SPEED, 0),
+                        }));
+                        break;
+                    case 'Thumb_Down':
+                        setRaccoonPosition((prev) => ({
+                            ...prev,
+                            y: Math.min(prev.y + CHARACTER_SPEED, 600),
+                        }));
+                        break;
+                    case 'Closed_Fist':
+                        setRaccoonPosition((prev) => ({
+                            ...prev,
+                            x: Math.max(prev.x - CHARACTER_SPEED, 0),
+                        }));
+                        break;
+                    case 'Open_Palm':
+                        setRaccoonPosition((prev) => ({
+                            ...prev,
+                            x: Math.min(prev.x + CHARACTER_SPEED, 800),
+                        }));
                         break;
                     default:
                         break;
@@ -168,50 +225,92 @@ const PuppyGame = () => {
         requestAnimationFrame(predict);
     };
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setObstaclePosition((prev) => ({
-                x: prev.x - OBSTACLE_SPEED,
-                y: prev.y,
-            }));
+    const checkCollision = (obstacle, raccoon) => {
+        return (
+            raccoon.x < obstacle.position.x + 50 &&
+            raccoon.x + 50 > obstacle.position.x &&
+            raccoon.y < obstacle.position.y + 50 &&
+            raccoon.y + 50 > obstacle.position.y
+        );
+    };
 
-            if (obstaclePosition.x < -50) {
-                setObstaclePosition({ x: 800, y: Math.random() * 550 });
-            }
+    const updateObstaclePosition = (obstacle) => {
+        let newX = obstacle.position.x - OBSTACLE_SPEED;
+        if (newX < -50) {
+            newX = 800;
+            return {
+                ...obstacle,
+                position: { x: newX, y: Math.random() * 550 },
+                showHeart: false,
+            };
+        }
+        return { ...obstacle, position: { ...obstacle.position, x: newX } };
+    };
+
+    const collisionDetectionLoop = () => {
+        obstaclesRef.current = obstaclesRef.current.map((obstacle) => {
+            const updatedObstacle = updateObstaclePosition(obstacle);
 
             if (
-                avatarPosition.x < obstaclePosition.x + 50 &&
-                avatarPosition.x + 50 > obstaclePosition.x &&
-                avatarPosition.y < obstaclePosition.y + 50 &&
-                avatarPosition.y + 50 > obstaclePosition.y
+                checkCollision(updatedObstacle, raccoonPositionRef.current) &&
+                !updatedObstacle.showHeart
             ) {
-                setCollision(true);
-            } else {
-                setCollision(false);
-            }
-        }, 50);
+                setTimeout(() => {
+                    obstaclesRef.current = obstaclesRef.current.map((ob) =>
+                        ob.id === updatedObstacle.id
+                            ? {
+                                  ...ob,
+                                  showHeart: false,
+                                  position: {
+                                      x: 800,
+                                      y: Math.random() * 550,
+                                  },
+                              }
+                            : ob
+                    );
+                }, 500);
 
-        return () => clearInterval(interval);
-    }, [obstaclePosition, avatarPosition]);
+                return { ...updatedObstacle, showHeart: true };
+            }
+
+            return updatedObstacle;
+        });
+
+        requestAnimationFrame(collisionDetectionLoop);
+    };
+
+    const gameLoop = () => {
+        setObstacles([...obstaclesRef.current]);
+        requestAnimationFrame(gameLoop);
+    };
 
     useEffect(() => {
-        if (collision) {
-            const changeCharacterImage = async () => {
-                const newCharacterImg = await loadImage('public/new_character.png'); // 충돌 시 새로운 캐릭터 이미지 경로
-                setCharacterImage(newCharacterImg);
-            };
-
-            changeCharacterImage();
-        }
-    }, [collision]);
+        const collisionAnimationId = requestAnimationFrame(
+            collisionDetectionLoop
+        );
+        const gameAnimationId = requestAnimationFrame(gameLoop);
+        return () => {
+            cancelAnimationFrame(collisionAnimationId);
+            cancelAnimationFrame(gameAnimationId);
+        };
+    }, []);
 
     return (
-        <div style={{ display: 'flex', position: 'relative', width: '800px', height: '600px' }}>
-            <video autoPlay id="video" style={{ width: 640, height: 480, display: 'none' }}></video>
-            <ObstacleCanvas
-                obstaclePosition={obstaclePosition}
-                objectImage={objectImage}
-            />
+        <div
+            className={'puppy-game-container'}
+            style={{
+                display: 'flex',
+                position: 'relative',
+                width: '800px',
+                height: '600px',
+            }}
+        >
+            <video
+                autoPlay
+                id="video"
+                style={{ width: 640, height: 480, display: 'none' }}
+            ></video>
+            <ObstacleCanvas obstacles={obstacles} heartImage={heartImage} />
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -223,7 +322,7 @@ const PuppyGame = () => {
                     height: 600,
                 }}
                 camera={{
-                    fov: 75,
+                    fov: 25,
                     position: [0, 0, 5],
                 }}
             >
@@ -236,19 +335,23 @@ const PuppyGame = () => {
     );
 };
 
-
-const ObstacleCanvas = ({ obstaclePosition, objectImage }) => (
-    <Stage width={800} height={600} style={{ position: 'absolute', top: 0, left: 0 }}>
+const ObstacleCanvas = ({ obstacles, heartImage }) => (
+    <Stage
+        width={800}
+        height={600}
+        style={{ position: 'absolute', top: 0, left: 0 }}
+    >
         <Layer>
-            {objectImage && (
+            {obstacles.map((obstacle) => (
                 <KonvaImage
-                    x={obstaclePosition.x}
-                    y={obstaclePosition.y}
-                    image={objectImage}
+                    key={obstacle.id}
+                    x={obstacle.position.x}
+                    y={obstacle.position.y}
+                    image={obstacle.showHeart ? heartImage : obstacle.image}
                     width={50}
                     height={50}
                 />
-            )}
+            ))}
         </Layer>
     </Stage>
 );
@@ -259,13 +362,15 @@ function Raccoon({ modelPath, position }) {
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
-    const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
+    const [modelScale] = useState(new Vector3(0.5, 0.5, 0.5));
 
     useEffect(() => {
-        headMeshRef.current = nodes.head_geo002;
-        hairMeshRef.current = nodes.hair_geo;
-        earsMeshRef.current = nodes.ears_geo;
-        tuftsMeshRef.current = nodes.tufts_geo;
+        if (nodes) {
+            headMeshRef.current = nodes.head_geo002;
+            hairMeshRef.current = nodes.hair_geo;
+            earsMeshRef.current = nodes.ears_geo;
+            tuftsMeshRef.current = nodes.tufts_geo;
+        }
     }, [nodes]);
 
     useFrame(() => {
@@ -282,49 +387,28 @@ function Raccoon({ modelPath, position }) {
             );
         }
 
-        if (transformationMatrix) {
-            const matrixPosition = new Vector3();
-            matrixPosition.setFromMatrixPosition(transformationMatrix);
-            [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
-                (ref) => {
-                    if (ref.current)
-                        ref.current.position.copy(matrixPosition).add(new Vector3(position.x / 100, position.y / 100, 0));
-                }
-            );
-        }
+        const meshes = [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef];
+        meshes.forEach((ref) => {
+            if (ref.current) {
+                ref.current.position.set(
+                    (position.x - 400) / 100,
+                    -(position.y - 300) / 100,
+                    0
+                );
+            }
+        });
 
         if (blendshapes.length > 0 && headMeshRef.current) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                    blendshape.categoryName
+                        blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
                         blendshape.score;
                 }
             });
-        }
-
-        if (faceLandmarks.length > 0) {
-            const noseLandmark = faceLandmarks[1];
-
-            const scaleFactor = 1;
-            setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
-
-            const facePosition = new Vector3(
-                (position.x / 800) * 4 - 2, // x 좌표를 -2에서 2 사이로 정규화
-                -((position.y / 600) * 4 - 2), // y 좌표를 -2에서 2 사이로 정규화
-                0 // z 좌표
-            );
-            [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
-                (ref) => {
-                    if (ref.current) {
-                        ref.current.position.copy(facePosition);
-                        ref.current.scale.copy(modelScale);
-                    }
-                }
-            );
         }
     });
 

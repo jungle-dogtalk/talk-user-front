@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import { apiCall, apiCallWithFileData } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
@@ -10,9 +9,10 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
-import AvatarApp from '../../components/common/AvatarApp';
 import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
+import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
+import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
@@ -34,26 +34,76 @@ const VideoChatPage = () => {
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
     const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
+    const [quizTime, setQuizTime] = useState(0); // 퀴즈 타이머 상태
     const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태 추가
+    const [quizChallenger, setQuizChallenger] = useState(''); // 퀴즈 도전자
+    const [quizResult, setQuizResult] = useState(''); // 퀴즈미션 결과 (성공/실패)
+    const [quizResultTrigger, setQuizResultTrigger] = useState(0);
+    const [isChallengeCompleted, setIsChallengeCompleted] = useState(false); // 미션 종료 여부
+    const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
+        useState(0);
+
+    const [showInitialModal, setShowInitialModal] = useState(true);
 
     const quizModeRef = useRef(quizMode);
 
-    const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
-    const isMissionActive = useSelector(
-        (state) => state.mission.isMissionActive
-    ); // Redux에서 isMissionActive 상태 가져오기
+    let ovSocket = null;
+
+    const handleQuizInProgress = (data) => {
+        console.log('자식에서 넘겨받은 데이터 -> ', data);
+        console.log('세션정보 -> ', session);
+        ovSocket
+            .signal({
+                data: JSON.stringify({
+                    userId: userInfo.username,
+                    message: `${userInfo.username} 유저가 미션을 시작합니다.`,
+                }),
+                to: [],
+                type: 'quizStart',
+            })
+            .then(() => {
+                console.log('시그널 성공적으로 전송');
+            })
+            .catch((error) => {
+                console.error('시그널 도중 에러 발생 -> ', error);
+            });
+        console.log('스타트 퀴즈 미션');
+    };
+
+    const finishQuizMission = () => {
+        console.log('세션정보 -> ', session);
+        session
+            .signal({
+                data: JSON.stringify({
+                    userId: userInfo.username,
+                    message: `${userInfo.username} 유저가 미션을 종료합니다.`,
+                }),
+                to: [],
+                type: 'quizEnd',
+            })
+            .then(() => {
+                console.log('시그널 성공적으로 전송');
+            })
+            .catch((error) => {
+                console.error('시그널 도중 에러 발생 -> ', error);
+            });
+    };
 
     useEffect(() => {
-        if (isMissionActive) {
-            // 미션이 활성화된 경우 수행할 작업
-            console.log('미션이 활성화되었습니다.');
-            // 필요한 작업을 여기에 추가합니다.
-        } else {
-            // 미션이 비활성화된 경우 수행할 작업
-            console.log('미션이 비활성화되었습니다.');
-            // 필요한 작업을 여기에 추가합니다.
+        const timer = setTimeout(() => {
+            setShowInitialModal(false);
+        }, 5000); // 5초 후 모달 닫기
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (quizChallenger && quizChallenger === userInfo.username) {
+            checkAnswer();
         }
-    }, [isMissionActive]);
+    }, [quizChallenger]);
+
+    const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
 
     // userInfo가 null인 경우 처리
     if (!userInfo) {
@@ -347,6 +397,7 @@ const VideoChatPage = () => {
             setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
             setSession(session);
+            ovSocket = session;
 
             session.on('streamCreated', (event) => {
                 let subscriber = session.subscribe(event.stream, undefined);
@@ -354,6 +405,40 @@ const VideoChatPage = () => {
                     ...prevSubscribers,
                     subscriber,
                 ]);
+            });
+
+            // 퀴즈 미션 시작
+            session.on('signal:quizStart', (event) => {
+                const data = JSON.parse(event.data);
+                console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
+
+                setQuizChallenger((prevQuizChallenger) => {
+                    if (prevQuizChallenger === '') {
+                        return data.userId;
+                    }
+                    return prevQuizChallenger;
+                });
+            });
+
+            // 퀴즈 미션 종료
+            session.on('signal:quizEnd', (event) => {
+                const data = JSON.parse(event.data);
+                console.log('quizEnd 시그널 전달받음, 내용은? -> ', data);
+
+                setIsChallengeCompleted(true);
+                setIsChallengeCompletedTrigger((prev) => prev + 1);
+                setQuizChallenger(''); // 퀴즈 도전자 초기화
+                if (data.userId === userInfo.username) {
+                    if (data.result) {
+                        // 미션성공
+                        setQuizResult('success');
+                        setQuizResultTrigger((prev) => prev + 1);
+                    } else {
+                        // 미션실패
+                        setQuizResult('failure');
+                        setQuizResultTrigger((prev) => prev + 1);
+                    }
+                }
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -501,11 +586,6 @@ const VideoChatPage = () => {
             return;
         }
 
-        // if (recognitionRef.current) {
-        //     console.warn('음성인식이 이미 시작됨');
-        //     return;
-        // }
-
         //SpeechRecognition 객체 생성 및 옵션 설정
         const recognition = new window.webkitSpeechRecognition();
         recognition.continuous = true; // 연속적인 음성인식
@@ -535,11 +615,19 @@ const VideoChatPage = () => {
                     if (quizModeRef.current) {
                         if (boyerMooreSearch(transcript, testString)) {
                             console.log('정답입니다!');
-                        } else {
-                            console.log('오답입니다!');
+                            setQuizMode(false); // 퀴즈 모드 해제
+                            quizModeRef.current = false; // ref 상태 업데이트
+                            setQuizTime(0); // 타이머 초기화
+                            ovSocket.signal({
+                                data: JSON.stringify({
+                                    userId: userInfo.username,
+                                    message: `${userInfo.username} 유저 미션 종료`,
+                                    result: true,
+                                }),
+                                to: [],
+                                type: 'quizEnd',
+                            });
                         }
-                        setQuizMode(false); // 퀴즈 모드 해제
-                        quizModeRef.current = false; // ref 상태 업데이트
                     }
                 }
             }
@@ -619,30 +707,101 @@ const VideoChatPage = () => {
         setQuizMode(true); // 퀴즈 모드 활성화
         quizModeRef.current = true; // ref 상태 업데이트
         console.log('Quiz 모드: ', quizModeRef.current);
+
+        setQuizTime(10);
+
+        const intervalId = setInterval(() => {
+            setQuizTime((prevTime) => {
+                if (prevTime <= 0) {
+                    clearInterval(intervalId);
+                    if (quizModeRef.current) {
+                        console.log('오답입니다!');
+                        finishQuizMission();
+                        setQuizMode(false);
+                        quizModeRef.current = false;
+                    }
+                    return 0;
+                }
+                console.log(`남은 시간: ${prevTime - 1}초`);
+                return prevTime - 1;
+            });
+        }, 1000);
     };
 
+    const InitialQuestionModal = () => {
+        if (!sessionData || sessionData.length < 4) return null;
+
+        const currentUserIndex = sessionData.findIndex(
+            (user) => user.userId === userInfo.username
+        );
+        const targetUserIndex = (currentUserIndex + 1) % 4;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
+                    <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
+                    <p className="mb-4">
+                        "{sessionData[targetUserIndex].nickname}" 님이 답변한
+                        질문을 맞춰보세요:
+                    </p>
+                    <p className="mb-4 font-bold">
+                        "{sessionData[targetUserIndex].question}"
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        이 창은 5초 후 자동으로 닫힙니다.
+                    </p>
+                </div>
+            </div>
+        );
+    };
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
-            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
-                <h1 className="text-white text-4xl">멍톡</h1>
-                <button
-                    onClick={leaveSession}
-                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
-                    style={{ fontSize: '25px' }}
-                >
-                    중단하기
-                </button>
+            <header className="w-full bg-[#a16e47] p-1 flex items-center justify-between">
+            <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-12 h-12 sm:w-16 sm:h-16"
+                />
+                <div className="flex items-center">
+                    <h2
+                        className="text-white text-lg font-bold bg-opacity-70 rounded-md"
+                        style={{ fontSize: '25px', marginRight: '20px' }}
+                    >
+                        남은 시간: {Math.floor(remainingTime / 60)}분{' '}
+                        {remainingTime % 60}초
+                    </h2>
+                    <button
+                        onClick={leaveSession}
+                        className="text-white text-lg bg-red-600 px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-300"
+                        style={{ fontSize: '25px' }}
+                    >
+                        중단하기
+                    </button>
+                    {quizChallenger && (
+                        <h1 className="text-yellow-500 text-4xl">
+                            현재 {quizChallenger} 유저가 미션 수행중
+                        </h1>
+                    )}
+                </div>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="flex flex-col w-3/4">
-                    <RaccoonHand></RaccoonHand>
+                <div className="flex flex-col w-3/4 bg-[#fffaf0] border-r border-gray-300">
+                    <RaccoonHand
+                        onQuizEvent={handleQuizInProgress}
+                        quizResult={quizResult}
+                        quizResultTrigger={quizResultTrigger}
+                        isChallengeCompleted={isChallengeCompleted}
+                        isChallengeCompletedTrigger={
+                            isChallengeCompletedTrigger
+                        }
+                    />
                     {/* <AvatarApp></AvatarApp> */}
                     <div
-                        className="grid grid-cols-2 gap-4 p-4 border-2 border-gray-300 relative"
+                        className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}
                     >
                         {publisher && (
-                            <div className="relative border-2 border-gray-300 aspect-video">
+                            <div className="relative border border-gray-300 rounded-lg shadow-md aspect-video">
                                 <OpenViduVideo streamManager={publisher} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
                                     {publisher.stream.connection.data}
@@ -668,7 +827,7 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-2 border-gray-300 aspect-video"
+                                className="relative border border-gray-300 rounded-lg shadow-md aspect-video"
                             >
                                 <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-md">
@@ -680,10 +839,30 @@ const VideoChatPage = () => {
                             (_, index) => (
                                 <div
                                     key={index}
-                                    className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
+                                    className="relative border border-gray-300 rounded-lg shadow-md aspect-video flex items-center justify-center"
                                 >
-                                    <div className="text-gray-500">
-                                        화면이 나올 공간
+                                    <div className="text-gray-500 flex flex-col items-center">
+                                        <svg
+                                            className="animate-spin h-8 w-8 text-gray-500 mb-2"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        로딩 중...
                                     </div>
                                 </div>
                             )
@@ -693,68 +872,107 @@ const VideoChatPage = () => {
                         className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
                         style={{ height: '200px' }}
                     >
-                        <button
-                            onClick={requestTopicRecommendations}
-                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
-                            style={{ fontSize: '28px' }}
-                        >
-                            주제 추천 Btn
-                        </button>
-
+                        {/* 테스트 용 하드코딩된 추천 주제
+                        {recommendedTopics.length === 0 && (
+                            <div className="recommended-topics mt-4">
+                                <h3
+                                    className="text-2xl font-semibold"
+                                    style={{ fontSize: '24px' }}
+                                >
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 1
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 2
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 3
+                                    </li>
+                                </ul>
+                            </div>
+                        )} */}
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
                                 <h3
-                                    className="text-lg font-semibold"
-                                    style={{ fontSize: '20px' }}
+                                    className="text-2xl font-semibold"
+                                    style={{ fontSize: '24px' }}
                                 >
                                     추천 주제
                                 </h3>
                                 <ul className="list-disc list-inside">
                                     {recommendedTopics.map((topic, index) => (
-                                        <li key={index}>{topic}</li>
+                                        <li
+                                            key={index}
+                                            className="text-xl text-gray-700 mb-2"
+                                            style={{ fontSize: '22px' }}
+                                        >
+                                            {topic}
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
                         )}
                     </div>
                 </div>
-                <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
-                    <h2
-                        className="text-lg font-bold mb-2 text-center"
-                        style={{ fontSize: '28px' }}
-                    >
-                        남은 시간: {Math.floor(remainingTime / 60)}분{' '}
-                        {remainingTime % 60}초
-                    </h2>
-                    <div className="flex justify-center mt-2">
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(1.0)}
-                        >
-                            1
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(0.5)}
-                        >
-                            2
-                        </button>
-                        <button
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                            onClick={() => updatePublisherWithNewPitch(1.5)}
-                        >
-                            3
-                        </button>
-                        <button
-                            onClick={checkAnswer}
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                        >
-                            Quiz Test
-                        </button>
-                    </div>
+                <div
+                    className="w-1/4 flex flex-col p-4"
+                    style={{
+                        backgroundImage: `url(${forestBackground})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                    }}
+                >
                     <MovingDogs sessionData={sessionData} />
+                    <div
+                        className="relative flex flex-col items-center space-y-4"
+                        style={{ top: '-36px' }}
+                    >
+                        <button
+                            onClick={requestTopicRecommendations}
+                            className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                            style={{ fontSize: '24px' }}
+                        >
+                            주제 추천
+                        </button>
+                        <div className="flex space-x-2">
+                            <button
+                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '24px' }}
+                                onClick={() => updatePublisherWithNewPitch(1.0)}
+                            >
+                                기본
+                            </button>
+                            <button
+                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '24px' }}
+                                onClick={() => updatePublisherWithNewPitch(0.5)}
+                            >
+                                low
+                            </button>
+                            <button
+                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '24px' }}
+                                onClick={() => updatePublisherWithNewPitch(1.5)}
+                            >
+                                high
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            {showInitialModal && <InitialQuestionModal />}
         </div>
     );
 };
