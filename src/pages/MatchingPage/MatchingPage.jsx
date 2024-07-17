@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 import logo from '../../assets/barking-talk.png';
+import './MatchingPage.css';
 
 const MatchingPage = () => {
     const navigate = useNavigate();
@@ -59,6 +60,12 @@ const MatchingPage = () => {
         getSessionList();
     }, []);
 
+    const createBouncingText = (text) => {
+        return text
+            .split('')
+            .map((char, index) => <span key={index}>{char}</span>);
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#FFFAE8]">
             <header className="w-full bg-[#a16e47] p-2 flex justify-between items-center">
@@ -68,10 +75,10 @@ const MatchingPage = () => {
                 <div className="bg-[#FFFAE8] rounded-lg p-8 w-full max-w-5xl flex flex-col items-center">
                     <div className="text-center">
                         <h2
-                            className="text-3xl sm:text-5xl font-bold"
+                            className="text-3xl sm:text-5xl font-bold bouncing-text"
                             style={{ fontSize: '50px' }}
                         >
-                            매칭 중 ...
+                            {createBouncingText('매칭 중 . . .')}
                         </h2>
                         <p
                             className="text-gray-700 mt-6 text-lg sm:text-2xl"
