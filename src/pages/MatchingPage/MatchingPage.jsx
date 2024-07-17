@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { apiCall } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
 import logo from '../../assets/barking-talk.png';
+import PuppyGame from './PuppyGame';
 
 const MatchingPage = () => {
     const navigate = useNavigate();
@@ -73,6 +74,7 @@ const MatchingPage = () => {
                         >
                             매칭 중 ...
                         </h2>
+
                         <p
                             className="text-gray-700 mt-6 text-lg sm:text-2xl"
                             style={{ fontSize: '30px' }}
@@ -80,7 +82,8 @@ const MatchingPage = () => {
                             나의 관심사 : {userInfo.interests.join(', ')}
                         </p>
                     </div>
-                    <div className="flex flex-col sm:flex-row items-center justify-center space-y-8 sm:space-y-0 sm:space-x-16 mt-12">
+                    <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />
+                    {/* <div className="flex flex-col sm:flex-row items-center justify-center space-y-8 sm:space-y-0 sm:space-x-16 mt-12">
                         <img
                             src={waitingDogImage}
                             alt="Waiting Dog"
@@ -93,7 +96,7 @@ const MatchingPage = () => {
                                 className="w-48 h-48 sm:w-64 sm:h-64"
                             />
                         </div>
-                    </div>
+                    </div> */}
                     <div className="flex justify-center mt-16">
                         <button
                             className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
