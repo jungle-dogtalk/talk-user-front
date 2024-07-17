@@ -43,6 +43,8 @@ const VideoChatPage = () => {
     const quizAnswerRef = useRef('');
 
     const [showInitialModal, setShowInitialModal] = useState(true);
+    const [showQuizSuccess, setShowQuizSuccess] = useState(false);
+    const [showQuizFailure, setShowQuizFailure] = useState(false);
 
     const quizModeRef = useRef(quizMode);
     const targetUserIndexRef = useRef(0);
@@ -430,6 +432,18 @@ const VideoChatPage = () => {
                 setIsChallengeCompletedTrigger((prev) => prev + 1);
                 setQuizChallenger(''); // 퀴즈 도전자 초기화
 
+                if (data.result === true) {
+                    setShowQuizSuccess(true);
+                } else {
+                    setShowQuizFailure(true);
+                }
+
+                setTimeout(() => {
+                    setQuizResult('');
+                    setShowQuizSuccess(false);
+                    setShowQuizFailure(false);
+                }, 10000);
+
                 if (data.userId === userInfo.username) {
                     if (data.result) {
                         // 미션성공
@@ -440,9 +454,6 @@ const VideoChatPage = () => {
                         setQuizResult('failure');
                         setQuizResultTrigger((prev) => prev + 1);
                     }
-                    setTimeout(() => {
-                        setQuizResult('');
-                    }, 10000);
                 }
             });
 
@@ -961,7 +972,7 @@ const VideoChatPage = () => {
                         {quizResult && (
                             <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
                                 <div className="p-6 rounded-lg  w-full max-w-3xl">
-                                    {quizResult === 'success' ? (
+                                    {showQuizSuccess && (
                                         <>
                                             <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
                                                 미션 성공 !!
@@ -970,7 +981,8 @@ const VideoChatPage = () => {
                                                 정답은 "{quizAnswerRef.current}"
                                             </h2>
                                         </>
-                                    ) : (
+                                    )}
+                                    {showQuizFailure && (
                                         <h1 className="text-blue-500 text-4xl font-bold text-center">
                                             미션 실패 ..
                                         </h1>
