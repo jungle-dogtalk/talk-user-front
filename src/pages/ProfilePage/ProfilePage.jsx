@@ -117,15 +117,15 @@ const ProfilePage = () => {
     const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#a16e47] p-1 sm:p-1 flex items-center justify-between">
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFF0D6] items-center">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 sm:p-1 flex items-center justify-between shadow-sm">
                 <img
                     src={logo}
-                    alt="명톡 로고"
+                    alt="멍톡 로고"
                     className="w-12 h-12 sm:w-16 sm:h-16"
                 />
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#e4d7c7] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                     onClick={handleDeleteAccount}
                 >
                     탈퇴하기
@@ -136,11 +136,11 @@ const ProfilePage = () => {
                     <img
                         src={profileImage}
                         alt="프로필 사진"
-                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-2 border-gray-300"
+                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-[#a16e47] shadow-md object-cover"
                     />
                     <label
                         htmlFor="file-input"
-                        className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer"
+                        className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer shadow-sm hover:shadow-md transition duration-300"
                     >
                         <img
                             src={editIcon}
@@ -155,72 +155,53 @@ const ProfilePage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <h2
-                    className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
-                    style={{ fontSize: '25px' }}
-                >
+                <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-[#a16e47]">
                     이름: {userInfo?.name}
                 </h2>
-                <h3
-                    className="text-lg sm:text-xl font-bold mb-2"
-                    style={{ fontSize: '25px' }}
-                >
+                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#a16e47]">
                     닉네임: {userInfo?.username}
                 </h3>
                 <div className="w-full max-w-3xl">
                     <div className="flex flex-col items-center mb-4">
                         <div className="w-4/6 mx-auto mb-2">
-                            <span
-                                className="block text-left mb-1 text-sm sm:text-base"
-                                style={{ fontSize: '20px' }}
-                            >
+                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
                                 발화지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
-                                    className="h-5 sm:h-7 bg-red-500 rounded-full shadow"
+                                    className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{
                                         width: `${displayUtteranceScore}%`,
                                     }}
                                 ></div>
                             </div>
-                            <span
-                                className="block text-right text-xs sm:text-sm mt-1 font-bold"
-                                style={{ fontSize: '20px' }}
-                            >
+                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
                                 {displayUtteranceScore}%
                             </span>
                         </div>
                         <div className="w-4/6 mx-auto mb-2">
-                            <span
-                                className="block text-left mb-1 text-sm sm:text-base"
-                                style={{ fontSize: '20px' }}
-                            >
+                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
                                 매너지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
-                                    className="h-5 sm:h-7 bg-blue-500 rounded-full shadow"
+                                    className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span
-                                className="block text-right text-xs sm:text-sm mt-1 font-bold"
-                                style={{ fontSize: '20px' }}
-                            >
+                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
                                 {displayMannerScore}%
                             </span>
                         </div>
                     </div>
-                    <hr className="w-full my-3 sm:my-4 border-gray-400" />
+                    <hr className="w-full my-3 sm:my-4 border-[#a16e47] opacity-30" />
                     <div className="text-center mt-3 sm:mt-4">
                         <h2
-                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4"
+                            className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4 text-[#a16e47]"
                             style={{ fontSize: '30px' }}
                         >
                             - 내가 고른 관심사 -
                         </h2>
-                        <br></br>
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
@@ -265,16 +246,16 @@ const ProfilePage = () => {
                                 </div>
                             ))}
                         </div>
-                        <hr className="w-full my-3 sm:my-4 border-gray-400" />
+                        <hr className="w-full my-3 sm:my-4 border-[#a16e47] opacity-30" />
                         <h2
-                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4"
+                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4 text-[#a16e47]"
                             style={{ fontSize: '30px' }}
                         >
                             - AI가 예측하는 관심사 -
                         </h2>
                         <br></br>
                         <div className="flex justify-center">
-                            <div className="flex flex-wrap justify-center">
+                            <div className="inline-grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 justify-center">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div
@@ -293,18 +274,17 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </div>
-                    <br></br>
                     <div className="flex justify-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
                         <button
                             type="button"
-                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#e4d7c7] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                            className="bg-[#a16e47] text-white py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#8a5d3b] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
