@@ -280,6 +280,9 @@ function RaccoonHand(props) {
 
     const handleIceBreaking = () => {
         setIceBreakingActive(!iceBreakingActive);
+        setTimeout(() => {
+            setIceBreakingActive(false);
+        }, 10000);
     };
 
     return (
