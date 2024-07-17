@@ -34,7 +34,8 @@ const VideoChatPage = () => {
     const [isLeaving, setIsLeaving] = useState(false); // 중단 중복 호출 방지
     const [sessionData, setSessionData] = useState(null);
     const [OV, setOV] = useState(null); // OpenVidu 객체 상태 추가
-    const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태 추가
+    const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태
+    const [quizTime, setQuizTime] = useState(0); // 퀴즈 타이머 상태
 
     const quizModeRef = useRef(quizMode);
 
@@ -501,11 +502,6 @@ const VideoChatPage = () => {
             return;
         }
 
-        // if (recognitionRef.current) {
-        //     console.warn('음성인식이 이미 시작됨');
-        //     return;
-        // }
-
         //SpeechRecognition 객체 생성 및 옵션 설정
         const recognition = new window.webkitSpeechRecognition();
         recognition.continuous = true; // 연속적인 음성인식
@@ -535,11 +531,10 @@ const VideoChatPage = () => {
                     if (quizModeRef.current) {
                         if (boyerMooreSearch(transcript, testString)) {
                             console.log('정답입니다!');
-                        } else {
-                            console.log('오답입니다!');
+                            setQuizMode(false); // 퀴즈 모드 해제
+                            quizModeRef.current = false; // ref 상태 업데이트
+                            setQuizTime(0); // 타이머 초기화
                         }
-                        setQuizMode(false); // 퀴즈 모드 해제
-                        quizModeRef.current = false; // ref 상태 업데이트
                     }
                 }
             }
@@ -619,6 +614,24 @@ const VideoChatPage = () => {
         setQuizMode(true); // 퀴즈 모드 활성화
         quizModeRef.current = true; // ref 상태 업데이트
         console.log('Quiz 모드: ', quizModeRef.current);
+
+        setQuizTime(10);
+
+        const intervalId = setInterval(() => {
+            setQuizTime((prevTime) => {
+                if (prevTime <= 0) {
+                    clearInterval(intervalId);
+                    if (quizModeRef.current) {
+                        console.log('오답입니다!');
+                        setQuizMode(false);
+                        quizModeRef.current = false;
+                    }
+                    return 0;
+                }
+                console.log(`남은 시간: ${prevTime - 1}초`);
+                return prevTime - 1;
+            });
+        }, 1000);
     };
 
     return (
