@@ -233,7 +233,7 @@ const MovingDogs = ({ sessionData }) => {
                 <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg w-full max-w-xs z-50">
                     <header className="bg-[#a16e47] text-white p-2 rounded-t-lg flex justify-between items-center">
                         <h2 className="text-sm text-center w-full">
-                            {selectedUser.nickname}의 질문
+                            "{selectedUser.nickname}"님의 질문
                         </h2>
                         <button
                             onClick={closeModal}
