@@ -127,8 +127,11 @@ const ChooseRaccoonPage = () => {
             </header>
             <div className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-2 sm:gap-1 p-2 sm:p-4">
                 <div className="w-full lg:flex-1 flex flex-col items-center justify-center mb-4 lg:mb-0">
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
-                        나의 모습
+                    <h2
+                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4"
+                        style={{ fontSize: '35px' }}
+                    >
+                        내 모습
                     </h2>
                     <video
                         ref={webcamRef}
@@ -138,7 +141,10 @@ const ChooseRaccoonPage = () => {
                     ></video>
                 </div>
                 <div className="w-full lg:flex-1 flex flex-col items-center justify-center">
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4">
+                    <h2
+                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4"
+                        style={{ fontSize: '35px' }}
+                    >
                         내 마스크
                     </h2>
                     <div className="relative w-full max-w-[480px] h-auto max-h-[360px] bg-white border rounded">
@@ -150,12 +156,14 @@ const ChooseRaccoonPage = () => {
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
                     onClick={() => window.history.back()}
+                    style={{ fontSize: '23px' }}
                 >
                     뒤로가기
                 </button>
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
                     onClick={handleSelect}
+                    style={{ fontSize: '23px' }}
                 >
                     선택
                 </button>

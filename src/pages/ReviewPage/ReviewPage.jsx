@@ -153,15 +153,24 @@ const ReviewPage = () => {
                 </div>
             </header>
             <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-4 w-full max-w-md sm:max-w-4xl">
-                <h2 className="text-lg sm:text-2xl font-bold text-center mb-4">
+                <h2
+                    className="text-lg sm:text-2xl font-bold text-center mb-4"
+                    style={{ fontSize: '35px' }}
+                >
                     통화 시간이 종료되었습니다.
                 </h2>
-                <p className="text-center mb-4 sm:mb-6">
+                <p
+                    className="text-center mb-4 sm:mb-6"
+                    style={{ fontSize: '25px' }}
+                >
                     즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
                 </p>
                 {topTalker && (
                     <div className="text-center mb-4 p-2 border border-yellow-400 bg-yellow-50 rounded-lg relative">
-                        <h2 className="text-xl sm:text-2xl font-bold text-yellow-600">
+                        <h2
+                            className="text-xl sm:text-2xl font-bold text-yellow-600"
+                            style={{ fontSize: '28px' }}
+                        >
                             오늘의 수다왕
                         </h2>
                         <img
@@ -169,11 +178,14 @@ const ReviewPage = () => {
                             alt="왕관"
                             className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mt-1"
                         />
-                        <h3 className="text-lg sm:text-xl font-semibold mt-1">
-                            {topTalker.nickname}님
+                        <h3
+                            className="text-lg sm:text-xl font-semibold mt-1"
+                            style={{ fontSize: '25px' }}
+                        >
+                            '{topTalker.nickname}'님
                         </h3>
                         <p className="text-sm sm:text-base text-gray-600 mt-1">
-                            발화량: {topTalker.utterance}
+                            발화량: {topTalker.utterance} %
                         </p>
                         <img
                             src={celebrationEffect}
@@ -196,7 +208,10 @@ const ReviewPage = () => {
                                     className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
                                 />
                                 <div className="flex-1">
-                                    <h3 className="text-base sm:text-xl font-semibold">
+                                    <h3
+                                        className="text-base sm:text-xl font-semibold"
+                                        style={{ fontSize: '25px' }}
+                                    >
                                         {user.nickname}{' '}
                                         <span className="text-sm text-gray-500">
                                             발화량 {user.utterance || 0}
@@ -227,7 +242,9 @@ const ReviewPage = () => {
                                     className="bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center space-x-2"
                                     onClick={() => handleReport(user.nickname)}
                                 >
-                                    <span>신고하기</span>
+                                    <span style={{ fontSize: '20px' }}>
+                                        신고하기
+                                    </span>
                                     <img
                                         src={Declaration}
                                         alt="이모티콘"
@@ -244,12 +261,14 @@ const ReviewPage = () => {
                     <button
                         className="bg-gray-300 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-full"
                         onClick={() => (window.location.href = '/main')}
+                        style={{ fontSize: '22px' }}
                     >
                         SKIP
                     </button>
                     <button
                         className="bg-green-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full"
                         onClick={handleSubmitReview}
+                        style={{ fontSize: '22px' }}
                     >
                         완료
                     </button>

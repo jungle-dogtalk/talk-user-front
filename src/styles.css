@@ -1,0 +1,25 @@
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('./assets/fonts/test.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'MyCustomFont', sans-serif !important;
+    color: #5b484a;
+}
+
+h2,
+h3 {
+    font-family: 'MyCustomFont', sans-serif !important;
+    color: #5b484a;
+    /* font-style: italic; */
+}
+
+.text-lg,
+.text-xl,
+.font-bold {
+    font-family: 'MyCustomFont', sans-serif !important;
+    color: #5b484a;
+}

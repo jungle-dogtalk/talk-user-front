@@ -59,10 +59,16 @@ const MatchingPage = () => {
             <div className="flex flex-col items-center justify-center flex-1 w-full px-4 sm:px-8">
                 <div className="bg-[#FFFAE8] rounded-lg p-8 w-full max-w-5xl flex flex-col items-center">
                     <div className="text-center">
-                        <h2 className="text-3xl sm:text-5xl font-bold">
-                            매칭 중
+                        <h2
+                            className="text-3xl sm:text-5xl font-bold"
+                            style={{ fontSize: '50px' }}
+                        >
+                            매칭 중 ...
                         </h2>
-                        <p className="text-gray-700 mt-6 text-lg sm:text-2xl">
+                        <p
+                            className="text-gray-700 mt-6 text-lg sm:text-2xl"
+                            style={{ fontSize: '30px' }}
+                        >
                             나의 관심사 : {userInfo.interests.join(', ')}
                         </p>
                     </div>
@@ -84,6 +90,7 @@ const MatchingPage = () => {
                         <button
                             className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleCancelClick}
+                            style={{ fontSize: '25px' }}
                         >
                             취소하기
                         </button>

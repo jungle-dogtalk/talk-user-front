@@ -53,12 +53,14 @@ const MainPage = () => {
                     <button
                         className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-base"
                         onClick={() => navigate('/profile')}
+                        style={{ fontSize: '20px' }}
                     >
                         마이 페이지
                     </button>
                     <button
                         className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-base"
                         onClick={handleLogout}
+                        style={{ fontSize: '20px' }}
                     >
                         로그아웃
                     </button>
@@ -71,12 +73,19 @@ const MainPage = () => {
                         alt="프로필 사진"
                         className="w-32 h-32 sm:w-48 sm:h-48 rounded-full mb-3 sm:mb-4"
                     />
-                    <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
+                    <h2
+                        className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
+                        style={{ fontSize: '30px' }}
+                    >
                         이름: {userInfo?.name}
                     </h2>
+                    <br></br>
                     <div className="w-full sm:w-2/3 mb-6 sm:mb-8 px-4 sm:px-0">
                         <div className="flex items-center justify-center mb-3 sm:mb-4">
-                            <span className="text-gray-700 font-bold text-xs sm:text-sm mr-2">
+                            <span
+                                className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
+                                style={{ fontSize: '23px' }}
+                            >
                                 발화지수
                             </span>
                             <div className="w-1/2 bg-red-200 h-4 sm:h-6 rounded-full overflow-hidden">
@@ -92,7 +101,10 @@ const MainPage = () => {
                             </span>
                         </div>
                         <div className="flex items-center justify-center">
-                            <span className="text-gray-700 font-bold text-xs sm:text-sm mr-2">
+                            <span
+                                className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
+                                style={{ fontSize: '23px' }}
+                            >
                                 매너지수
                             </span>
                             <div className="w-1/2 bg-blue-200 h-4 sm:h-6 rounded-full overflow-hidden">
@@ -114,10 +126,13 @@ const MainPage = () => {
                     >
                         <img
                             src={roomIcon}
-                            alt="방에서 통화하기"
+                            alt="둘이서 통화하기"
                             className="w-16 h-16 sm:w-20 sm:h-20 mb-2 sm:mb-4"
                         />
-                        <span className="text-sm sm:text-lg font-semibold">
+                        <span
+                            className="text-sm sm:text-lg font-semibold"
+                            style={{ fontSize: '20px' }}
+                        >
                             둘이서 통화하기
                         </span>
                     </button>
@@ -130,7 +145,10 @@ const MainPage = () => {
                             alt="넷이서 통화하기"
                             className="w-16 h-16 sm:w-20 sm:h-20 mb-2 sm:mb-4"
                         />
-                        <span className="text-sm sm:text-lg font-semibold">
+                        <span
+                            className="text-sm sm:text-lg font-semibold"
+                            style={{ fontSize: '20px' }}
+                        >
                             넷이서 통화하기
                         </span>
                     </button>

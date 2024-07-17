@@ -8,6 +8,7 @@ import Cookies from 'js-cookie'; // 쿠키 라이브러리 임포트
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
+import '../../styles.css'; // styles.css 파일을 포함
 
 const ProfilePage = () => {
     // Redux 상태와 훅 초기화
@@ -98,7 +99,7 @@ const ProfilePage = () => {
             );
 
             if (response.status === 200) {
-                alert('프로필 업데이가 잘 되었습니다.');
+                alert('프로필 업데이트가 잘 되었습니다.');
                 navigate('/main'); // 홈으로 리다이렉트
             }
         } catch (error) {
@@ -154,50 +155,72 @@ const ProfilePage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">
+                <h2
+                    className="text-lg sm:text-xl font-bold mb-1 sm:mb-2"
+                    style={{ fontSize: '25px' }}
+                >
                     이름: {userInfo?.name}
                 </h2>
-                <h3 className="text-lg sm:text-xl font-bold mb-2">
+                <h3
+                    className="text-lg sm:text-xl font-bold mb-2"
+                    style={{ fontSize: '25px' }}
+                >
                     닉네임: {userInfo?.username}
                 </h3>
                 <div className="w-full max-w-3xl">
                     <div className="flex flex-col items-center mb-4">
-                        <div className="w-full mx-auto mb-2">
-                            <span className="block text-left mb-1 text-sm sm:text-base">
+                        <div className="w-4/6 mx-auto mb-2">
+                            <span
+                                className="block text-left mb-1 text-sm sm:text-base"
+                                style={{ fontSize: '20px' }}
+                            >
                                 발화지수
                             </span>
-                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner">
                                 <div
-                                    className="h-6 sm:h-8 bg-red-500 rounded-full shadow"
+                                    className="h-5 sm:h-7 bg-red-500 rounded-full shadow"
                                     style={{
                                         width: `${displayUtteranceScore}%`,
                                     }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-xs sm:text-sm mt-1 font-bold">
+                            <span
+                                className="block text-right text-xs sm:text-sm mt-1 font-bold"
+                                style={{ fontSize: '20px' }}
+                            >
                                 {displayUtteranceScore}%
                             </span>
                         </div>
-                        <div className="w-full mx-auto">
-                            <span className="block text-left mb-1 text-sm sm:text-base">
+                        <div className="w-4/6 mx-auto mb-2">
+                            <span
+                                className="block text-left mb-1 text-sm sm:text-base"
+                                style={{ fontSize: '20px' }}
+                            >
                                 매너지수
                             </span>
-                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner">
+                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner">
                                 <div
-                                    className="h-6 sm:h-8 bg-blue-500 rounded-full shadow"
+                                    className="h-5 sm:h-7 bg-blue-500 rounded-full shadow"
                                     style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-xs sm:text-sm mt-1 font-bold">
+                            <span
+                                className="block text-right text-xs sm:text-sm mt-1 font-bold"
+                                style={{ fontSize: '20px' }}
+                            >
                                 {displayMannerScore}%
                             </span>
                         </div>
                     </div>
                     <hr className="w-full my-3 sm:my-4 border-gray-400" />
                     <div className="text-center mt-3 sm:mt-4">
-                        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
-                            내가 고른 관심사
+                        <h2
+                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4"
+                            style={{ fontSize: '30px' }}
+                        >
+                            - 내가 고른 관심사 -
                         </h2>
+                        <br></br>
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
                             {[
                                 { name: '독서', icon: '📚' },
@@ -221,7 +244,7 @@ const ProfilePage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-1 sm:p-2 w-full sm:w-28 rounded-xl border cursor-pointer flex items-center ${
+                                    className={`p-1 sm:p-2 w-full sm:w-28 rounded-xl border cursor-pointer flex items-center justify-center ${
                                         clickedInterests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -233,15 +256,23 @@ const ProfilePage = () => {
                                     <span className="text-xl sm:text-2xl mr-1">
                                         {interest.icon}
                                     </span>
-                                    <span className="text-xs sm:text-sm leading-tight">
+                                    <span
+                                        className="text-xs sm:text-sm leading-tight"
+                                        style={{ fontSize: '18px' }}
+                                    >
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <h2 className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4">
-                            AI 관심사
+                        <hr className="w-full my-3 sm:my-4 border-gray-400" />
+                        <h2
+                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4"
+                            style={{ fontSize: '30px' }}
+                        >
+                            - AI가 예측하는 관심사 -
                         </h2>
+                        <br></br>
                         <div className="flex justify-center">
                             <div className="flex flex-wrap justify-center">
                                 {userInfo?.interests2?.map(
@@ -250,7 +281,10 @@ const ProfilePage = () => {
                                             key={index}
                                             className="p-1 sm:p-2 w-24 sm:w-28 rounded-xl border flex items-center justify-center bg-white m-1 sm:m-2"
                                         >
-                                            <span className="block text-center text-xs sm:text-sm">
+                                            <span
+                                                className="block text-center text-xs sm:text-sm"
+                                                style={{ fontSize: '18px' }}
+                                            >
                                                 {interest}
                                             </span>
                                         </div>
@@ -259,6 +293,7 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </div>
+                    <br></br>
                     <div className="flex justify-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
                         <button
                             type="button"

@@ -612,6 +612,7 @@ const VideoChatPage = () => {
                 <button
                     onClick={leaveSession}
                     className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
+                    style={{ fontSize: '25px' }}
                 >
                     중단하기
                 </button>
@@ -679,13 +680,17 @@ const VideoChatPage = () => {
                         <button
                             onClick={requestTopicRecommendations}
                             className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mb-4"
+                            style={{ fontSize: '28px' }}
                         >
                             주제 추천 Btn
                         </button>
 
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
-                                <h3 className="text-lg font-semibold">
+                                <h3
+                                    className="text-lg font-semibold"
+                                    style={{ fontSize: '20px' }}
+                                >
                                     추천 주제
                                 </h3>
                                 <ul className="list-disc list-inside">
@@ -698,7 +703,10 @@ const VideoChatPage = () => {
                     </div>
                 </div>
                 <div className="w-1/4 flex flex-col bg-[#CFFFAA] p-4">
-                    <h2 className="text-lg font-bold mb-2 text-center">
+                    <h2
+                        className="text-lg font-bold mb-2 text-center"
+                        style={{ fontSize: '28px' }}
+                    >
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
