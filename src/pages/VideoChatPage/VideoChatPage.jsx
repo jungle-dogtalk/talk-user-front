@@ -37,12 +37,22 @@ const VideoChatPage = () => {
     const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태
     const [quizTime, setQuizTime] = useState(0); // 퀴즈 타이머 상태
 
+    const [showInitialModal, setShowInitialModal] = useState(true);
+
     const quizModeRef = useRef(quizMode);
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
     const isMissionActive = useSelector(
         (state) => state.mission.isMissionActive
     ); // Redux에서 isMissionActive 상태 가져오기
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowInitialModal(false);
+        }, 5000); // 10초 후 모달 닫기
+
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         if (isMissionActive) {
@@ -634,6 +644,31 @@ const VideoChatPage = () => {
         }, 1000);
     };
 
+    const InitialQuestionModal = () => {
+        if (!sessionData || sessionData.length < 4) return null;
+
+        const currentUserIndex = sessionData.findIndex(
+            (user) => user.userId === userInfo.username
+        );
+        const targetUserIndex = (currentUserIndex + 1) % 4;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
+                    <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
+                    <p className="mb-4">
+                        {sessionData[targetUserIndex].userId}이 답변한 질문을 맞춰보세요:
+                    </p>
+                    <p className="mb-4 font-bold">
+                        "{sessionData[targetUserIndex].question}"
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        이 창은 5초 후 자동으로 닫힙니다.
+                    </p>
+                </div>
+            </div>
+        );
+    };
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
@@ -768,6 +803,7 @@ const VideoChatPage = () => {
                     <MovingDogs sessionData={sessionData} />
                 </div>
             </div>
+            {showInitialModal && <InitialQuestionModal />}
         </div>
     );
 };
