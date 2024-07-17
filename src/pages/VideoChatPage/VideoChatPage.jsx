@@ -960,7 +960,7 @@ const VideoChatPage = () => {
 
                         {quizResult && (
                             <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
-                                <div className="p-6 rounded-lg shadow-lg w-full max-w-3xl">
+                                <div className="p-6 rounded-lg  w-full max-w-3xl">
                                     {quizResult === 'success' ? (
                                         <>
                                             <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
