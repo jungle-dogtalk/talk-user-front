@@ -677,7 +677,7 @@ const VideoChatPage = () => {
                 <h1 className="text-white text-4xl">멍톡</h1>
                 <button
                     onClick={leaveSession}
-                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md"
+                    className="text-white text-lg bg-red-600 px-4 py-2 rounded-md hover:bg-red-700 transition-colors duration-300"
                     style={{ fontSize: '25px' }}
                 >
                     중단하기
@@ -706,9 +706,7 @@ const VideoChatPage = () => {
                                     <div className="absolute top-10 right-2 w-38 bg-white shadow-lg rounded-lg p-2 z-50">
                                         <SettingMenu
                                             publisher={publisher}
-                                            onMirroredChange={
-                                                handleMirrorChange
-                                            }
+                                            onMirroredChange={handleMirrorChange}
                                         />
                                     </div>
                                 )}
@@ -762,47 +760,6 @@ const VideoChatPage = () => {
                         className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
                         style={{ height: '200px' }}
                     >
-                        <div className="flex justify-center items-center mb-4">
-                            <button
-                                onClick={requestTopicRecommendations}
-                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4"
-                                style={{ fontSize: '28px' }}
-                            >
-                                주제 추천 Btn
-                            </button>
-                            <div className="flex space-x-2">
-                                <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                                    onClick={() =>
-                                        updatePublisherWithNewPitch(1.0)
-                                    }
-                                >
-                                    1
-                                </button>
-                                <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                                    onClick={() =>
-                                        updatePublisherWithNewPitch(0.5)
-                                    }
-                                >
-                                    2
-                                </button>
-                                <button
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                                    onClick={() =>
-                                        updatePublisherWithNewPitch(1.5)
-                                    }
-                                >
-                                    3
-                                </button>
-                                <button
-                                    onClick={checkAnswer}
-                                    className="bg-blue-500 text-white px-2 py-1 rounded-md mx-1"
-                                >
-                                    Quiz Test
-                                </button>
-                            </div>
-                        </div>
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
                                 <h3
@@ -836,10 +793,43 @@ const VideoChatPage = () => {
                         {remainingTime % 60}초
                     </h2>
                     <MovingDogs sessionData={sessionData} />
+                    <div className="flex justify-center items-center mt-4">
+                        <button
+                            onClick={requestTopicRecommendations}
+                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                            style={{ fontSize: '28px' }}
+                        >
+                            주제 추천
+                        </button>
+                        <div className="flex space-x-2">
+                            <button
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '28px' }}
+                                onClick={() => updatePublisherWithNewPitch(1.0)}
+                            >
+                                기본
+                            </button>
+                            <button
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '28px' }}
+                                onClick={() => updatePublisherWithNewPitch(0.5)}
+                            >
+                                low
+                            </button>
+                            <button
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                style={{ fontSize: '28px' }}
+                                onClick={() => updatePublisherWithNewPitch(1.5)}
+                            >
+                                high
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
         </div>
     );
+    
 };
 export default VideoChatPage;
