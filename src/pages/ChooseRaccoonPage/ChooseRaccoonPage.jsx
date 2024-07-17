@@ -112,7 +112,8 @@ const ChooseRaccoonPage = () => {
     const handleSelect = () => {
         // 아바타 선택 후 처리 로직
         console.log('Selected avatar url:', url); // TODO: Redux로 처리 요망 or 쿼리스트링 사용 / 대기화면으로 먼저 가야 함
-        navigate('/questions');
+        // navigate('/questions');
+        navigate('/videochat?sessionId=sessionA');
     };
 
     return (
