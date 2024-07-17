@@ -241,7 +241,7 @@ function RaccoonHand(props) {
                     case 'Victory':
                         console.log('브이감지');
                         if (isQuizCompletedRef.current) {
-                            return;
+                            break;
                         }
                         if (!quizInProgressRef.current) {
                             performQuiz();
