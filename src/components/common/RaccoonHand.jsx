@@ -52,7 +52,7 @@ const victoryModels = [
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
-function RaccoonHand() {
+function RaccoonHand(props) {
     const dispatch = useDispatch();
 
     const [modelPath, setModelPath] = useState(models[0]);
@@ -63,6 +63,27 @@ function RaccoonHand() {
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
     const [clearedPercentage, setClearedPercentage] = useState(0);
+
+    let quizInProgress = false;
+    let isQuizCompleted = false;
+
+    useEffect(() => {
+        if (props.quizResult === 'success') {
+            isQuizCompleted = true;
+            changeVictoryModel();
+        }
+
+        if (props.quizResult === 'failure') {
+            alert('땡 !! 얼음미션을 수행합니다 !!');
+        }
+    }, [props.quizResult]);
+
+    useEffect(() => {
+        console.log('컴플리티드 변경 감지 -> ', props.isChallengeCompleted);
+        if (props.isChallengeCompleted) {
+            quizInProgress = false;
+        }
+    }, [props.isChallengeCompleted]);
 
     useEffect(() => {
         const updateHandPositions = () => {
@@ -132,19 +153,26 @@ function RaccoonHand() {
 
     /* 퀴즈 실행 */
     const performQuiz = () => {
-        console.log('퀴즈 시작');
-        dispatch(startMission());
+        console.log('자식컴포넌트 퀴즈 시작');
+        quizInProgress = true;
+        const data = {
+            quizInProgress,
+        };
+
+        props.onQuizEvent(data);
+
+        // dispatch(startMission());
         // TODO: 퀴즈 미션 로직 수행
 
-        // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
-        let isVictory = true;
-        if (isVictory) {
-            changeVictoryModel();
-            // dispatch(stopMission());
-        } else {
-            console.log('얼음 미션 수행');
-            // dispatch(startMission());
-        }
+        // // 퀴즈 성공 시 왕관 모델로 변경, 실패 시 얼음 미션 수행 및 완료 전까지 퀴즈 수행 불가
+        // let isVictory = true;
+        // if (isVictory) {
+        //     changeVictoryModel();
+        //     // dispatch(stopMission());
+        // } else {
+        //     console.log('얼음 미션 수행');
+        //     // dispatch(startMission());
+        // }
     };
 
     const predict = () => {
@@ -223,7 +251,16 @@ function RaccoonHand() {
                     //     );
                     //     break;
                     case 'Victory':
-                        performQuiz();
+                        console.log('브이 감지');
+                        console.log('퀴즈컴플리티드 -> ', isQuizCompleted);
+                        console.log('퀴즈인프로그레스 -> ', quizInProgress);
+                        if (isQuizCompleted) {
+                            return;
+                        }
+
+                        if (!quizInProgress) {
+                            performQuiz();
+                        }
                         break;
                     default:
                         // No movement for other gestures
@@ -352,7 +389,7 @@ function IceBreakingBackground({ handPositions, onPercentageChange }) {
     const originalImageData = useRef(null);
     const erasedPixels = useRef(new Set());
     const lastEraseTime = useRef({});
-    const REGENERATION_DELAY = 3000; // 2초 후 재생성 시작
+    const REGENERATION_DELAY = 30000; // 2초 후 재생성 시작
 
     useEffect(() => {
         const canvas = document.createElement('canvas');
@@ -532,7 +569,6 @@ function IceBreakingBackground({ handPositions, onPercentageChange }) {
                 100;
             setClearedPercentage(newClearedPercentage);
             onPercentageChange(newClearedPercentage);
-            cibsike, kig;
 
             meshRef.current.material.map = canvasTexture;
             meshRef.current.material.needsUpdate = true;
