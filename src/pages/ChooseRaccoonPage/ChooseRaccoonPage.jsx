@@ -117,53 +117,69 @@ const ChooseRaccoonPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            <header className="w-full bg-[#a16e47] p-2 flex items-center">
+        <div className="flex flex-col h-screen bg-gradient-to-b from-[#FFF8E1] to-[#FFE0B2]">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
-                    alt="명톡 로고"
+                    alt="멍톡 로고"
                     className="w-12 h-12 sm:w-16 sm:h-16"
                 />
             </header>
-            <div className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-2 sm:gap-1 p-2 sm:p-4">
-                <div className="w-full lg:flex-1 flex flex-col items-center justify-center mb-4 lg:mb-0">
+            <div className="flex flex-1 flex-col lg:flex-row items-center justify-center gap-6 sm:gap-10 p-6 sm:p-10">
+                <div className="w-full lg:w-1/2 flex flex-col items-center justify-center mb-6 lg:mb-0">
                     <h2
-                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4"
-                        style={{ fontSize: '35px' }}
+                        className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-[#8B4513]"
+                        style={{
+                            fontSize: '40px',
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                        }}
                     >
                         내 모습
                     </h2>
-                    <video
-                        ref={webcamRef}
-                        autoPlay
-                        id="video"
-                        className="w-full max-w-[480px] h-auto max-h-[360px] border rounded"
-                    ></video>
+                    <div className="relative w-full max-w-[520px] h-auto max-h-[390px] rounded-2xl overflow-hidden shadow-2xl">
+                        <video
+                            ref={webcamRef}
+                            autoPlay
+                            id="video"
+                            className="w-full h-full object-cover"
+                        ></video>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                        <div className="absolute bottom-4 left-4 text-white text-lg font-semibold">
+                            실시간 영상
+                        </div>
+                    </div>
                 </div>
-                <div className="w-full lg:flex-1 flex flex-col items-center justify-center">
+                <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
                     <h2
-                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4"
-                        style={{ fontSize: '35px' }}
+                        className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-[#8B4513]"
+                        style={{
+                            fontSize: '40px',
+                            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                        }}
                     >
                         내 마스크
                     </h2>
-                    <div className="relative w-full max-w-[480px] h-auto max-h-[360px] bg-white border rounded">
+                    <div className="relative w-full max-w-[520px] h-auto max-h-[390px] bg-white rounded-2xl shadow-2xl overflow-hidden">
                         <ChooseRaccoonHand />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-2xl"></div>
+                        <div className="absolute bottom-4 left-4 text-white text-lg font-semibold">
+                            선택된 마스크
+                        </div>
                     </div>
                 </div>
             </div>
-            <div className="flex justify-center space-x-4 py-2 mb-2">
+            <div className="flex justify-center space-x-8 py-6 mb-6">
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
+                    className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-3 px-8 sm:py-4 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-2xl font-bold"
                     onClick={() => window.history.back()}
-                    style={{ fontSize: '23px' }}
+                    style={{ fontSize: '24px' }}
                 >
                     뒤로가기
                 </button>
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-lg"
+                    className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-3 px-8 sm:py-4 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-2xl font-bold"
                     onClick={handleSelect}
-                    style={{ fontSize: '23px' }}
+                    style={{ fontSize: '24px' }}
                 >
                     선택
                 </button>
