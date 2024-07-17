@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { OpenVidu } from 'openvidu-browser';
-import axios from 'axios';
 import OpenViduVideo from './OpenViduVideo';
 import { apiCall, apiCallWithFileData } from '../../utils/apiCall';
 import { API_LIST } from '../../utils/apiList';
@@ -10,7 +9,6 @@ import settingsIcon from '../../assets/settings-icon.jpg'; // 설정 아이콘
 import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
-import AvatarApp from '../../components/common/AvatarApp';
 import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 
@@ -38,12 +36,14 @@ const VideoChatPage = () => {
     const [quizMode, setQuizMode] = useState(false); // 퀴즈 모드 상태 추가
     const [quizChallenger, setQuizChallenger] = useState(''); // 퀴즈 도전자
     const [quizResult, setQuizResult] = useState(''); // 퀴즈미션 결과 (성공/실패)
+    const [quizResultTrigger, setQuizResultTrigger] = useState(0);
     const [isChallengeCompleted, setIsChallengeCompleted] = useState(false); // 미션 종료 여부
+    const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
+        useState(0);
 
     const quizModeRef = useRef(quizMode);
 
     let ovSocket = null;
-    let isMyTurn = false;
 
     const handleQuizInProgress = (data) => {
         console.log('자식에서 넘겨받은 데이터 -> ', data);
@@ -395,6 +395,7 @@ const VideoChatPage = () => {
                 ]);
             });
 
+            // 퀴즈 미션 시작
             session.on('signal:quizStart', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
@@ -407,19 +408,23 @@ const VideoChatPage = () => {
                 });
             });
 
+            // 퀴즈 미션 종료
             session.on('signal:quizEnd', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizEnd 시그널 전달받음, 내용은? -> ', data);
 
                 setIsChallengeCompleted(true);
+                setIsChallengeCompletedTrigger((prev) => prev + 1);
                 setQuizChallenger(''); // 퀴즈 도전자 초기화
                 if (data.userId === userInfo.username) {
                     if (data.result) {
                         // 미션성공
                         setQuizResult('success');
+                        setQuizResultTrigger((prev) => prev + 1);
                     } else {
                         // 미션실패
                         setQuizResult('failure');
+                        setQuizResultTrigger((prev) => prev + 1);
                     }
                 }
             });
@@ -733,7 +738,11 @@ const VideoChatPage = () => {
                     <RaccoonHand
                         onQuizEvent={handleQuizInProgress}
                         quizResult={quizResult}
+                        quizResultTrigger={quizResultTrigger}
                         isChallengeCompleted={isChallengeCompleted}
+                        isChallengeCompletedTrigger={
+                            isChallengeCompletedTrigger
+                        }
                     />
                     {/* <AvatarApp></AvatarApp> */}
                     <div
