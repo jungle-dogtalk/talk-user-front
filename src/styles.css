@@ -34,6 +34,7 @@ h3 {
     align-items: center;
     justify-content: center;
     pointer-events: none; /* 말풍선이 클릭되지 않도록 */
+    width: calc(100% - 320px); /* 조정된 크기 */
 }
 
 .speech-bubble {
