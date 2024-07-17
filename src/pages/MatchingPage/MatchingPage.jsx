@@ -15,16 +15,24 @@ const MatchingPage = () => {
 
     // 사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {
+        const storedQuestion = sessionStorage.getItem('question');
+        const storedAnswer = sessionStorage.getItem('answer');
+
         socket.emit('userDetails', {
             userId: userInfo.username,
             userInterests: userInfo.interests,
             aiInterests: userInfo.interests2,
             nickname: userInfo.nickname,
+            question: storedQuestion,
+            answer: storedAnswer,
         });
 
         socket.on('matched', (data) => {
             console.log('Matched event received:', data);
             if (data.sessionId) {
+                // 질문과 답변을 세션 스토리지에서 삭제
+                sessionStorage.removeItem('question');
+                sessionStorage.removeItem('answer');
                 location.href = '/videochat?sessionId=' + data.sessionId;
             } else {
                 console.error('No sessionId in matched event data');
@@ -36,7 +44,7 @@ const MatchingPage = () => {
         return () => {
             socket.disconnect();
         };
-    }, []);
+    }, [userInfo, socket]);
 
     const handleCancelClick = () => {
         navigate('/main');

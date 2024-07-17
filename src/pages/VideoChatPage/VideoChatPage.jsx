@@ -11,7 +11,7 @@ import { getToken, getTokenForTest } from '../../services/openviduService';
 import SettingMenu from './SettingMenu';
 import io from 'socket.io-client';
 import AvatarApp from '../../components/common/AvatarApp';
-import RaccoonHand from '../ChooseRaccoonPage/RaccoonHand';
+import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 
 const VideoChatPage = () => {
@@ -39,6 +39,22 @@ const VideoChatPage = () => {
     const quizModeRef = useRef(quizMode);
 
     const userInfo = useSelector((state) => state.user.userInfo); // redux에서 유저 정보 가져오기
+    const isMissionActive = useSelector(
+        (state) => state.mission.isMissionActive
+    ); // Redux에서 isMissionActive 상태 가져오기
+
+    useEffect(() => {
+        if (isMissionActive) {
+            // 미션이 활성화된 경우 수행할 작업
+            console.log('미션이 활성화되었습니다.');
+            // 필요한 작업을 여기에 추가합니다.
+        } else {
+            // 미션이 비활성화된 경우 수행할 작업
+            console.log('미션이 비활성화되었습니다.');
+            // 필요한 작업을 여기에 추가합니다.
+        }
+    }, [isMissionActive]);
+
     // userInfo가 null인 경우 처리
     if (!userInfo) {
         return <div>Loading...</div>;

@@ -121,23 +121,7 @@ const MainPage = () => {
                 </div>
                 <div className="flex space-x-4 sm:space-x-8 w-full justify-center mb-4">
                     <button
-                        className="flex flex-col items-center justify-center bg-green-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-green-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 sm:w-50 sm:h-50"
-                        onClick={() => navigate('/room')}
-                    >
-                        <img
-                            src={roomIcon}
-                            alt="둘이서 통화하기"
-                            className="w-16 h-16 sm:w-20 sm:h-20 mb-2 sm:mb-4"
-                        />
-                        <span
-                            className="text-sm sm:text-lg font-semibold"
-                            style={{ fontSize: '20px' }}
-                        >
-                            둘이서 통화하기
-                        </span>
-                    </button>
-                    <button
-                        className="flex flex-col items-center justify-center bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 sm:w-50 sm:h-50"
+                        className="flex flex-col items-center justify-center bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-50 h-50 sm:w-52 sm:h-52"
                         onClick={() => navigate('/choose-raccoon')}
                     >
                         <img

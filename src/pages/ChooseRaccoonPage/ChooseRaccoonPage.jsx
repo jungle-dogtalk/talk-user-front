@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './ChooseRaccoonPage.css';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import { Canvas, useFrame, useGraph } from '@react-three/fiber';
 import { Color, Euler, Matrix4 } from 'three';
 import { useGLTF } from '@react-three/drei';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { useNavigate } from 'react-router-dom';
-import RaccoonHand from './RaccoonHand.jsx';
+import ChooseRaccoonHand from './ChooseRaccoonHand.jsx';
 
 let video;
 let faceLandmarker;
@@ -113,6 +112,7 @@ const ChooseRaccoonPage = () => {
     const handleSelect = () => {
         // 아바타 선택 후 처리 로직
         console.log('Selected avatar url:', url); // TODO: Redux로 처리 요망 or 쿼리스트링 사용 / 대기화면으로 먼저 가야 함
+        // navigate('/questions');
         navigate('/videochat?sessionId=sessionA');
     };
 
@@ -148,7 +148,7 @@ const ChooseRaccoonPage = () => {
                         내 마스크
                     </h2>
                     <div className="relative w-full max-w-[480px] h-auto max-h-[360px] bg-white border rounded">
-                        <RaccoonHand />
+                        <ChooseRaccoonHand />
                     </div>
                 </div>
             </div>
