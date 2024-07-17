@@ -258,7 +258,7 @@ const ProfilePage = () => {
                                     </span>
                                     <span
                                         className="text-xs sm:text-sm leading-tight"
-                                        style={{ fontSize: '18px' }}
+                                        style={{ fontSize: '14px' }}
                                     >
                                         {interest.name}
                                     </span>
