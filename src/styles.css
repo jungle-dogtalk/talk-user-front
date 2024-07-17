@@ -23,3 +23,67 @@ h3 {
     font-family: 'MyCustomFont', sans-serif !important;
     color: #5b484a;
 }
+
+.speech-bubble-container {
+    position: absolute;
+    top: 105px; /* 헤더 아래로 60px */
+    left: 330px; /* 왼쪽 카드 옆으로 320px */
+    right: 10px; /* 오른쪽 끝에서 10px */
+    bottom: 250px; /* 라쿤 모델 위로 300px */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* 말풍선이 클릭되지 않도록 */
+}
+
+.speech-bubble {
+    background: #fff;
+    border-radius: 0.4em;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    font-size: 20px;
+    text-align: center;
+    pointer-events: all; /* 말풍선 내 텍스트 선택 가능 */
+    width: 100%; /* 반응형 너비 */
+    height: 100%; /* 반응형 높이 */
+    max-width: 1430px; /* 최대 너비 설정 */
+    max-height: 1000px; /* 최대 높이 설정 */
+}
+
+.speech-bubble:after {
+    content: '';
+    position: absolute;
+    bottom: -60px; /* 말풍선 끝 부분 위치 조정 */
+    left: 83%;
+    transform: translateX(-50%);
+    border-width: 30px;
+    border-style: solid;
+    border-color: #fff transparent transparent transparent;
+}
+
+.services-container {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+    padding: 5px;
+}
+
+.service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 22%;
+}
+
+.service-image {
+    max-width: 30%;
+    height: auto;
+}
+
+.service-text {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
