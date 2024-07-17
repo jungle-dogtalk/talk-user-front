@@ -920,7 +920,7 @@ const VideoChatPage = () => {
                                 </ul>
                             </div>
                         )} */}
-                        {recommendedTopics.length > 0 && (
+                        {recommendedTopics.length > 0 && !quizChallenger && !quizResult && (
                             <div className="recommended-topics mt-4">
                                 <h3
                                     className="text-2xl font-semibold"
