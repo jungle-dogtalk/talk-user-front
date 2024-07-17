@@ -41,6 +41,8 @@ const VideoChatPage = () => {
     const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
         useState(0);
 
+    const [showInitialModal, setShowInitialModal] = useState(true);
+
     const quizModeRef = useRef(quizMode);
 
     let ovSocket = null;
@@ -84,6 +86,14 @@ const VideoChatPage = () => {
                 console.error('시그널 도중 에러 발생 -> ', error);
             });
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setShowInitialModal(false);
+        }, 5000); // 5초 후 모달 닫기
+
+        return () => clearTimeout(timer);
+    }, []);
 
     useEffect(() => {
         if (quizChallenger && quizChallenger === userInfo.username) {
@@ -716,6 +726,32 @@ const VideoChatPage = () => {
         }, 1000);
     };
 
+    const InitialQuestionModal = () => {
+        if (!sessionData || sessionData.length < 4) return null;
+
+        const currentUserIndex = sessionData.findIndex(
+            (user) => user.userId === userInfo.username
+        );
+        const targetUserIndex = (currentUserIndex + 1) % 4;
+
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
+                    <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
+                    <p className="mb-4">
+                        {sessionData[targetUserIndex].userId}이 답변한 질문을
+                        맞춰보세요:
+                    </p>
+                    <p className="mb-4 font-bold">
+                        "{sessionData[targetUserIndex].question}"
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        이 창은 5초 후 자동으로 닫힙니다.
+                    </p>
+                </div>
+            </div>
+        );
+    };
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
@@ -790,8 +826,28 @@ const VideoChatPage = () => {
                                     key={index}
                                     className="relative border-2 border-gray-300 aspect-video flex items-center justify-center"
                                 >
-                                    <div className="text-gray-500">
-                                        화면이 나올 공간
+                                    <div className="text-gray-500 flex flex-col items-center">
+                                        <svg
+                                            className="animate-spin h-8 w-8 text-gray-500 mb-2"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        로딩 중...
                                     </div>
                                 </div>
                             )
@@ -863,6 +919,7 @@ const VideoChatPage = () => {
                     <MovingDogs sessionData={sessionData} />
                 </div>
             </div>
+            {showInitialModal && <InitialQuestionModal />}
         </div>
     );
 };
