@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
-import dogHouseImage1 from '../../assets/doghouse.jpg';
-import dogHouseImage2 from '../../assets/doghouse.jpg';
-import dogHouseImage3 from '../../assets/doghouse.jpg';
-import dogHouseImage4 from '../../assets/doghouse.jpg';
-
-const dogHouseImages = [
-    dogHouseImage1,
-    dogHouseImage2,
-    dogHouseImage3,
-    dogHouseImage4,
-];
+import dogHouseImage from '../../assets/doghouse.gif';  // doghouse.gif 이미지로 변경
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
@@ -170,11 +160,11 @@ const MovingDogs = ({ sessionData }) => {
                         className="relative w-20 h-20"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-0 left-0 w-full text-center text-xs bg-white bg-opacity-70 rounded-sm">
+                        <div className="absolute top-[-20px] left-0 w-full text-center text-xs bg-white bg-opacity-70 rounded-sm">
                             {data.nickname}의 집
                         </div>
                         <img
-                            src={dogHouseImages[index % dogHouseImages.length]}
+                            src={dogHouseImage}
                             alt={`Dog house ${index + 1}`}
                             className="w-full h-full object-cover"
                         />
