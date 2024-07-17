@@ -740,8 +740,8 @@ const VideoChatPage = () => {
                 <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
                     <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
                     <p className="mb-4">
-                        "{sessionData[targetUserIndex].nickname}" 님이 답변한 질문을
-                        맞춰보세요:
+                        "{sessionData[targetUserIndex].nickname}" 님이 답변한
+                        질문을 맞춰보세요:
                     </p>
                     <p className="mb-4 font-bold">
                         "{sessionData[targetUserIndex].question}"
@@ -893,31 +893,31 @@ const VideoChatPage = () => {
                     }}
                 >
                     <MovingDogs sessionData={sessionData} />
-                    <div className="flex justify-center items-center mt-4">
+                    <div className="flex flex-col items-center mt-4 space-y-4">
                         <button
                             onClick={requestTopicRecommendations}
-                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                            className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-300"
                             style={{ fontSize: '28px' }}
                         >
                             주제 추천
                         </button>
                         <div className="flex space-x-2">
                             <button
-                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-300"
                                 style={{ fontSize: '28px' }}
                                 onClick={() => updatePublisherWithNewPitch(1.0)}
                             >
                                 기본
                             </button>
                             <button
-                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-300"
                                 style={{ fontSize: '28px' }}
                                 onClick={() => updatePublisherWithNewPitch(0.5)}
                             >
                                 low
                             </button>
                             <button
-                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md inline-block mr-4 hover:bg-gray-400 transition-colors duration-300"
+                                className="bg-gray-300 text-brown-700 text-2xl font-bold px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-300"
                                 style={{ fontSize: '28px' }}
                                 onClick={() => updatePublisherWithNewPitch(1.5)}
                             >

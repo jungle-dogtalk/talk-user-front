@@ -24,10 +24,10 @@ const MovingDogs = ({ sessionData }) => {
     const [showModal, setShowModal] = useState(false);
 
     const dogHouses = [
-        { x: 20, y: 10 }, // 왼쪽 위
-        { x: 80, y: 10 }, // 오른쪽 위
-        { x: 20, y: 90 }, // 왼쪽 아래
-        { x: 80, y: 90 }, // 오른쪽 아래
+        { x: 20, y: 8 }, // 왼쪽 위
+        { x: 80, y: 8 }, // 오른쪽 위
+        { x: 20, y: 86 }, // 왼쪽 아래
+        { x: 80, y: 86 }, // 오른쪽 아래
     ];
 
     // 강아지 집과 사용자 데이터를 매핑합니다.
