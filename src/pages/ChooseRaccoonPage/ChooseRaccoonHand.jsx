@@ -24,12 +24,11 @@ let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
 const models = [
-    '/blue_raccoon.glb',
+    '/yellow_raccoon_head.glb',
     '/jungle_raccoon_head.glb',
+    '/blue_raccoon.glb',
     '/raccoon_head.glb',
     '/warrior_raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
-    // '/yupyup_raccoon_head.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -234,7 +233,7 @@ function ChooseRaccoonHand() {
                 <Raccoon modelPath={modelPath} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
-            <div className="absolute top-2 left-2 right-2 flex justify-between">
+            <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
                 {/* <button
                     onClick={changeModel}
                     className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"

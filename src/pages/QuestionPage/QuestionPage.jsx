@@ -81,7 +81,7 @@ const QuestionPage = () => {
                             className="bg-[#a16e47] text-[#f7f3e9] py-2 px-4 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] hover:text-[#a16e47] transition duration-300 ease-in-out mb-4 text-xs sm:text-base font-semibold shadow-md hover:shadow-lg"
                             onClick={fetchRandomQuestion}
                         >
-                            질문 새로고침
+                            다른 질문
                         </button>
                     </div>
                     <div>

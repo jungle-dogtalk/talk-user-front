@@ -92,28 +92,14 @@ const ChooseRaccoonPage = () => {
     const handleRetry = () => {
         // 아바타 변경 로직 (임의의 아바타 이미지 설정)
 
-        const urls = [
-            'https://models.readyplayer.me/668293698a5ecca99f9b06c1.glb',
-            'https://models.readyplayer.me/6682c315649e11cdd6dd8a8a.glb',
-            'https://models.readyplayer.me/66857649a6014cc4b10e8f73.glb',
-            'https://models.readyplayer.me/668d1456878f8e58dc12d758.glb',
-            'https://models.readyplayer.me/668d14b51847c40762af418e.glb',
-            'https://models.readyplayer.me/668d14d83369b0756b9c487c.glb',
-            'https://models.readyplayer.me/668d14e93369b0756b9c48b0.glb',
-            'https://models.readyplayer.me/668d14f634432ca7edca24af.glb',
-            'https://models.readyplayer.me/668d150a7a0772243cddc4af.glb',
-            'https://models.readyplayer.me/668d152063703fb7530e8a0d.glb',
-        ];
+        const urls = [''];
         const randomUrl = urls[Math.floor(Math.random() * urls.length)];
         setUrl(randomUrl);
     };
 
     // TODO: 너구리 선택 후 처리 로직
     const handleSelect = () => {
-        // 아바타 선택 후 처리 로직
-        console.log('Selected avatar url:', url); // TODO: Redux로 처리 요망 or 쿼리스트링 사용 / 대기화면으로 먼저 가야 함
-        // navigate('/questions');
-        navigate('/videochat?sessionId=sessionA');
+        navigate('/questions');
     };
 
     return (
@@ -134,7 +120,7 @@ const ChooseRaccoonPage = () => {
                             textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
                         }}
                     >
-                        내 모습
+                        CAM
                     </h2>
                     <div className="relative w-full max-w-[520px] h-auto max-h-[390px] rounded-2xl overflow-hidden shadow-2xl">
                         <video
@@ -161,7 +147,7 @@ const ChooseRaccoonPage = () => {
                     </h2>
                     <div className="relative w-full max-w-[520px] h-auto max-h-[390px] bg-white rounded-2xl shadow-2xl overflow-hidden">
                         <ChooseRaccoonHand />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-2xl"></div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-2xl"></div>
                         <div className="absolute bottom-4 left-4 text-white text-lg font-semibold">
                             선택된 마스크
                         </div>
