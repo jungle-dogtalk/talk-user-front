@@ -12,6 +12,7 @@ import io from 'socket.io-client';
 import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
+import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 
 const VideoChatPage = () => {
     const FRAME_RATE = 60;
@@ -755,8 +756,12 @@ const VideoChatPage = () => {
     };
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
-            <header className="w-full bg-[#a16e47] p-4 flex items-center justify-between">
-                <h1 className="text-white text-4xl">멍톡</h1>
+            <header className="w-full bg-[#a16e47] p-1 flex items-center justify-between">
+            <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-12 h-12 sm:w-16 sm:h-16"
+                />
                 <div className="flex items-center">
                     <h2
                         className="text-white text-lg font-bold bg-opacity-70 rounded-md"
@@ -867,17 +872,54 @@ const VideoChatPage = () => {
                         className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
                         style={{ height: '200px' }}
                     >
+                        {/* 테스트 용 하드코딩된 추천 주제
+                        {recommendedTopics.length === 0 && (
+                            <div className="recommended-topics mt-4">
+                                <h3
+                                    className="text-2xl font-semibold"
+                                    style={{ fontSize: '24px' }}
+                                >
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 1
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 2
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 3
+                                    </li>
+                                </ul>
+                            </div>
+                        )} */}
                         {recommendedTopics.length > 0 && (
                             <div className="recommended-topics mt-4">
                                 <h3
-                                    className="text-lg font-semibold"
-                                    style={{ fontSize: '20px' }}
+                                    className="text-2xl font-semibold"
+                                    style={{ fontSize: '24px' }}
                                 >
                                     추천 주제
                                 </h3>
                                 <ul className="list-disc list-inside">
                                     {recommendedTopics.map((topic, index) => (
-                                        <li key={index}>{topic}</li>
+                                        <li
+                                            key={index}
+                                            className="text-xl text-gray-700 mb-2"
+                                            style={{ fontSize: '22px' }}
+                                        >
+                                            {topic}
+                                        </li>
                                     ))}
                                 </ul>
                             </div>
@@ -893,7 +935,10 @@ const VideoChatPage = () => {
                     }}
                 >
                     <MovingDogs sessionData={sessionData} />
-                    <div className="relative flex flex-col items-center space-y-4" style={{ top: '-36px' }}>
+                    <div
+                        className="relative flex flex-col items-center space-y-4"
+                        style={{ top: '-36px' }}
+                    >
                         <button
                             onClick={requestTopicRecommendations}
                             className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
