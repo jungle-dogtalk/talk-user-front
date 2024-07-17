@@ -97,3 +97,38 @@
     border-radius: 5px;
     cursor: pointer;
 } */
+
+.bouncing-text span {
+    display: inline-block;
+    animation: bounce 0.3s ease infinite alternate;
+}
+
+.bouncing-text span:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.bouncing-text span:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.bouncing-text span:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.bouncing-text span:nth-child(5) {
+    animation-delay: 0.4s;
+}
+
+.bouncing-text span:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+@keyframes bounce {
+    100% {
+        transform: translateY(-20px);
+        text-shadow: 0 1px 10px #000, 0 2px 10px #000, 0 3px 10px #000,
+            0 4px 10px #000, 0 5px 10px #000, 0 6px 10px #000 transparent,
+            0 7px 10px #000 transparent, 0 8px 10px #000 transparent,
+            0 9px 10px #000 transparent, 0 10px 10px rgba(0, 0, 0, 0.4);
+    }
+}
