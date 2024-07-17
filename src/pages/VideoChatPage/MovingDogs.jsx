@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dogWalk.gif';
-import dogHouseImage from '../../assets/doghouse.gif';  // doghouse.gif 이미지로 변경
+import dogHouseImage from '../../assets/doghouse.gif'; // doghouse.gif 이미지로 변경
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
@@ -26,8 +26,8 @@ const MovingDogs = ({ sessionData }) => {
     const dogHouses = [
         { x: 20, y: 8 }, // 왼쪽 위
         { x: 80, y: 8 }, // 오른쪽 위
-        { x: 20, y: 86 }, // 왼쪽 아래
-        { x: 80, y: 86 }, // 오른쪽 아래
+        { x: 20, y: 80 }, // 왼쪽 아래
+        { x: 80, y: 80 }, // 오른쪽 아래
     ];
 
     // 강아지 집과 사용자 데이터를 매핑합니다.
@@ -160,13 +160,13 @@ const MovingDogs = ({ sessionData }) => {
                         className="relative w-20 h-20"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-20px] left-0 w-full text-center text-xs bg-white bg-opacity-70 rounded-sm">
-                            {data.nickname}의 집
+                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-semibold rounded-lg py-1 shadow-md">
+                            "{data.nickname}"님
                         </div>
                         <img
                             src={dogHouseImage}
                             alt={`Dog house ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover rounded-lg shadow-md"
                         />
                     </div>
                 </div>
