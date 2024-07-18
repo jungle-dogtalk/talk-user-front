@@ -230,7 +230,16 @@ const MovingDogs = ({ sessionData }) => {
                 </div>
             ))}
             {showModal && selectedUser && (
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-lg shadow-lg w-full max-w-xs z-50">
+                <div
+                    className="absolute bg-white rounded-lg shadow-lg z-50"
+                    style={{
+                        left: '50%',
+                        top: '43%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '80%',
+                        maxWidth: '300px',
+                    }}
+                >
                     <header className="bg-[#a16e47] text-white p-2 rounded-t-lg flex justify-between items-center">
                         <h2 className="text-sm text-center w-full">
                             "{selectedUser.nickname}"님의 질문
@@ -243,7 +252,7 @@ const MovingDogs = ({ sessionData }) => {
                         </button>
                     </header>
                     <div className="p-4 text-center">
-                        <p>{selectedUser.question}</p>
+                        <p className="text-sm">{selectedUser.question}</p>
                         <button
                             className="mt-2 bg-red-500 text-white px-2 py-1 rounded-full mx-auto"
                             onClick={closeModal}
