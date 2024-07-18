@@ -760,22 +760,27 @@ const VideoChatPage = () => {
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full text-center">
-                    <h2 className="text-xl font-bold mb-4">답변을 맞출 대상</h2>
-                    <p className="mb-4">
-                        "{sessionData[targetUserIndexRef.current].nickname}"
+                <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center transform transition-transform scale-105 hover:scale-110">
+                    <h2 className="text-3xl font-extrabold mb-4 text-orange-800">
+                        답변을 맞출 대상
+                    </h2>
+                    <p className="mb-4 text-lg text-orange-700">
+                        <span className="font-semibold text-orange-800">
+                            "{sessionData[targetUserIndexRef.current].nickname}"
+                        </span>{' '}
                         님에 대한 질문의 답변을 맞춰보세요
                     </p>
-                    <p className="mb-4 font-bold">
+                    <p className="mb-4 font-bold text-xl text-orange-800 bg-orange-200 p-4 rounded-lg shadow-inner">
                         "{sessionData[targetUserIndexRef.current].question}"
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
                     </p>
                 </div>
             </div>
         );
     };
+
     return (
         <div className="min-h-screen flex flex-col bg-[#f7f3e9]">
             <header className="w-full bg-[#a16e47] p-1 flex items-center justify-between">
@@ -920,27 +925,31 @@ const VideoChatPage = () => {
                                 </ul>
                             </div>
                         )} */}
-                        {recommendedTopics.length > 0 && !quizChallenger && !quizResult && (
-                            <div className="recommended-topics mt-4">
-                                <h3
-                                    className="text-2xl font-semibold"
-                                    style={{ fontSize: '24px' }}
-                                >
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    {recommendedTopics.map((topic, index) => (
-                                        <li
-                                            key={index}
-                                            className="text-xl text-gray-700 mb-2"
-                                            style={{ fontSize: '22px' }}
-                                        >
-                                            {topic}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                        {recommendedTopics.length > 0 &&
+                            !quizChallenger &&
+                            !quizResult && (
+                                <div className="recommended-topics mt-4">
+                                    <h3
+                                        className="text-2xl font-semibold"
+                                        style={{ fontSize: '24px' }}
+                                    >
+                                        추천 주제
+                                    </h3>
+                                    <ul className="list-disc list-inside">
+                                        {recommendedTopics.map(
+                                            (topic, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="text-xl text-gray-700 mb-2"
+                                                    style={{ fontSize: '22px' }}
+                                                >
+                                                    {topic}
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
                         {quizChallenger && (
                             <div className="bg-[#e7d4b5] w-full h-full flex items-center justify-center">
                                 <div className="p-6 rounded-lg shadow-lg w-full">
