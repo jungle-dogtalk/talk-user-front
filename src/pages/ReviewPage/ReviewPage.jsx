@@ -116,7 +116,7 @@ const ReviewPage = () => {
                 })),
             });
             alert('리뷰가 제출되었습니다.');
-            // window.location.href = '/main';
+            window.location.href = '/main';
         } catch (error) {
             console.error('Error submitting reviews:', error);
             alert('리뷰 제출 중 오류가 발생했습니다.');
