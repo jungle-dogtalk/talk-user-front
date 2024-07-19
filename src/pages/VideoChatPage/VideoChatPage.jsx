@@ -1014,36 +1014,6 @@ const VideoChatPage = () => {
                         className="relative flex flex-col items-center space-y-4"
                         style={{ top: '-36px' }}
                     >
-                        <button
-                            onClick={requestTopicRecommendations}
-                            className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
-                            style={{ fontSize: '24px' }}
-                        >
-                            주제 추천
-                        </button>
-                        <div className="flex space-x-2">
-                            <button
-                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
-                                style={{ fontSize: '24px' }}
-                                onClick={() => updatePublisherWithNewPitch(1.0)}
-                            >
-                                기본
-                            </button>
-                            <button
-                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
-                                style={{ fontSize: '24px' }}
-                                onClick={() => updatePublisherWithNewPitch(0.5)}
-                            >
-                                low
-                            </button>
-                            <button
-                                className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
-                                style={{ fontSize: '24px' }}
-                                onClick={() => updatePublisherWithNewPitch(1.5)}
-                            >
-                                high
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
