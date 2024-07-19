@@ -179,24 +179,7 @@ const VideoChatPage = () => {
         // 결과 데이터 수신 받아와 변수에 저장 후 상태 업데이트
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
-            setRecommendedTopics((prevTopics) => {
-                if (data === '\n') {
-                    return [...prevTopics, ''];
-                } else {
-                    const updatedTopics = [...prevTopics];
-                    if (updatedTopics.length === 0) {
-                        updatedTopics.push(data);
-                    } else {
-                        updatedTopics[updatedTopics.length - 1] += data;
-                    }
-                    return updatedTopics;
-                }
-            });
-            /*------------본래 주제 한 번에 받아오던 코드-------------*/
-            // const topics = Array.isArray(data.data.topics)
-            //     ? data.data.topics
-            //     : [];
-            // setRecommendedTopics(topics);
+            setRecommendedTopics((prevTopics) => [...prevTopics, data.trim()]);
         });
 
         socket.current.on('endOfStream', () => {
@@ -414,7 +397,7 @@ const VideoChatPage = () => {
             session.on('signal:quizStart', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
-
+                // recognition.start();
                 setQuizChallenger((prevQuizChallenger) => {
                     if (prevQuizChallenger === '') {
                         return data.userId;
@@ -654,7 +637,7 @@ const VideoChatPage = () => {
         recognition.onend = () => {
             console.log('Speech recognition ended');
             if (recognitionRef.current) {
-                recognition.onstart();
+                recognition.start();
             }
         };
 
@@ -683,6 +666,7 @@ const VideoChatPage = () => {
     };
 
     function boyerMooreSearch(text, pattern) {
+        console.log('대답 내용: ', text);
         // text 공백 전처리
         text = text.trim();
         pattern = pattern.trim();
@@ -708,6 +692,7 @@ const VideoChatPage = () => {
             }
 
             if (j < 0) {
+                console.log('성공');
                 return true;
             } else {
                 const charCode = text.charCodeAt(s + j);
@@ -716,7 +701,7 @@ const VideoChatPage = () => {
                 s += Math.max(1, badCharShift);
             }
         }
-
+        console.log('실패');
         return false;
     }
 
@@ -941,19 +926,58 @@ const VideoChatPage = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative">
+                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
                     <MovingDogs sessionData={sessionData} />
 
-                    <div className="mt-auto">
-                        <button
-                            onClick={() => setUseTestTopics(!useTestTopics)}
-                            className="bg-blue-500 text-white px-2 py-1 rounded-md text-sm mb-2"
-                        >
-                            {useTestTopics ? '실제 데이터' : '테스트 데이터'}
-                        </button>
+                    <button
+                        onClick={requestTopicRecommendations}
+                        className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
+                        style={{
+                            fontSize: '24px',
+                            top: '350px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                        }}
+                    >
+                        주제 추천
+                    </button>
 
-                        {((useTestTopics && testTopics.length > 0) ||
-                            (!useTestTopics && recommendedTopics.length > 0)) &&
+                    <div
+                        className="w-full flex flex-col items-center absolute"
+                        style={{ top: '400px', left: '4px'  }}
+                    >
+                        {recommendedTopics.length === 0 && (
+                            <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h3
+                                    className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
+                                    style={{ fontSize: '24px' }}
+                                >
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 1
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 2
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 3
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+
+                        {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
                                 <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
@@ -961,14 +985,16 @@ const VideoChatPage = () => {
                                         추천 주제
                                     </h3>
                                     <ul className="list-disc list-inside text-[#2c4021] space-y-2">
-                                        {(useTestTopics
-                                            ? testTopics
-                                            : recommendedTopics
-                                        ).map((topic, index) => (
-                                            <li key={index} className="text-lg">
-                                                {topic}
-                                            </li>
-                                        ))}
+                                        {recommendedTopics.map(
+                                            (topic, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="text-lg"
+                                                >
+                                                    {topic}
+                                                </li>
+                                            )
+                                        )}
                                     </ul>
                                 </div>
                             )}

@@ -63,7 +63,8 @@ const MovingDogs = ({ sessionData }) => {
                         className="relative w-20 h-20"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-semibold rounded-lg py-1 shadow-md">
+                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 shadow-md">
+
                             "
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
@@ -91,7 +92,7 @@ const MovingDogs = ({ sessionData }) => {
                     className="absolute bg-white rounded-lg shadow-lg z-50"
                     style={{
                         left: '50%',
-                        top: '43%',
+                        top: '27%',
                         transform: 'translate(-50%, -50%)',
                         width: '80%',
                         maxWidth: '300px',
