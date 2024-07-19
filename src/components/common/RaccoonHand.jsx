@@ -184,6 +184,9 @@ const RaccoonHand = React.memo((props) => {
                 blendshapes = faceResult.faceBlendshapes[0].categories;
                 faceLandmarks = faceResult.faceLandmarks[0];
                 transformationMatrix = matrix;
+
+                //감정 인식
+                recognizeEmotion(blendshapes);
             }
 
             // Hand result processing
@@ -282,6 +285,26 @@ const RaccoonHand = React.memo((props) => {
         setTimeout(() => {
             setIceBreakingActive(false);
         }, 10000);
+    };
+
+    const recognizeEmotion = (blendshapes) => {
+        const blendshapeMap = blendshapes.reduce((map, obj) => {
+            map[obj.categoryName] = obj.score;
+            return map;
+        }, {});
+
+        // 웃음 (smile)을 인식 'mouthSmileLeft' 'mouthSmileRight'
+        const smileValueLeft = blendshapeMap['mouthSmileLeft'] || 0;
+        const smileValueRight = blendshapeMap['mouthSmileRight'] || 0;
+        const smileValue = (smileValueLeft + smileValueRight) / 2;
+
+        // console.log(
+        //     `Smile Left: ${smileValueLeft}, Smile Right: ${smileValueRight}, Average: ${smileValue}`
+        // );
+
+        if (smileValue > 0.5) {
+            console.log('Smiling');
+        }
     };
 
     return (
