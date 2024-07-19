@@ -179,24 +179,7 @@ const VideoChatPage = () => {
         // 결과 데이터 수신 받아와 변수에 저장 후 상태 업데이트
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
-            setRecommendedTopics((prevTopics) => {
-                if (data === '\n') {
-                    return [...prevTopics, ''];
-                } else {
-                    const updatedTopics = [...prevTopics];
-                    if (updatedTopics.length === 0) {
-                        updatedTopics.push(data);
-                    } else {
-                        updatedTopics[updatedTopics.length - 1] += data;
-                    }
-                    return updatedTopics;
-                }
-            });
-            /*------------본래 주제 한 번에 받아오던 코드-------------*/
-            // const topics = Array.isArray(data.data.topics)
-            //     ? data.data.topics
-            //     : [];
-            // setRecommendedTopics(topics);
+            setRecommendedTopics((prevTopics) => [...prevTopics, data.trim()]);
         });
 
         socket.current.on('endOfStream', () => {
@@ -414,7 +397,7 @@ const VideoChatPage = () => {
             session.on('signal:quizStart', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
-
+                // recognition.start();
                 setQuizChallenger((prevQuizChallenger) => {
                     if (prevQuizChallenger === '') {
                         return data.userId;
@@ -654,7 +637,7 @@ const VideoChatPage = () => {
         recognition.onend = () => {
             console.log('Speech recognition ended');
             if (recognitionRef.current) {
-                recognition.onstart();
+                recognition.start();
             }
         };
 
@@ -683,6 +666,7 @@ const VideoChatPage = () => {
     };
 
     function boyerMooreSearch(text, pattern) {
+        console.log('대답 내용: ', text);
         // text 공백 전처리
         text = text.trim();
         pattern = pattern.trim();
@@ -708,6 +692,7 @@ const VideoChatPage = () => {
             }
 
             if (j < 0) {
+                console.log('성공');
                 return true;
             } else {
                 const charCode = text.charCodeAt(s + j);
@@ -716,7 +701,7 @@ const VideoChatPage = () => {
                 s += Math.max(1, badCharShift);
             }
         }
-
+        console.log('실패');
         return false;
     }
 

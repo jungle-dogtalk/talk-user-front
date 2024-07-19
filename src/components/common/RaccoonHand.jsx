@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
     Color,
     Euler,
@@ -50,7 +50,7 @@ const victoryModels = [
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
-function RaccoonHand(props) {
+const RaccoonHand = React.memo((props) => {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [victoryModelIndex, setVictoryModelIndex] = useState(0);
@@ -257,11 +257,11 @@ function RaccoonHand(props) {
         setup();
     }, []);
 
-    const changeModel = () => {
+    const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
         setModelPath(models[nextIndex]);
-    };
+    }, [modelIndex]);
 
     // TODO: 왕관 모델로 변경
     const changeVictoryModel = () => {
@@ -359,7 +359,7 @@ function RaccoonHand(props) {
             </button> */}
         </div>
     );
-}
+});
 
 function IceBreakingBackground({ handPositions, onPercentageChange }) {
     const meshRef = useRef();

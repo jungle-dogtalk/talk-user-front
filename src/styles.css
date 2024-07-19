@@ -24,18 +24,32 @@ h3 {
     color: #5b484a;
 }
 
+.left-container {
+    flex: 0 0 20%; /* 왼쪽 영역을 33%로 고정 */
+    max-width: 33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 24px;
+    overflow: hidden;
+}
+
+.right-container {
+    flex: 1; /* 오른쪽 영역을 나머지 공간으로 설정 */
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    padding: 24px;
+    overflow: hidden;
+}
+
 .speech-bubble-container {
-    position: absolute;
-    top: 105px; /* 헤더 아래로 60px */
-    left: 33vh; /* 왼쪽 카드 옆으로 320px */
-    right: 20px; /* 오른쪽 끝에서 10px */
-    bottom: 250px; /* 라쿤 모델 위로 300px */
+    width: 90%;
+    height: 75%; /* 오른쪽 영역의 75% 높이 */
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none; /* 말풍선이 클릭되지 않도록 */
-    width: calc(100% - 340px); /* 조정된 크기 */
-    overflow: hidden;
+    pointer-events: none;
 }
 
 .speech-bubble {
@@ -46,11 +60,9 @@ h3 {
     display: inline-block;
     font-size: 20px;
     text-align: center;
-    pointer-events: all; /* 말풍선 내 텍스트 선택 가능 */
-    width: 150vh;
+    pointer-events: all;
+    width: 100%;
     height: 100%;
-    max-width: 1430px; /* 최대 너비 설정 */
-    max-height: 90vh; /* 최대 높이 설정 */
     overflow: hidden;
     position: relative;
 }
@@ -61,7 +73,7 @@ h3 {
     bottom: -30px; /* 말풍선 끝 부분 위치 조정 */
     left: 50%;
     transform: translateX(-50%);
-    border-width: 30px;
+    border-width: 15px;
     border-style: solid;
     border-color: #fff transparent transparent transparent;
 }
