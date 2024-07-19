@@ -12,8 +12,6 @@ const MovingDogs = ({ sessionData }) => {
         { x: 64, y: 9 }, // 왼쪽 아래
         { x: 92, y: 9 }, // 오른쪽 아래
     ];
-    
-    
 
     // 모달 상태와 선택된 사용자 상태 추가
     const [selectedUser, setSelectedUser] = useState(null);
@@ -64,7 +62,6 @@ const MovingDogs = ({ sessionData }) => {
                         onClick={() => handleDogHouseClick(index)}
                     >
                         <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 shadow-md">
-
                             "
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
@@ -92,27 +89,42 @@ const MovingDogs = ({ sessionData }) => {
                     className="absolute bg-white rounded-lg shadow-lg z-50"
                     style={{
                         left: '50%',
-                        top: '27%',
+                        top: '30%',
                         transform: 'translate(-50%, -50%)',
-                        width: '80%',
-                        maxWidth: '300px',
+                        width: '85%',
+                        maxWidth: '380px',
                     }}
                 >
-                    <header className="bg-[#a16e47] text-white p-2 rounded-t-lg flex justify-between items-center">
-                        <h2 className="text-sm text-center w-full">
+                    <header className="bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] text-white p-3 flex justify-between items-center">
+                        <h2 className="text-lg font-bold text-center w-full">
                             "{selectedUser.nickname}"님의 질문
                         </h2>
                         <button
                             onClick={closeModal}
-                            className="absolute right-2 text-white"
+                            className="absolute right-4 top-4 text-white hover:text-gray-200 transition-colors"
                         >
-                            X
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                ></path>
+                            </svg>
                         </button>
                     </header>
-                    <div className="p-4 text-center">
-                        <p className="text-sm">{selectedUser.question}</p>
+                    <div className="p-4 bg-gradient-to-b from-white to-gray-50">
+                        <p className="text-xl mb-4 text-gray-700 text-center">
+                            {selectedUser.question}
+                        </p>
                         <button
-                            className="mt-2 bg-red-500 text-white px-2 py-1 rounded-full mx-auto"
+                            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-full font-semibold shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
                             onClick={closeModal}
                         >
                             닫기
