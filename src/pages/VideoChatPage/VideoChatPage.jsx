@@ -51,6 +51,7 @@ const VideoChatPage = () => {
 
     const quizModeRef = useRef(quizMode);
     const targetUserIndexRef = useRef(0);
+    const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
 
     let ovSocket = null;
 
@@ -361,6 +362,7 @@ const VideoChatPage = () => {
                 publisher.stream.getMediaStream(),
                 userInfo.username
             );
+            startInactivityTimer();
 
             socket.current.emit('joinSession', sessionId);
         }, 1000);
@@ -477,6 +479,7 @@ const VideoChatPage = () => {
                 console.log(
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
+                resetInactivityTimer(); // Reset inactivity timer on speech detected
             });
 
             // 발화 종료 감지
@@ -484,6 +487,7 @@ const VideoChatPage = () => {
                 console.log(
                     'User ' + event.connection.connectionId + ' stop speaking'
                 );
+                startInactivityTimer(); // Start inactivity timer on speech stop detected
             });
 
             const allowedSessionIdList = [
@@ -826,6 +830,26 @@ const VideoChatPage = () => {
                 </div>
             </div>
         );
+    };
+
+    // TTS 기능 추가
+    const handleTTS = useCallback((username, message) => {
+        const utterance = new SpeechSynthesisUtterance(
+            `${username}님, ${message}`
+        );
+        utterance.lang = 'ko-KR';
+        window.speechSynthesis.speak(utterance);
+    }, []);
+
+    const startInactivityTimer = () => {
+        clearTimeout(inactivityTimeoutRef.current);
+        inactivityTimeoutRef.current = setTimeout(() => {
+            handleTTS(userInfo.username, '말하세요');
+        }, 10000); // 10초 후에 "말하세요" TTS 재생
+    };
+
+    const resetInactivityTimer = () => {
+        clearTimeout(inactivityTimeoutRef.current);
     };
 
     return (
