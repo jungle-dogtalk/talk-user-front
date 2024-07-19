@@ -90,7 +90,7 @@ const MainPage = () => {
             <div className="flex flex-col items-start p-4 sm:p-6 w-full">
                 <div
                     className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg"
-                    style={{ maxWidth: '300px', height: '450px' }}
+                    style={{ maxWidth: '300px', height: '420px' }}
                 >
                     <div className="flex flex-col items-center w-full mb-6 sm:mb-0">
                         <img
@@ -146,7 +146,7 @@ const MainPage = () => {
                         </div>
                     </div>
                     <button
-                        className="bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center mt-4"
+                        className="bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center"
                         onClick={() => navigate('/choose-raccoon')}
                     >
                         <span
@@ -162,22 +162,22 @@ const MainPage = () => {
                     style={{ maxWidth: '300px', height: '450px' }}
                 >
                     <h2
-                        className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                        style={{ fontSize: '22px' }}
+                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center"
+                        style={{ fontSize: '25px' }}
                     >
-                        사람들이 가장 관심있어 해요!
+                        지금 사람들이<br></br>가장 관심있어 해요!
                     </h2>
                     {Array.isArray(topInterests) && topInterests.length > 0 ? (
                         topInterests.map((interest, index) => (
                             <div
                                 key={index}
-                                className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-4"
+                                className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-3"
                                 style={{ maxWidth: '300px', height: '55px' }}
                             >
                                 <h2
                                     className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
                                     style={{
-                                        fontSize: '20px',
+                                        fontSize: '24px',
                                         marginBottom: '0',
                                     }}
                                 >
