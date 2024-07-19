@@ -826,7 +826,7 @@ const VideoChatPage = () => {
                                     onClick={toggleSettings}
                                 />
                                 {showSettings && (
-                                    <div className="absolute top-14 right-3 w-52 bg-white shadow-2xl rounded-lg p-4 z-50">
+                                    <div className="absolute top-14 right-3 z-50">
                                         <SettingMenu
                                             publisher={publisher}
                                             onMirroredChange={handleMirrorChange}
