@@ -1,7 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { startMission, stopMission } from '../../redux/slices/missionSlice';
 import {
     Color,
     Euler,
@@ -53,11 +51,8 @@ const victoryModels = [
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function RaccoonHand(props) {
-    const dispatch = useDispatch();
-
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
-    const [victoryModelPath, setVictoryModelPath] = useState(victoryModels[0]);
     const [victoryModelIndex, setVictoryModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
@@ -65,6 +60,7 @@ function RaccoonHand(props) {
     const [clearedPercentage, setClearedPercentage] = useState(0);
     const isQuizCompletedRef = useRef(false);
     const quizInProgressRef = useRef(false);
+    const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
 
     useEffect(() => {
         if (props.quizResult === 'success') {
@@ -215,11 +211,12 @@ function RaccoonHand(props) {
 
                 switch (currentGesture) {
                     // case 'Thumb_Up':
-                    //     avatarPosition.y = Math.min(
-                    //         avatarPosition.y + moveSpeed,
-                    //         maxY
-                    //     );
-                    //     break;
+                    // avatarPosition.y = Math.min(
+                    //     avatarPosition.y + moveSpeed,
+                    //     maxY
+                    // );
+                    // changeVictoryModel();
+                    // break;
                     // case 'Thumb_Down':
                     //     avatarPosition.y = Math.max(
                     //         avatarPosition.y - moveSpeed,
@@ -268,9 +265,11 @@ function RaccoonHand(props) {
 
     // TODO: 왕관 모델로 변경
     const changeVictoryModel = () => {
+        setIsVictoryModelLoading(true); // 모델 로딩 시작
         const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
-        setModelIndex(nextIndex);
+        setVictoryModelIndex(nextIndex);
         setModelPath(victoryModels[nextIndex]);
+        setIsVictoryModelLoading(false); // 모델 로딩
     };
 
     const changeHandColor = () => {
@@ -325,7 +324,13 @@ function RaccoonHand(props) {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                <Raccoon modelPath={modelPath} />
+                {!isVictoryModelLoading && (
+                    <Raccoon
+                        modelPath={modelPath}
+                        onLoad={() => setIsVictoryModelLoading(false)}
+                    />
+                )}
+
                 {iceBreakingActive && (
                     <IceBreakingBackground
                         handPositions={handPositions}

@@ -296,8 +296,8 @@ const VideoChatPage = () => {
 
             // 합성 캔버스 생성
             const compositeCanvas = document.createElement('canvas');
-            compositeCanvas.width = 640; // 원하는 크기로 설정
-            compositeCanvas.height = 480;
+            compositeCanvas.width = 540; // 원하는 크기로 설정
+            compositeCanvas.height = 380;
             const ctx = compositeCanvas.getContext('2d');
 
             // 렌더링 함수
@@ -816,10 +816,32 @@ const VideoChatPage = () => {
                     <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
                         {publisher && (
                             <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300">
-                                <OpenViduVideo streamManager={publisher} />
+                                <div className="absolute inset-0">
+                                    <OpenViduVideo streamManager={publisher} />
+                                </div>
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
+                                <div className="absolute bottom-2 left-2 z-10">
+                                    <div className="flex flex-col space-y-1">
+                                        {sessionData
+                                            .find(
+                                                (user) =>
+                                                    user.userId ===
+                                                    userInfo.username
+                                            )
+                                            ?.userInterests.slice(0, 3)
+                                            .map((interest, index) => (
+                                                <span
+                                                    key={index}
+                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                >
+                                                    {interest}
+                                                </span>
+                                            ))}
+                                    </div>
+                                </div>
+
                                 <img
                                     src={settingsIcon}
                                     alt="설정"
@@ -827,7 +849,7 @@ const VideoChatPage = () => {
                                     onClick={toggleSettings}
                                 />
                                 {showSettings && (
-                                    <div className="absolute top-14 right-3 w-52 bg-white shadow-2xl rounded-lg p-4 z-50">
+                                    <div className="absolute top-14 right-3 z-50">
                                         <SettingMenu
                                             publisher={publisher}
                                             onMirroredChange={
@@ -843,10 +865,40 @@ const VideoChatPage = () => {
                                 key={index}
                                 className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300"
                             >
-                                <OpenViduVideo streamManager={subscriber} />
+                                <div className="absolute inset-0">
+                                    <OpenViduVideo streamManager={subscriber} />
+                                </div>
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {subscriber.stream.connection.data}
                                 </div>
+
+                                {/* <div className="absolute bottom-2 left-2 z-10">
+                                    <div className="flex flex-col space-y-1">
+                                        {(() => {
+                                            const subscriberNickname =
+                                                JSON.parse(
+                                                    subscriber.stream.connection
+                                                        .data
+                                                ).clientData;
+                                            const subscriberData =
+                                                sessionData.find(
+                                                    (user) =>
+                                                        user.nickname ===
+                                                        subscriberNickname
+                                                );
+                                            return subscriberData?.userInterests
+                                                .slice(0, 3)
+                                                .map((interest, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium"
+                                                    >
+                                                        {interest}
+                                                    </span>
+                                                ));
+                                        })()}
+                                    </div>
+                                </div> */}
                             </div>
                         ))}
                         {Array.from({ length: 4 - subscribers.length - 1 }).map(
@@ -887,6 +939,13 @@ const VideoChatPage = () => {
                 </div>
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner">
                     <MovingDogs sessionData={sessionData} />
+                    <button
+                        onClick={requestTopicRecommendations}
+                        className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                        style={{ fontSize: '24px' }}
+                    >
+                        주제 추천
+                    </button>
                     <div className="mt-auto space-y-5">
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
