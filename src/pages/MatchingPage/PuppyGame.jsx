@@ -196,13 +196,13 @@ const PuppyGame = () => {
                     case 'Thumb_Up':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            y: (prev.y - CHARACTER_SPEED + 600) % 600,
+                            y: (prev.y - CHARACTER_SPEED + 500) % 500,
                         }));
                         break;
                     case 'Thumb_Down':
                         setRaccoonPosition((prev) => ({
                             ...prev,
-                            y: (prev.y + CHARACTER_SPEED) % 600,
+                            y: (prev.y + CHARACTER_SPEED) % 500,
                         }));
                         break;
                     case 'Closed_Fist':
@@ -302,7 +302,7 @@ const PuppyGame = () => {
                 display: 'flex',
                 position: 'relative',
                 width: '800px',
-                height: '600px',
+                height: '500px',
             }}
         >
             <video
@@ -319,7 +319,7 @@ const PuppyGame = () => {
                     left: 0,
                     pointerEvents: 'none',
                     width: 800,
-                    height: 600,
+                    height: 500,
                 }}
                 camera={{
                     fov: 25,
@@ -338,7 +338,7 @@ const PuppyGame = () => {
 const ObstacleCanvas = ({ obstacles, heartImage }) => (
     <Stage
         width={800}
-        height={600}
+        height={500}
         style={{ position: 'absolute', top: 0, left: 0 }}
     >
         <Layer>
