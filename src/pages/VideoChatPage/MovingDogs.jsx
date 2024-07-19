@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import dogWalkGif from '../../assets/dogWalk.gif';
+import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/doghouse.gif'; // doghouse.gif 이미지로 변경
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
+    const dogHouses = [
+        { x: 20, y: 8 }, // 왼쪽 위
+        { x: 40, y: 8 }, // 오른쪽 위
+        { x: 60, y: 8 }, // 왼쪽 아래
+        { x: 80, y: 8 }, // 오른쪽 아래
+    ];
     const [dogPositions, setDogPositions] = useState(
-        Array(4).fill({ x: 50, y: 50 })
+        dogHouses.map(house => ({
+            x: house.x,
+            y: house.y + 15 // 강아지 집 아래에 위치하도록 y 값 조정
+        }))
     );
-    const [dogDestinations, setDogDestinations] = useState(Array(4).fill(null));
-    const [movingDogs, setMovingDogs] = useState(Array(4).fill(true));
     const [showBubble, setShowBubble] = useState(Array(4).fill(false));
     const [bubbleTimers, setBubbleTimers] = useState(Array(4).fill(null));
     const [bubblePosition, setBubblePosition] = useState({ top: 0, left: 0 });
@@ -23,57 +30,11 @@ const MovingDogs = ({ sessionData }) => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-    const dogHouses = [
-        { x: 20, y: 8 }, // 왼쪽 위
-        { x: 80, y: 8 }, // 오른쪽 위
-        { x: 20, y: 80 }, // 왼쪽 아래
-        { x: 80, y: 80 }, // 오른쪽 아래
-    ];
-
     // 강아지 집과 사용자 데이터를 매핑합니다.
     const dogHouseMapping = dogHouses.map((house, index) => ({
         house,
         data: safeSessionData[index] || { nickname: `User ${index + 1}` },
     }));
-
-    const getRandomPosition = () => ({
-        x: Math.random() * 90,
-        y: Math.random() * 90,
-    });
-
-    const distance = (p1, p2) =>
-        Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setDogPositions((prevPositions) => {
-                if (!Array.isArray(prevPositions)) return prevPositions;
-                return prevPositions.map((pos, index) => {
-                    if (!Array.isArray(movingDogs) || !movingDogs[index])
-                        return pos;
-                    let dest = Array.isArray(dogDestinations)
-                        ? dogDestinations[index]
-                        : null;
-                    if (!dest || distance(pos, dest) < 1) {
-                        dest = getRandomPosition();
-                        setDogDestinations((prev) => {
-                            if (!Array.isArray(prev)) return prev;
-                            return prev.map((d, i) => (i === index ? dest : d));
-                        });
-                    }
-                    const dx = dest.x - pos.x;
-                    const dy = dest.y - pos.y;
-                    const length = Math.sqrt(dx * dx + dy * dy);
-                    const speed = 0.35;
-                    return {
-                        x: pos.x + (dx / length) * speed,
-                        y: pos.y + (dy / length) * speed,
-                    };
-                });
-            });
-        }, 50);
-        return () => clearInterval(interval);
-    }, [movingDogs, dogDestinations]);
 
     const handleDogClick = (index, event) => {
         if (!sessionData[index]) return;
@@ -92,19 +53,11 @@ const MovingDogs = ({ sessionData }) => {
             if (!Array.isArray(prev)) return prev;
             return prev.map((v, i) => (i === index ? true : v));
         });
-        setMovingDogs((prev) => {
-            if (!Array.isArray(prev)) return prev;
-            return prev.map((v, i) => (i === index ? false : v));
-        });
 
         const newTimer = setTimeout(() => {
             setShowBubble((prev) => {
                 if (!Array.isArray(prev)) return prev;
                 return prev.map((v, i) => (i === index ? false : v));
-            });
-            setMovingDogs((prev) => {
-                if (!Array.isArray(prev)) return prev;
-                return prev.map((v, i) => (i === index ? true : v));
             });
         }, 10000);
 
