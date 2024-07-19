@@ -872,7 +872,7 @@ const VideoChatPage = () => {
                                     {subscriber.stream.connection.data}
                                 </div>
 
-                                <div className="absolute bottom-2 left-2 z-10">
+                                {/* <div className="absolute bottom-2 left-2 z-10">
                                     <div className="flex flex-col space-y-1">
                                         {(() => {
                                             const subscriberNickname =
@@ -898,7 +898,7 @@ const VideoChatPage = () => {
                                                 ));
                                         })()}
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
                         ))}
                         {Array.from({ length: 4 - subscribers.length - 1 }).map(
@@ -939,6 +939,13 @@ const VideoChatPage = () => {
                 </div>
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner">
                     <MovingDogs sessionData={sessionData} />
+                    <button
+                        onClick={requestTopicRecommendations}
+                        className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
+                        style={{ fontSize: '24px' }}
+                    >
+                        주제 추천
+                    </button>
                     <div className="mt-auto space-y-5">
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&

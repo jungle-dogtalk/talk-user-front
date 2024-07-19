@@ -30,7 +30,6 @@ const MovingDogs = ({ sessionData }) => {
         data: safeSessionData[index] || { nickname: `User ${index + 1}` },
     }));
 
-
     // 강아지 집 클릭 핸들러 추가
     const handleDogHouseClick = (index) => {
         setSelectedUser(sessionData[index]);
@@ -66,7 +65,7 @@ const MovingDogs = ({ sessionData }) => {
                     }}
                 >
                     <div
-                        className="relative w-20 h-20"
+                        className="relative w-16 h-16"
                         onClick={() => handleDogHouseClick(index)}
                     >
                         <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-semibold rounded-lg py-1 shadow-md">
@@ -124,20 +123,32 @@ const MovingDogs = ({ sessionData }) => {
                                     </p> */}
                                 </div>
                             )}
-                            <img
-                                src={dogWalkGif}
-                                alt={`Dog ${index + 1}`}
-                                className="w-16 h-16 cursor-pointer" // 크기를 w-20 h-20에서 w-16 h-16으로 줄임
-                                onClick={(event) =>
-                                    handleDogClick(index, event)
-                                }
-                            />
                             {/* <div className="absolute bottom-0 left-0 right-0 text-center text-xs bg-white bg-opacity-70 rounded-sm">
                                 {safeSessionData[index]?.nickname ||
                                     `Dog ${index + 1}`}
                             </div> */}
                         </div>
                     </div>
+                </div>
+            ))}
+
+            {/* 강아지 렌더링 부분 */}
+            {dogPositions.map((pos, index) => (
+                <div
+                    key={`dog-${index}`}
+                    className="absolute"
+                    style={{
+                        left: `${pos.x}%`,
+                        top: `${pos.y}%`,
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                >
+                    <img
+                        src={dogWalkGif}
+                        alt={`Dog ${index + 1}`}
+                        className="w-8 h-8 cursor-pointer"
+                        onClick={(event) => handleDogClick(index, event)}
+                    />
                 </div>
             ))}
 
