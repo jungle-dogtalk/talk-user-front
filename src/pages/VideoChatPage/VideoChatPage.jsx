@@ -15,7 +15,7 @@ import forestBackground from '../../assets/forest-background.jpg'; // 배경 이
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 
 const VideoChatPage = () => {
-    const FRAME_RATE = 60;
+    const FRAME_RATE = 30;
     const location = useLocation();
     const sessionId = new URLSearchParams(location.search).get('sessionId');
     const recognitionRef = useRef(null);
@@ -348,7 +348,9 @@ const VideoChatPage = () => {
             const publisher = OV.initPublisher(undefined, {
                 audioSource: mediaStream.getAudioTracks()[0],
                 videoSource: compositeStream.getVideoTracks()[0],
+                frameRate: 30, // 프레임 레이트 낮추기
                 filter: filterOptions,
+                videoCodec: 'VP8', // VP8 코덱
             });
 
             setPublisher(publisher);
@@ -500,7 +502,8 @@ const VideoChatPage = () => {
                             OV.getUserMedia({
                                 audioSource: false,
                                 videoSource: undefined,
-                                resolution: '1280x720',
+                                // resolution: '1280x720',
+                                resolution: '640x480',
                                 frameRate: FRAME_RATE,
                             }).then((mediaStream) => {
                                 startStreaming(session, OV, mediaStream);
@@ -522,7 +525,8 @@ const VideoChatPage = () => {
                             OV.getUserMedia({
                                 audioSource: false,
                                 videoSource: undefined,
-                                resolution: '1280x720',
+                                // resolution: '1280x720',
+                                resolution: '640x480',
                                 frameRate: FRAME_RATE,
                             }).then((mediaStream) => {
                                 startStreaming(session, OV, mediaStream);
