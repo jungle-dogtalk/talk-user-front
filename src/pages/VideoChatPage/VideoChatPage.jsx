@@ -414,7 +414,7 @@ const VideoChatPage = () => {
             session.on('signal:quizStart', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
-
+                // recognition.start();
                 setQuizChallenger((prevQuizChallenger) => {
                     if (prevQuizChallenger === '') {
                         return data.userId;
@@ -654,7 +654,7 @@ const VideoChatPage = () => {
         recognition.onend = () => {
             console.log('Speech recognition ended');
             if (recognitionRef.current) {
-                recognition.onstart();
+                recognition.start();
             }
         };
 
@@ -804,13 +804,14 @@ const VideoChatPage = () => {
             </header>
             <div className="flex flex-1 overflow-hidden relative">
                 <div className="flex flex-col w-3/4 bg-gradient-to-br from-[#fff8e8] to-[#fff2d6] border-r border-[#d4b894] shadow-inner">
-                    
-                    <RaccoonHand 
+                    <RaccoonHand
                         onQuizEvent={handleQuizInProgress}
                         quizResult={quizResult}
                         quizResultTrigger={quizResultTrigger}
                         isChallengeCompleted={isChallengeCompleted}
-                        isChallengeCompletedTrigger={isChallengeCompletedTrigger}
+                        isChallengeCompletedTrigger={
+                            isChallengeCompletedTrigger
+                        }
                     />
                     <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
                         {publisher && (
@@ -829,7 +830,9 @@ const VideoChatPage = () => {
                                     <div className="absolute top-14 right-3 w-52 bg-white shadow-2xl rounded-lg p-4 z-50">
                                         <SettingMenu
                                             publisher={publisher}
-                                            onMirroredChange={handleMirrorChange}
+                                            onMirroredChange={
+                                                handleMirrorChange
+                                            }
                                         />
                                     </div>
                                 )}
@@ -846,55 +849,66 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         ))}
-                        {Array.from({ length: 4 - subscribers.length - 1 }).map((_, index) => (
-                            <div
-                                key={index}
-                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
-                            >
-                                <div className="text-[#8b5e3c] flex flex-col items-center">
-                                    <svg
-                                        className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    <span className="text-lg font-semibold">로딩 중...</span>
+                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
+                            (_, index) => (
+                                <div
+                                    key={index}
+                                    className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
+                                >
+                                    <div className="text-[#8b5e3c] flex flex-col items-center">
+                                        <svg
+                                            className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        <span className="text-lg font-semibold">
+                                            로딩 중...
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            )
+                        )}
                     </div>
                 </div>
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner">
                     <MovingDogs sessionData={sessionData} />
                     <div className="mt-auto space-y-5">
-                        {recommendedTopics.length > 0 && !quizChallenger && !quizResult && (
-                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h3 className="text-2xl font-bold mb-3 text-[#4a6741] border-b-2 border-[#7cb772] pb-2">
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside text-[#2c4021] space-y-2">
-                                    {recommendedTopics.map((topic, index) => (
-                                        <li key={index} className="text-lg">
-                                            {topic}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                        {recommendedTopics.length > 0 &&
+                            !quizChallenger &&
+                            !quizResult && (
+                                <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                    <h3 className="text-2xl font-bold mb-3 text-[#4a6741] border-b-2 border-[#7cb772] pb-2">
+                                        추천 주제
+                                    </h3>
+                                    <ul className="list-disc list-inside text-[#2c4021] space-y-2">
+                                        {recommendedTopics.map(
+                                            (topic, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="text-lg"
+                                                >
+                                                    {topic}
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
                         {quizChallenger && (
                             <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
                                 <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
@@ -902,10 +916,21 @@ const VideoChatPage = () => {
                                 </h1>
                                 <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
                                     <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
-                                        {sessionData[targetUserIndexRef.current].nickname} 님의 질문
+                                        {
+                                            sessionData[
+                                                targetUserIndexRef.current
+                                            ].nickname
+                                        }{' '}
+                                        님의 질문
                                     </h2>
                                     <p className="text-[#4a6741] text-lg text-center italic">
-                                        "{sessionData[targetUserIndexRef.current].question}"
+                                        "
+                                        {
+                                            sessionData[
+                                                targetUserIndexRef.current
+                                            ].question
+                                        }
+                                        "
                                     </p>
                                 </div>
                             </div>

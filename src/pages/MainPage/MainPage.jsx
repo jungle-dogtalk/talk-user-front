@@ -83,115 +83,123 @@ const MainPage = () => {
                     </button>
                 </div>
             </header>
-            <div className="flex flex-col items-start p-4 sm:p-6 w-full overflow-hidden">
-                <div
-                    className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg"
-                    style={{ maxWidth: '300px', height: '420px' }}
-                >
-                    <div className="flex flex-col items-center w-full mb-6 sm:mb-0">
-                        <img
-                            src={userInfo?.profileImage || profileImage}
-                            alt="프로필 사진"
-                            className="w-32 h-32 sm:w-30 sm:h-30 rounded-full mb-3 sm:mb-4"
-                        />
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
-                            style={{ fontSize: '23px' }}
-                        >
-                            이름: {userInfo?.name}
-                        </h2>
-                        <div className="w-full mb-6 sm:mb-8 px-4 sm:px-0 text-center">
-                            <div className="flex items-center justify-center mb-3 sm:mb-4">
-                                <span
-                                    className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
-                                    style={{ fontSize: '17px' }}
-                                >
-                                    발화지수
-                                </span>
-                                <div className="w-1/2 bg-red-200 h-4 sm:h-6 rounded-full overflow-hidden">
-                                    <div
-                                        className="bg-red-600 h-full rounded-full"
-                                        style={{
-                                            width: `${displayUtteranceScore}%`,
-                                        }}
-                                    ></div>
+            <div className="flex flex-grow overflow-hidden">
+                <div className="left-container">
+                    <div
+                        className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg mb-6"
+                        style={{ maxWidth: '300px', height: '420px' }}
+                    >
+                        <div className="flex flex-col items-center w-full mb-6 sm:mb-0">
+                            <img
+                                src={userInfo?.profileImage || profileImage}
+                                alt="프로필 사진"
+                                className="w-32 h-32 sm:w-30 sm:h-30 rounded-full mb-3 sm:mb-4"
+                            />
+                            <h2
+                                className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
+                                style={{ fontSize: '23px' }}
+                            >
+                                이름: {userInfo?.name}
+                            </h2>
+                            <div className="w-full mb-6 sm:mb-8 px-4 sm:px-0 text-center">
+                                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                                    <span
+                                        className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
+                                        style={{ fontSize: '17px' }}
+                                    >
+                                        발화지수
+                                    </span>
+                                    <div className="w-1/2 bg-red-200 h-4 sm:h-6 rounded-full overflow-hidden">
+                                        <div
+                                            className="bg-red-600 h-full rounded-full"
+                                            style={{
+                                                width: `${displayUtteranceScore}%`,
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <span className="ml-2 text-gray-700 text-xs sm:text-sm">
+                                        {displayUtteranceScore}%
+                                    </span>
                                 </div>
-                                <span className="ml-2 text-gray-700 text-xs sm:text-sm">
-                                    {displayUtteranceScore}%
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-center">
-                                <span
-                                    className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
-                                    style={{ fontSize: '17px' }}
-                                >
-                                    매너지수
-                                </span>
-                                <div className="w-1/2 bg-blue-200 h-4 sm:h-6 rounded-full overflow-hidden">
-                                    <div
-                                        className="bg-blue-600 h-full rounded-full"
-                                        style={{
-                                            width: `${displayMannerScore}%`,
-                                        }}
-                                    ></div>
+                                <div className="flex items-center justify-center">
+                                    <span
+                                        className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
+                                        style={{ fontSize: '17px' }}
+                                    >
+                                        매너지수
+                                    </span>
+                                    <div className="w-1/2 bg-blue-200 h-4 sm:h-6 rounded-full overflow-hidden">
+                                        <div
+                                            className="bg-blue-600 h-full rounded-full"
+                                            style={{
+                                                width: `${displayMannerScore}%`,
+                                            }}
+                                        ></div>
+                                    </div>
+                                    <span className="ml-2 text-gray-700 text-xs sm:text-sm">
+                                        {displayMannerScore}%
+                                    </span>
                                 </div>
-                                <span className="ml-2 text-gray-700 text-xs sm:text-sm">
-                                    {displayMannerScore}%
-                                </span>
                             </div>
                         </div>
-                    </div>
-                    <button
-                        className="bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center"
-                        onClick={() => navigate('/choose-raccoon')}
-                    >
-                        <span
-                            className="text-sm sm:text-lg font-bold"
-                            style={{ fontSize: '30px' }}
+                        <button
+                            className="bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center"
+                            onClick={() => navigate('/choose-raccoon')}
                         >
-                            통화하기
-                        </span>
-                    </button>
-                </div>
-                <div
-                    className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg mt-6"
-                    style={{ maxWidth: '300px', height: '450px' }}
-                >
-                    <h2
-                        className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center"
-                        style={{ fontSize: '25px' }}
-                    >
-                        지금 사람들이
-                        <br />
-                        가장 관심있어 해요!
-                    </h2>
-                    {Array.isArray(topInterests) && topInterests.length > 0 ? (
-                        topInterests.map((interest, index) => (
-                            <div
-                                key={index}
-                                className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-3"
-                                style={{ maxWidth: '300px', height: '55px' }}
+                            <span
+                                className="text-sm sm:text-lg font-bold"
+                                style={{ fontSize: '30px' }}
                             >
-                                <h2
-                                    className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
+                                통화하기
+                            </span>
+                        </button>
+                    </div>
+                    <div
+                        className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg"
+                        style={{ maxWidth: '300px', height: '450px' }}
+                    >
+                        <h2
+                            className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center"
+                            style={{ fontSize: '25px' }}
+                        >
+                            지금 사람들이
+                            <br />
+                            가장 관심있어 해요!
+                        </h2>
+                        {Array.isArray(topInterests) &&
+                        topInterests.length > 0 ? (
+                            topInterests.map((interest, index) => (
+                                <div
+                                    key={index}
+                                    className="flex flex-col items-center justify-start p-3 sm:p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-3"
                                     style={{
-                                        fontSize: '24px',
-                                        marginBottom: '0',
+                                        maxWidth: '300px',
+                                        height: '55px',
                                     }}
                                 >
-                                    {index + 1}. {interest}
-                                </h2>
-                            </div>
-                        ))
-                    ) : (
-                        <p className="text-center text-gray-500">
-                            관심사를 불러오는 중...
-                        </p>
-                    )}
+                                    <h2
+                                        className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
+                                        style={{
+                                            fontSize: '24px',
+                                            marginBottom: '0',
+                                        }}
+                                    >
+                                        {index + 1}. {interest}
+                                    </h2>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-500">
+                                관심사를 불러오는 중...
+                            </p>
+                        )}
+                    </div>
                 </div>
-            </div>
-            <div className="speech-bubble-container">
-                <SpeechBubble />
+                <div className="right-container">
+                    <div className="speech-bubble-container">
+                        <SpeechBubble />
+                    </div>
+                </div>
             </div>
             <GLTFModel />
         </div>
