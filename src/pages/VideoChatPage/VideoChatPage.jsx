@@ -817,7 +817,6 @@ const VideoChatPage = () => {
                             isChallengeCompletedTrigger
                         }
                     />
-                    {/* <AvatarApp></AvatarApp> */}
                     <div
                         className="grid grid-cols-2 gap-4 p-4 relative"
                         style={{ flex: '1 1 auto' }}
@@ -890,116 +889,6 @@ const VideoChatPage = () => {
                             )
                         )}
                     </div>
-                    <div
-                        className="flex-grow bg-white p-4 rounded-md text-center overflow-y-auto"
-                        style={{ height: '200px' }}
-                    >
-                        {/* 테스트 용 하드코딩된 추천 주제
-                        {recommendedTopics.length === 0 && (
-                            <div className="recommended-topics mt-4">
-                                <h3
-                                    className="text-2xl font-semibold"
-                                    style={{ fontSize: '24px' }}
-                                >
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 1
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 2
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 3
-                                    </li>
-                                </ul>
-                            </div>
-                        )} */}
-                        {recommendedTopics.length > 0 &&
-                            !quizChallenger &&
-                            !quizResult && (
-                                <div className="recommended-topics mt-4">
-                                    <h3
-                                        className="text-2xl font-semibold"
-                                        style={{ fontSize: '24px' }}
-                                    >
-                                        추천 주제
-                                    </h3>
-                                    <ul className="list-disc list-inside">
-                                        {recommendedTopics.map(
-                                            (topic, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="text-xl text-gray-700 mb-2"
-                                                    style={{ fontSize: '22px' }}
-                                                >
-                                                    {topic}
-                                                </li>
-                                            )
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
-                        {quizChallenger && (
-                            <div className="bg-[#e7d4b5] w-full h-full flex items-center justify-center">
-                                <div className="p-6 rounded-lg shadow-lg w-full">
-                                    <h1 className="text-[#7a5c47] text-4xl font-bold mb-4 text-center">
-                                        현재 {quizChallenger} 유저가 퀴즈 미션
-                                        수행중!
-                                    </h1>
-                                    <div className="bg-[#f7f3e9] p-4 rounded-md shadow-md w-full">
-                                        <h2 className="text-gray-800 text-2xl mb-2 font-semibold text-center">
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].nickname
-                                            }{' '}
-                                            님이 답변한 질문
-                                        </h2>
-                                        <p className="text-gray-700 text-xl text-center">
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].question
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {showQuizSuccess && (
-                            <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
-                                <div className="p-6 rounded-lg  w-full max-w-3xl">
-                                    <h1 className="text-green-500 text-4xl font-bold mb-4 text-center">
-                                        미션 성공 !!
-                                    </h1>
-                                    <h2 className="text-gray-800 text-2xl font-semibold text-center">
-                                        정답은 "{quizAnswerRef.current}"
-                                    </h2>
-                                </div>
-                            </div>
-                        )}
-                        {showQuizFailure && (
-                            <div className="bg-[#e7d4b5] w-full flex items-center justify-center mt-4">
-                                <div className="p-6 rounded-lg  w-full max-w-3xl">
-                                    <h1 className="text-blue-500 text-4xl font-bold text-center">
-                                        미션 실패 ..
-                                    </h1>
-                                </div>
-                            </div>
-                        )}
-                    </div>
                 </div>
                 <div
                     className="w-1/4 flex flex-col p-4"
@@ -1010,11 +899,83 @@ const VideoChatPage = () => {
                     }}
                 >
                     <MovingDogs sessionData={sessionData} />
+
+                    <div className="mt-auto">
+                        {' '}
+                        {/* 이 div를 추가합니다 */}
+                        {recommendedTopics.length > 0 &&
+                            !quizChallenger &&
+                            !quizResult && (
+                                <div className="bg-[#e7d4b5] w-full p-4 rounded-lg shadow-lg mb-4">
+                                    <h3
+                                        className="text-2xl font-semibold mb-2"
+                                        style={{ fontSize: '20px' }}
+                                    >
+                                        추천 주제
+                                    </h3>
+                                    <ul className="list-disc list-inside">
+                                        {recommendedTopics.map(
+                                            (topic, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="text-lg text-gray-700 mb-1"
+                                                    style={{ fontSize: '16px' }}
+                                                >
+                                                    {topic}
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                </div>
+                            )}
+                        {quizChallenger && (
+                            <div className="bg-[#e7d4b5] w-full p-4 rounded-lg shadow-lg mb-4">
+                                <h1 className="text-[#7a5c47] text-xl font-bold mb-2 text-center">
+                                    현재 {quizChallenger} 유저가 퀴즈 미션
+                                    수행중!
+                                </h1>
+                                <div className="bg-[#f7f3e9] p-2 rounded-md shadow-md">
+                                    <h2 className="text-gray-800 text-lg mb-1 font-semibold text-center">
+                                        {
+                                            sessionData[
+                                                targetUserIndexRef.current
+                                            ].nickname
+                                        }{' '}
+                                        님이 답변한 질문
+                                    </h2>
+                                    <p className="text-gray-700 text-sm text-center">
+                                        {
+                                            sessionData[
+                                                targetUserIndexRef.current
+                                            ].question
+                                        }
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                        {showQuizSuccess && (
+                            <div className="bg-[#e7d4b5] w-full p-4 rounded-lg shadow-lg mb-4">
+                                <h1 className="text-green-500 text-xl font-bold mb-2 text-center">
+                                    미션 성공 !!
+                                </h1>
+                                <h2 className="text-gray-800 text-lg font-semibold text-center">
+                                    정답은 "{quizAnswerRef.current}"
+                                </h2>
+                            </div>
+                        )}
+                        {showQuizFailure && (
+                            <div className="bg-[#e7d4b5] w-full p-4 rounded-lg shadow-lg mb-4">
+                                <h1 className="text-blue-500 text-xl font-bold text-center">
+                                    미션 실패 ..
+                                </h1>
+                            </div>
+                        )}
+                    </div>
+
                     <div
                         className="relative flex flex-col items-center space-y-4"
                         style={{ top: '-36px' }}
-                    >
-                    </div>
+                    ></div>
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
