@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Stage, Layer, Image as KonvaImage } from 'react-konva';
+import { Stage, Layer, Rect, Text, Image as KonvaImage } from 'react-konva';
 import {
     FaceLandmarker,
     HandLandmarker,
@@ -352,6 +352,22 @@ const ObstacleCanvas = ({ obstacles, heartImage }) => (
                     height={50}
                 />
             ))}
+            <Rect
+                x={290}
+                y={464}
+                width={230}
+                height={30}
+                fill="rgba(255, 255, 255, 0.5)"
+                cornerRadius={5}
+            />
+            <Text
+                x={300}
+                y={470}
+                text="상: 👍 하: 👎 좌: ✊ 우: 🖐️"
+                fontSize={20}
+                fontFamily={'MyCustomFont'}
+                fill="black"
+            />
         </Layer>
     </Stage>
 );
