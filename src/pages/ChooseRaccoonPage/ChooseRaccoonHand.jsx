@@ -1,7 +1,9 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Color, Euler, Matrix4, Vector3 } from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedModel } from '../../redux/slices/racoonSlice.js';
 import {
     FaceLandmarker,
     HandLandmarker,
@@ -24,16 +26,18 @@ let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
 const models = [
-    '/yellow_raccoon_head.glb',
-    '/jungle_raccoon_head.glb',
-    '/blue_raccoon.glb',
     '/raccoon_head.glb',
+    '/yellow_raccoon_head.glb',
+    '/blue_raccoon.glb',
+    '/jungle_raccoon_head.glb',
     '/warrior_raccoon_head.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function ChooseRaccoonHand() {
+    const dispatch = useDispatch(); // 상태관리를 위한 dispatch 함수
+    const currentModel = useSelector(state => state.racoon.selectedModel);
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
@@ -181,11 +185,21 @@ function ChooseRaccoonHand() {
         setup();
     }, []);
 
-    const changeModel = () => {
+    /* 버튼 클릭 시 라쿤 모델 변경 */
+    const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
-        setModelPath(models[nextIndex]);
-    };
+        const newModel = models[nextIndex];
+        setModelPath(newModel);
+        dispatch(setSelectedModel(newModel));
+        
+        // Redux 상태 출력
+        console.log('Model changed. New Redux State:', {
+            previousModel: currentModel,
+            newModel: newModel,
+            // fullState: store.getState() // 이 부분은 제거하거나 다른 방식으로 구현해야 합니다
+        });
+    }, [modelIndex, currentModel, dispatch]);
 
     const changeHandColor = () => {
         const nextColorIndex = (handColorIndex + 1) % handColors.length;

@@ -40,20 +40,25 @@ const models = [
 ];
 
 const victoryModels = [
+    '/blue_raccoon_crown.glb',
     '/jungle_raccoon_crown.glb',
     '/raccoon_crown.glb',
     '/warrior_raccoon_crown.glb',
     '/yellow_raccoon_crown.glb',
     '/yupyup_raccoon_crown.glb',
-    '/blue_raccoon_crown.glb',
 ];
 
+const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
+const randomElement = combinedModels[Math.floor(Math.random() * combinedModels.length)];
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
+console.log(randomElement);
+
+
 const RaccoonHand = React.memo((props) => {
-    const [modelPath, setModelPath] = useState(models[0]);
+    const [modelPath, setModelPath] = useState(randomElement[0]);
     const [modelIndex, setModelIndex] = useState(0);
-    const [victoryModelIndex, setVictoryModelIndex] = useState(0);
+    const [victoryModelIndex, setVictoryModelIndex] = useState(randomElement[1]);
     const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
@@ -265,10 +270,11 @@ const RaccoonHand = React.memo((props) => {
 
     // TODO: 왕관 모델로 변경
     const changeVictoryModel = () => {
+        console.log(randomElement);
         setIsVictoryModelLoading(true); // 모델 로딩 시작
-        const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
-        setVictoryModelIndex(nextIndex);
-        setModelPath(victoryModels[nextIndex]);
+        // const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
+        // setVictoryModelIndex(nextIndex);
+        setModelPath(randomElement[1]);
         setIsVictoryModelLoading(false); // 모델 로딩
     };
 
