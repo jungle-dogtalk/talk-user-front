@@ -46,6 +46,9 @@ const VideoChatPage = () => {
     const [showQuizSuccess, setShowQuizSuccess] = useState(false);
     const [showQuizFailure, setShowQuizFailure] = useState(false);
 
+    const [showRecommendedTopics, setShowRecommendedTopics] = useState(false);
+    const [showQuizResult, setShowQuizResult] = useState(false);
+
     const quizModeRef = useRef(quizMode);
     const targetUserIndexRef = useRef(0);
 
@@ -193,6 +196,16 @@ const VideoChatPage = () => {
             }
         };
     }, [location]);
+
+    useEffect(() => {
+        if (quizResult === 'success' || quizResult === 'failure') {
+            setShowQuizResult(true);
+            setTimeout(() => {
+                setShowQuizResult(false);
+                setQuizResult('');
+            }, 5000);
+        }
+    }, [quizResult]);
 
     // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
@@ -578,6 +591,7 @@ const VideoChatPage = () => {
         setRecommendedTopics([]); // 기존 추천 주제를 초기화
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
+        setShowRecommendedTopics(true);
     };
 
     // 음성인식 시작
@@ -736,52 +750,57 @@ const VideoChatPage = () => {
 
     const [useTestTopics, setUseTestTopics] = useState(false);
 
-    {
-        showQuizSuccess && (
-            <div className="absolute inset-0 flex items-center justify-center z-50">
-                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                    <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
-                        미션 성공 !!
-                    </h1>
-                    <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
-                        정답: "{quizAnswerRef.current}"
-                    </h2>
-                </div>
-            </div>
-        );
-    }
-    {
-        showQuizFailure && (
-            <div className="absolute inset-0 flex items-center justify-center z-50">
-                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                    <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
-                        미션 실패 ..
-                    </h1>
-                </div>
-            </div>
-        );
-    }
-    const RecommendedTopicsModal = () => {
+    const QuizResultModal = ({ success, answer, onClose }) => {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                    <h3
-                        className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
-                        style={{ fontSize: '24px' }}
+                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300 max-w-lg">
+                    <h1
+                        className={`text-2xl font-bold mb-3 text-center border-b-2 pb-2 ${
+                            success
+                                ? 'text-green-600 border-green-400'
+                                : 'text-blue-600 border-blue-400'
+                        }`}
                     >
+                        {success ? '미션 성공 !!' : '미션 실패 ..'}
+                    </h1>
+                    {success && (
+                        <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
+                            정답: "{answer}"
+                        </h2>
+                    )}
+                    <button
+                        onClick={onClose}
+                        className="mt-4 bg-[#7cb772] text-white px-4 py-2 rounded-full hover:bg-[#5c9f52] transition-colors duration-300"
+                    >
+                        닫기
+                    </button>
+                </div>
+            </div>
+        );
+    };
+    const RecommendedTopicsModal = ({ topics, onClose }) => {
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300 max-w-lg">
+                    <h3 className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
                         추천 주제
                     </h3>
                     <ul className="list-disc list-inside">
-                        {recommendedTopics.map((topic, index) => (
+                        {topics.map((topic, index) => (
                             <li
                                 key={index}
                                 className="text-xl text-gray-700 mb-2"
-                                style={{ fontSize: '22px' }}
                             >
                                 {topic}
                             </li>
                         ))}
                     </ul>
+                    <button
+                        onClick={onClose}
+                        className="mt-4 bg-[#7cb772] text-white px-4 py-2 rounded-full hover:bg-[#5c9f52] transition-colors duration-300"
+                    >
+                        닫기
+                    </button>
                 </div>
             </div>
         );
@@ -1035,7 +1054,7 @@ const VideoChatPage = () => {
                             </div>
                         )} */}
 
-                        {recommendedTopics.length > 0 &&
+                        {/* {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
                                 <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
@@ -1055,7 +1074,7 @@ const VideoChatPage = () => {
                                         )}
                                     </ul>
                                 </div>
-                            )}
+                            )} */}
 
                         {quizChallenger && (
                             <div className="absolute inset-0 flex items-center justify-center z-50">
@@ -1109,9 +1128,20 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
+            {showRecommendedTopics && (
+                <RecommendedTopicsModal
+                    topics={recommendedTopics}
+                    onClose={() => setShowRecommendedTopics(false)}
+                />
+            )}
+            {showQuizResult && (
+                <QuizResultModal
+                    success={quizResult === 'success'}
+                    answer={quizAnswerRef.current}
+                    onClose={() => setShowQuizResult(false)}
+                />
+            )}
             {showInitialModal && <InitialQuestionModal />}
-            {recommendedTopics.length > 0 && <RecommendedTopicsModal />}
-            {recommendedTopics.length > 0 && <RecommendedTopicsModal />}
         </div>
     );
 };
