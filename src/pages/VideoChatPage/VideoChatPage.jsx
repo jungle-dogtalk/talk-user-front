@@ -783,56 +783,53 @@ const VideoChatPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-2 flex items-center justify-between shadow-md">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
                     alt="명톡 로고"
-                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full shadow-lg"
+                    className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
                 />
                 <div className="flex items-center">
-                    <h2 className="text-white text-lg font-bold bg-[#8b5e3c] bg-opacity-70 rounded-md px-4 py-2 mr-4 shadow-inner">
+                    <h2 className="text-white text-2xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
                     <button
                         onClick={leaveSession}
-                        className="text-white text-lg bg-red-500 px-6 py-2 rounded-md hover:bg-red-600 transition-colors duration-300 shadow-lg"
+                        className="text-white text-xl bg-gradient-to-r from-red-500 to-red-600 px-7 py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors duration-300 shadow-lg transform hover:scale-105"
                     >
                         중단하기
                     </button>
                 </div>
             </header>
             <div className="flex flex-1 overflow-hidden relative">
-                <div className="flex flex-col w-3/4 bg-[#fff8e8] border-r border-[#d4b894] shadow-inner">
-                    <RaccoonHand
+                <div className="flex flex-col w-3/4 bg-gradient-to-br from-[#fff8e8] to-[#fff2d6] border-r border-[#d4b894] shadow-inner">
+                    
+                    <RaccoonHand 
                         onQuizEvent={handleQuizInProgress}
                         quizResult={quizResult}
                         quizResultTrigger={quizResultTrigger}
                         isChallengeCompleted={isChallengeCompleted}
-                        isChallengeCompletedTrigger={
-                            isChallengeCompletedTrigger
-                        }
+                        isChallengeCompletedTrigger={isChallengeCompletedTrigger}
                     />
-                    <div className="grid grid-cols-2 gap-6 p-6 relative flex-grow">
+                    <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
                         {publisher && (
-                            <div className="relative border-2 border-[#d4b894] rounded-lg shadow-lg overflow-hidden">
+                            <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300">
                                 <OpenViduVideo streamManager={publisher} />
-                                <div className="absolute top-0 left-0 bg-[#a16e47] bg-opacity-70 text-white p-2 rounded-br-md">
+                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
                                 <img
                                     src={settingsIcon}
                                     alt="설정"
-                                    className="absolute top-2 right-2 w-8 h-8 cursor-pointer bg-white rounded-full p-1 shadow-md"
+                                    className="absolute top-3 right-3 w-9 h-9 cursor-pointer bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors duration-300"
                                     onClick={toggleSettings}
                                 />
                                 {showSettings && (
-                                    <div className="absolute top-12 right-2 w-48 bg-white shadow-xl rounded-lg p-3 z-50">
+                                    <div className="absolute top-14 right-3 w-52 bg-white shadow-2xl rounded-lg p-4 z-50">
                                         <SettingMenu
                                             publisher={publisher}
-                                            onMirroredChange={
-                                                handleMirrorChange
-                                            }
+                                            onMirroredChange={handleMirrorChange}
                                         />
                                     </div>
                                 )}
@@ -841,110 +838,91 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-2 border-[#d4b894] rounded-lg shadow-lg overflow-hidden"
+                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300"
                             >
                                 <OpenViduVideo streamManager={subscriber} />
-                                <div className="absolute top-0 left-0 bg-[#a16e47] bg-opacity-70 text-white p-2 rounded-br-md">
+                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {subscriber.stream.connection.data}
                                 </div>
                             </div>
                         ))}
-                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
-                            (_, index) => (
-                                <div
-                                    key={index}
-                                    className="relative border-2 border-[#d4b894] rounded-lg shadow-lg flex items-center justify-center bg-[#f7f3e9]"
-                                >
-                                    <div className="text-[#8b5e3c] flex flex-col items-center">
-                                        <svg
-                                            className="animate-spin h-10 w-10 text-[#8b5e3c] mb-2"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        로딩 중...
-                                    </div>
+                        {Array.from({ length: 4 - subscribers.length - 1 }).map((_, index) => (
+                            <div
+                                key={index}
+                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
+                            >
+                                <div className="text-[#8b5e3c] flex flex-col items-center">
+                                    <svg
+                                        className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    <span className="text-lg font-semibold">로딩 중...</span>
                                 </div>
-                            )
-                        )}
+                            </div>
+                        ))}
                     </div>
                 </div>
-                <div className="w-1/4 flex flex-col p-4 bg-gradient-to-b from-[#a8d89c] to-[#7cb772]">
+                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner">
                     <MovingDogs sessionData={sessionData} />
-                    <div className="mt-auto space-y-4">
-                        {recommendedTopics.length > 0 &&
-                            !quizChallenger &&
-                            !quizResult && (
-                                <div className="bg-white bg-opacity-90 w-full p-4 rounded-lg shadow-lg">
-                                    <h3 className="text-2xl font-semibold mb-2 text-[#4a6741]">
-                                        추천 주제
-                                    </h3>
-                                    <ul className="list-disc list-inside text-[#2c4021]">
-                                        {recommendedTopics.map(
-                                            (topic, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="text-lg mb-1"
-                                                >
-                                                    {topic}
-                                                </li>
-                                            )
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
+                    <div className="mt-auto space-y-5">
+                        {recommendedTopics.length > 0 && !quizChallenger && !quizResult && (
+                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h3 className="text-2xl font-bold mb-3 text-[#4a6741] border-b-2 border-[#7cb772] pb-2">
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside text-[#2c4021] space-y-2">
+                                    {recommendedTopics.map((topic, index) => (
+                                        <li key={index} className="text-lg">
+                                            {topic}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
                         {quizChallenger && (
-                            <div className="bg-white bg-opacity-90 w-full p-4 rounded-lg shadow-lg">
-                                <h1 className="text-[#4a6741] text-xl font-bold mb-2 text-center">
-                                    현재 {quizChallenger} 유저가 퀴즈 미션
-                                    수행중!
+                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
+                                    {quizChallenger} 유저 퀴즈 미션 수행중!
                                 </h1>
-                                <div className="bg-[#f0f8ff] p-3 rounded-md shadow-inner">
-                                    <h2 className="text-[#2c4021] text-lg mb-1 font-semibold text-center">
-                                        {
-                                            sessionData[
-                                                targetUserIndexRef.current
-                                            ].nickname
-                                        }{' '}
-                                        님이 답변한 질문
+                                <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
+                                    <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
+                                        {sessionData[targetUserIndexRef.current].nickname} 님의 질문
                                     </h2>
-                                    <p className="text-[#4a6741] text-sm text-center">
-                                        {
-                                            sessionData[
-                                                targetUserIndexRef.current
-                                            ].question
-                                        }
+                                    <p className="text-[#4a6741] text-lg text-center italic">
+                                        "{sessionData[targetUserIndexRef.current].question}"
                                     </p>
                                 </div>
                             </div>
                         )}
                         {showQuizSuccess && (
-                            <div className="bg-white bg-opacity-90 w-full p-4 rounded-lg shadow-lg">
-                                <h1 className="text-green-600 text-xl font-bold mb-2 text-center">
+                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
                                     미션 성공 !!
                                 </h1>
-                                <h2 className="text-[#2c4021] text-lg font-semibold text-center">
-                                    정답은 "{quizAnswerRef.current}"
+                                <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
+                                    정답: "{quizAnswerRef.current}"
                                 </h2>
                             </div>
                         )}
                         {showQuizFailure && (
-                            <div className="bg-white bg-opacity-90 w-full p-4 rounded-lg shadow-lg">
-                                <h1 className="text-blue-600 text-xl font-bold text-center">
+                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
                                     미션 실패 ..
                                 </h1>
                             </div>
