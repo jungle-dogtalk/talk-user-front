@@ -52,6 +52,7 @@ const VideoChatPage = () => {
     const quizModeRef = useRef(quizMode);
     const targetUserIndexRef = useRef(0);
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
+    const ttsStreamRef = useRef(null); // TTS 스트림 참조
 
     let ovSocket = null;
 
@@ -833,13 +834,45 @@ const VideoChatPage = () => {
     };
 
     // TTS 기능 추가
-    const handleTTS = useCallback((username, message) => {
-        const utterance = new SpeechSynthesisUtterance(
-            `${username}님, ${message}`
-        );
-        utterance.lang = 'ko-KR';
-        window.speechSynthesis.speak(utterance);
-    }, []);
+    const handleTTS = useCallback(
+        (username, message) => {
+            const utterance = new SpeechSynthesisUtterance(
+                `${username}님, ${message}`
+            );
+            utterance.lang = 'ko-KR';
+            utterance.onend = () => {
+                // TTS가 끝나면 스트림을 종료합니다.
+                if (ttsStreamRef.current) {
+                    const tracks = ttsStreamRef.current.getTracks();
+                    tracks.forEach((track) => track.stop());
+                    ttsStreamRef.current = null;
+                }
+            };
+            window.speechSynthesis.speak(utterance);
+
+            // Web Audio API를 사용하여 TTS를 MediaStream으로 변환
+            const audioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            const destination = audioContext.createMediaStreamDestination();
+            const source = audioContext.createMediaElementSource(
+                utterance.audioElement
+            );
+            source.connect(destination);
+            source.connect(audioContext.destination);
+
+            // TTS 스트림을 OpenVidu로 송출
+            const ttsStream = destination.stream;
+            ttsStreamRef.current = ttsStream;
+            const ttsPublisher = OV.initPublisher(undefined, {
+                audioSource: ttsStream.getAudioTracks()[0],
+                videoSource: null,
+                publishAudio: true,
+                publishVideo: false,
+            });
+            session.publish(ttsPublisher);
+        },
+        [OV, session]
+    );
 
     const startInactivityTimer = () => {
         clearTimeout(inactivityTimeoutRef.current);
