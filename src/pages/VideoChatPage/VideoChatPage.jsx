@@ -822,6 +822,26 @@ const VideoChatPage = () => {
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
+                                <div className="absolute bottom-2 left-2 z-10">
+                                    <div className="flex flex-col space-y-1">
+                                        {sessionData
+                                            .find(
+                                                (user) =>
+                                                    user.userId ===
+                                                    userInfo.username
+                                            )
+                                            ?.userInterests.slice(0, 3)
+                                            .map((interest, index) => (
+                                                <span
+                                                    key={index}
+                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                >
+                                                    {interest}
+                                                </span>
+                                            ))}
+                                    </div>
+                                </div>
+
                                 <img
                                     src={settingsIcon}
                                     alt="설정"
@@ -850,6 +870,34 @@ const VideoChatPage = () => {
                                 </div>
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {subscriber.stream.connection.data}
+                                </div>
+
+                                <div className="absolute bottom-2 left-2 z-10">
+                                    <div className="flex flex-col space-y-1">
+                                        {(() => {
+                                            const subscriberNickname =
+                                                JSON.parse(
+                                                    subscriber.stream.connection
+                                                        .data
+                                                ).clientData;
+                                            const subscriberData =
+                                                sessionData.find(
+                                                    (user) =>
+                                                        user.nickname ===
+                                                        subscriberNickname
+                                                );
+                                            return subscriberData?.userInterests
+                                                .slice(0, 3)
+                                                .map((interest, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium"
+                                                    >
+                                                        {interest}
+                                                    </span>
+                                                ));
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
                         ))}
