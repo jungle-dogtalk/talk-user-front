@@ -279,8 +279,11 @@ const VideoChatPage = () => {
 
             // 합성 캔버스 생성
             const compositeCanvas = document.createElement('canvas');
-            compositeCanvas.width = 540; // 원하는 크기로 설정
-            compositeCanvas.height = 380;
+
+            // 16:9 비율
+            compositeCanvas.width = 1280; // 너비(16)
+            compositeCanvas.height = 720; // 높이(9)
+
             const ctx = compositeCanvas.getContext('2d');
 
             // 렌더링 함수
@@ -804,10 +807,8 @@ const VideoChatPage = () => {
                     />
                     <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
                         {publisher && (
-                            <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300">
-                                <div className="absolute inset-0">
-                                    <OpenViduVideo streamManager={publisher} />
-                                </div>
+                            <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video">
+                                <OpenViduVideo streamManager={publisher} />
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
@@ -852,11 +853,9 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300"
+                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video"
                             >
-                                <div className="absolute inset-0">
-                                    <OpenViduVideo streamManager={subscriber} />
-                                </div>
+                                <OpenViduVideo streamManager={subscriber} />
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {subscriber.stream.connection.data}
                                 </div>
@@ -894,7 +893,7 @@ const VideoChatPage = () => {
                             (_, index) => (
                                 <div
                                     key={index}
-                                    className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
+                                    className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] aspect-video"
                                 >
                                     <div className="text-[#8b5e3c] flex flex-col items-center">
                                         <svg
@@ -944,7 +943,7 @@ const VideoChatPage = () => {
 
                     <div
                         className="w-full flex flex-col items-center absolute"
-                        style={{ top: '400px', left: '4px'  }}
+                        style={{ top: '400px', left: '4px' }}
                     >
                         {recommendedTopics.length === 0 && (
                             <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">

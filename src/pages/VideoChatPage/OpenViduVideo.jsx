@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import styles from './VideoChatPage.module.css';
 
 const OpenViduVideo = (props) => {
     const videoRef = useRef();
@@ -14,7 +13,9 @@ const OpenViduVideo = (props) => {
         <video
             autoPlay={true}
             ref={videoRef}
-            className={props.isMirrored ? styles.mirrored : ''}
+            className={`w-full h-full ${
+                props.isMirrored ? 'scale-x-[-1]' : ''
+            }`}
         />
     );
 };
