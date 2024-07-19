@@ -253,7 +253,6 @@ const ProfilePage = () => {
                         >
                             - AI가 예측하는 관심사 -
                         </h2>
-                        <br></br>
                         <div className="flex justify-center">
                             <div className="inline-grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 justify-center">
                                 {userInfo?.interests2?.map(
