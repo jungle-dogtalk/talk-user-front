@@ -634,7 +634,7 @@ const VideoChatPage = () => {
                     // 퀴즈 모드일 때만 quizAnswer 검사
                     if (quizModeRef.current) {
                         if (
-                            boyerMooreSearch(transcript, quizAnswerRef.current)
+                            containsPattern(transcript, quizAnswerRef.current)
                         ) {
                             console.log('정답입니다!');
                             setQuizMode(false); // 퀴즈 모드 해제
@@ -686,44 +686,25 @@ const VideoChatPage = () => {
         }
     };
 
-    function boyerMooreSearch(text, pattern) {
-        console.log('대답 내용: ', text);
-        // text 공백 전처리
-        text = text.trim();
-        pattern = pattern.trim();
+    function containsPattern(text, pattern) {
+        // 디버깅을 위한 로그
+        console.log(`text: '${text}', pattern: '${pattern}'`);
 
-        const m = pattern.length;
-        const n = text.length;
+        // text와 pattern의 모든 공백 제거
+        text = text.replace(/\s+/g, '');
+        pattern = pattern.replace(/\s+/g, '');
 
-        if (m === 0) return true;
+        // 공백 전처리 후 빈 문자열 처리
+        if (pattern.length === 0) return true;
+        if (text.length === 0) return false;
 
-        const badChar = Array(256).fill(-1);
+        console.log(`trim-text: '${text}', trim-pattern: '${pattern}'`);
 
-        for (let i = 0; i < m; i++) {
-            badChar[pattern.charCodeAt(i)] = i;
-        }
+        // 패턴이 텍스트에 포함되어 있는지 확인
+        const result = text.includes(pattern);
 
-        let s = 0;
-
-        while (s <= n - m) {
-            let j = m - 1;
-
-            while (j >= 0 && pattern[j] === text[s + j]) {
-                j--;
-            }
-
-            if (j < 0) {
-                console.log('성공');
-                return true;
-            } else {
-                const charCode = text.charCodeAt(s + j);
-                const badCharShift =
-                    badChar[charCode] !== -1 ? j - badChar[charCode] : 1;
-                s += Math.max(1, badCharShift);
-            }
-        }
-        console.log('실패');
-        return false;
+        console.log(result ? '성공' : '실패');
+        return result;
     }
 
     // 퀴즈 음성인식 결과를 체크하는 함수
