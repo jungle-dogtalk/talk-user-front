@@ -731,6 +731,10 @@ const VideoChatPage = () => {
         }, 1000);
     };
 
+    const [useTestTopics, setUseTestTopics] = useState(false);
+
+    const testTopics = ['테스트 주제 1', '테스트 주제 2', '테스트 주제 3'];
+
     const InitialQuestionModal = () => {
         if (!sessionData || sessionData.length < 4) return null;
 
@@ -922,16 +926,57 @@ const VideoChatPage = () => {
                         )}
                     </div>
                 </div>
-                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner">
+                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
                     <MovingDogs sessionData={sessionData} />
+
                     <button
                         onClick={requestTopicRecommendations}
-                        className="bg-gray-300 text-brown-700 text-xl font-bold px-3 py-1 rounded-md hover:bg-gray-400 transition-colors duration-300"
-                        style={{ fontSize: '24px' }}
+                        className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
+                        style={{
+                            fontSize: '24px',
+                            top: '350px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                        }}
                     >
                         주제 추천
                     </button>
-                    <div className="mt-auto space-y-5">
+
+                    <div
+                        className="w-full flex flex-col items-center absolute"
+                        style={{ top: '400px', left: '4px'  }}
+                    >
+                        {recommendedTopics.length === 0 && (
+                            <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                <h3
+                                    className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
+                                    style={{ fontSize: '24px' }}
+                                >
+                                    추천 주제
+                                </h3>
+                                <ul className="list-disc list-inside">
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 1
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 2
+                                    </li>
+                                    <li
+                                        className="text-xl text-gray-700 mb-2"
+                                        style={{ fontSize: '22px' }}
+                                    >
+                                        테스트 주제 3
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
@@ -953,47 +998,54 @@ const VideoChatPage = () => {
                                     </ul>
                                 </div>
                             )}
+
                         {quizChallenger && (
-                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
-                                    {quizChallenger} 유저 퀴즈 미션 수행중!
-                                </h1>
-                                <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
-                                    <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
-                                        {
-                                            sessionData[
-                                                targetUserIndexRef.current
-                                            ].nickname
-                                        }{' '}
-                                        님의 질문
-                                    </h2>
-                                    <p className="text-[#4a6741] text-lg text-center italic">
-                                        "
-                                        {
-                                            sessionData[
-                                                targetUserIndexRef.current
-                                            ].question
-                                        }
-                                        "
-                                    </p>
+                            <div className="absolute inset-0 flex items-center justify-center z-50">
+                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                    <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
+                                        {quizChallenger} 유저 퀴즈 미션 수행중!
+                                    </h1>
+                                    <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
+                                        <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
+                                            {
+                                                sessionData[
+                                                    targetUserIndexRef.current
+                                                ].nickname
+                                            }{' '}
+                                            님의 질문
+                                        </h2>
+                                        <p className="text-[#4a6741] text-lg text-center italic">
+                                            "
+                                            {
+                                                sessionData[
+                                                    targetUserIndexRef.current
+                                                ].question
+                                            }
+                                            "
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}
                         {showQuizSuccess && (
-                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
-                                    미션 성공 !!
-                                </h1>
-                                <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
-                                    정답: "{quizAnswerRef.current}"
-                                </h2>
+                            <div className="absolute inset-0 flex items-center justify-center z-50">
+                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                    <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
+                                        미션 성공 !!
+                                    </h1>
+                                    <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
+                                        정답: "{quizAnswerRef.current}"
+                                    </h2>
+                                </div>
                             </div>
                         )}
                         {showQuizFailure && (
-                            <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
-                                    미션 실패 ..
-                                </h1>
+                            <div className="absolute inset-0 flex items-center justify-center z-50">
+                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                                    <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
+                                        미션 실패 ..
+                                    </h1>
+                                </div>
                             </div>
                         )}
                     </div>

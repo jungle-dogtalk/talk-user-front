@@ -12,13 +12,8 @@ const MovingDogs = ({ sessionData }) => {
         { x: 64, y: 9 }, // 왼쪽 아래
         { x: 92, y: 9 }, // 오른쪽 아래
     ];
-    const [dogPositions, setDogPositions] = useState(
-        dogHouses.map((house) => ({
-            x: house.x,
-            y: house.y + 20, // 강아지 집 아래에 위치하도록 y 값 조정
-        }))
-    );
-    const [showBubble, setShowBubble] = useState(Array(4).fill(false));
+    
+    
 
     // 모달 상태와 선택된 사용자 상태 추가
     const [selectedUser, setSelectedUser] = useState(null);
@@ -68,7 +63,8 @@ const MovingDogs = ({ sessionData }) => {
                         className="relative w-20 h-20"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-semibold rounded-lg py-1 shadow-md">
+                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 shadow-md">
+
                             "
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
@@ -91,32 +87,12 @@ const MovingDogs = ({ sessionData }) => {
                 </div>
             ))}
 
-            {/* 강아지 렌더링 부분 */}
-            {dogPositions.map((pos, index) => (
-                <div
-                    key={`dog-${index}`}
-                    className="absolute"
-                    style={{
-                        left: `${pos.x -7}%`,
-                        top: `${pos.y -10}%`,
-                        transform: 'translate(-50%, -50%)',
-                    }}
-                >
-                    <img
-                        src={dogWalkGif}
-                        alt={`Dog ${index + 1}`}
-                        style={{ width: '50px', height: '50px' }} // 강아지 크기 고정
-                        onClick={(event) => handleDogClick(index, event)}
-                    />
-                </div>
-            ))}
-
             {showModal && selectedUser && (
                 <div
                     className="absolute bg-white rounded-lg shadow-lg z-50"
                     style={{
                         left: '50%',
-                        top: '43%',
+                        top: '27%',
                         transform: 'translate(-50%, -50%)',
                         width: '80%',
                         maxWidth: '300px',
