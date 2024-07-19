@@ -11,6 +11,7 @@ const Slide3 = () => (
         </h2>
         <br></br>
         <br></br>
+        <br></br>
         <img
             src={SlideImage}
             alt="Slide3"

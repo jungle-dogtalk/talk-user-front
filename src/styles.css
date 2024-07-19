@@ -27,8 +27,8 @@ h3 {
 .speech-bubble-container {
     position: absolute;
     top: 105px; /* 헤더 아래로 60px */
-    left: 330px; /* 왼쪽 카드 옆으로 320px */
-    right: 10px; /* 오른쪽 끝에서 10px */
+    left: 30vh; /* 왼쪽 카드 옆으로 320px */
+    right: 20px; /* 오른쪽 끝에서 10px */
     bottom: 250px; /* 라쿤 모델 위로 300px */
     display: flex;
     align-items: center;
@@ -46,8 +46,8 @@ h3 {
     font-size: 20px;
     text-align: center;
     pointer-events: all; /* 말풍선 내 텍스트 선택 가능 */
-    width: 100%; /* 반응형 너비 */
-    height: 100%; /* 반응형 높이 */
+    width: 150vh;
+    height: 100%;
     max-width: 1430px; /* 최대 너비 설정 */
     max-height: 1000px; /* 최대 높이 설정 */
 }
