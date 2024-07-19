@@ -944,7 +944,7 @@ const VideoChatPage = () => {
 
                     <div
                         className="w-full flex flex-col items-center absolute"
-                        style={{ top: '400px', left: '4px'  }}
+                        style={{ top: '400px', left: '4px' }}
                     >
                         {recommendedTopics.length === 0 && (
                             <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
