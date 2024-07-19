@@ -65,7 +65,7 @@ const MovingDogs = ({ sessionData }) => {
                     }}
                 >
                     <div
-                        className="relative w-16 h-16"
+                        className="relative w-20 h-20"
                         onClick={() => handleDogHouseClick(index)}
                     >
                         <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white font-semibold rounded-lg py-1 shadow-md">
@@ -87,48 +87,7 @@ const MovingDogs = ({ sessionData }) => {
                             top: '100%',
                             transform: 'translate(-50%, 10%)',
                         }}
-                    >
-                        <div className="relative">
-                            {showBubble[index] && (
-                                <div
-                                    className="absolute bg-white p-1 rounded-lg shadow-lg text-[0.75rem] flex items-center justify-center"
-                                    style={{
-                                        bottom: '100%',
-                                        left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        width: '120px',
-                                        maxWidth: '100%',
-                                        marginBottom: '-10px',
-                                        padding: '10px',
-                                        background:
-                                            'linear-gradient(135deg, #72edf2 10%, #5151e5 100%)',
-                                        color: 'white',
-                                        boxShadow:
-                                            '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    }}
-                                >
-                                    {/* <svg
-                                        className="absolute text-white h-3 w-3 transform -translate-x-1/2"
-                                        style={{ bottom: '-6px', left: '50%' }}
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M12 24l-12-12h24z" />
-                                    </svg> */}
-                                    {/* <p className="m-0 text-center">
-                                        {safeSessionData[index]?.aiInterests?.[
-                                            randomInterestIndex[index]
-                                        ] || '정보 없음'}
-                                    </p> */}
-                                </div>
-                            )}
-                            {/* <div className="absolute bottom-0 left-0 right-0 text-center text-xs bg-white bg-opacity-70 rounded-sm">
-                                {safeSessionData[index]?.nickname ||
-                                    `Dog ${index + 1}`}
-                            </div> */}
-                        </div>
-                    </div>
+                    ></div>
                 </div>
             ))}
 
@@ -138,15 +97,15 @@ const MovingDogs = ({ sessionData }) => {
                     key={`dog-${index}`}
                     className="absolute"
                     style={{
-                        left: `${pos.x}%`,
-                        top: `${pos.y}%`,
+                        left: `${pos.x -7}%`,
+                        top: `${pos.y -10}%`,
                         transform: 'translate(-50%, -50%)',
                     }}
                 >
                     <img
                         src={dogWalkGif}
                         alt={`Dog ${index + 1}`}
-                        className="w-8 h-8 cursor-pointer"
+                        style={{ width: '50px', height: '50px' }} // 강아지 크기 고정
                         onClick={(event) => handleDogClick(index, event)}
                     />
                 </div>
