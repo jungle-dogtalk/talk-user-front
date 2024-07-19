@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logoutUser, fetchUserProfile } from '../../redux/slices/userSlice'; // 로그아웃 액션 임포트
-import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
-import profileImage from '../../assets/profile.jpg'; // 프로필 이미지 경로
+import { logoutUser, fetchUserProfile } from '../../redux/slices/userSlice';
+import logo from '../../assets/barking-talk.png';
+import profileImage from '../../assets/profile.jpg';
 import GLTFModel from '../../components/GLTFModel.jsx';
 import SpeechBubble from '../../components/SpeechBubble.jsx';
 import '../../styles.css';
@@ -13,7 +13,7 @@ import { API_LIST } from '../../utils/apiList.js';
 const MainPage = () => {
     const userInfo = useSelector((state) => state.user.userInfo);
     const token = useSelector((state) => state.user.token);
-    const navigate = useNavigate(); // useNavigate 훅 사용
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [topInterests, setTopInterests] = useState([]);
 
@@ -21,7 +21,7 @@ const MainPage = () => {
 
     useEffect(() => {
         if (!token) {
-            navigate('/'); // 로그인 상태가 아닌 경우 로그인 페이지로 리디렉션
+            navigate('/');
         }
     }, [token, navigate]);
 
@@ -31,7 +31,6 @@ const MainPage = () => {
     };
 
     useEffect(() => {
-        // Redux를 사용하여 사용자 정보를 가져오는 함수
         dispatch(fetchUserProfile());
     }, [dispatch]);
 
@@ -39,7 +38,6 @@ const MainPage = () => {
         const fetchTopInterests = async () => {
             try {
                 console.log('Fetching top interests from API');
-                // 상위 5개 관심사 가져와 상태 저장
                 const response = await axios.get(
                     API_LIST.GET_TOP_INTERESTS.path
                 );
@@ -54,16 +52,14 @@ const MainPage = () => {
         fetchTopInterests();
     }, []);
 
-    // 매너지수와 발화지수 계산
     const mannerScore = userInfo?.reviewAverageScore || 0;
     const utteranceScore = userInfo?.utterance || 0;
 
-    // 매너지수와 발화지수가 0이라면 50으로 설정
     const displayMannerScore = mannerScore === 0 ? 50 : mannerScore;
     const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#f7f3e9] relative">
+        <div className="min-h-screen flex flex-col bg-[#f7f3e9] relative overflow-hidden">
             <header className="w-full bg-[#a16e47] p-2 flex items-center justify-between">
                 <img
                     src={logo}
@@ -87,7 +83,7 @@ const MainPage = () => {
                     </button>
                 </div>
             </header>
-            <div className="flex flex-col items-start p-4 sm:p-6 w-full">
+            <div className="flex flex-col items-start p-4 sm:p-6 w-full overflow-hidden">
                 <div
                     className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg"
                     style={{ maxWidth: '300px', height: '420px' }}
@@ -165,7 +161,9 @@ const MainPage = () => {
                         className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center"
                         style={{ fontSize: '25px' }}
                     >
-                        지금 사람들이<br></br>가장 관심있어 해요!
+                        지금 사람들이
+                        <br />
+                        가장 관심있어 해요!
                     </h2>
                     {Array.isArray(topInterests) && topInterests.length > 0 ? (
                         topInterests.map((interest, index) => (
@@ -195,7 +193,6 @@ const MainPage = () => {
             <div className="speech-bubble-container">
                 <SpeechBubble />
             </div>
-
             <GLTFModel />
         </div>
     );

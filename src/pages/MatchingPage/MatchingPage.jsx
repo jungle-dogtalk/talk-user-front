@@ -84,23 +84,23 @@ const MatchingPage = () => {
                         </h2>
                         <p
                             className="text-gray-700 mt-4 text-lg sm:text-2xl" // mt-4로 조정
-                            style={{ fontSize: '25px' }}
+                            style={{ fontSize: '30px' }}
                         >
                             나의 관심사 : {userInfo.interests.join(', ')}
                         </p>
                     </div>
                     <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />
-                    <p className="mt-4" style={{ fontSize: '25px' }}>
+                    {/* <p className="mt-4" style={{ fontSize: '25px' }}>
                         {' '}
                         상: 👍 하: 👎 좌: 🖐️ 우: ✊
-                    </p>
+                    </p> */}
                     <div className="flex justify-center mt-4">
                         {' '}
                         {/* mt-4로 조정 */}
                         <button
                             className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleCancelClick}
-                            style={{ fontSize: '25px' }}
+                            style={{ fontSize: '30px' }}
                         >
                             돌아가기
                         </button>

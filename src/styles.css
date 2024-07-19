@@ -27,14 +27,15 @@ h3 {
 .speech-bubble-container {
     position: absolute;
     top: 105px; /* 헤더 아래로 60px */
-    left: 30vh; /* 왼쪽 카드 옆으로 320px */
+    left: 33vh; /* 왼쪽 카드 옆으로 320px */
     right: 20px; /* 오른쪽 끝에서 10px */
     bottom: 250px; /* 라쿤 모델 위로 300px */
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none; /* 말풍선이 클릭되지 않도록 */
-    width: calc(100% - 320px); /* 조정된 크기 */
+    width: calc(100% - 340px); /* 조정된 크기 */
+    overflow: hidden;
 }
 
 .speech-bubble {
@@ -49,18 +50,24 @@ h3 {
     width: 150vh;
     height: 100%;
     max-width: 1430px; /* 최대 너비 설정 */
-    max-height: 1000px; /* 최대 높이 설정 */
+    max-height: 90vh; /* 최대 높이 설정 */
+    overflow: hidden;
+    position: relative;
 }
 
 .speech-bubble:after {
     content: '';
     position: absolute;
-    bottom: -60px; /* 말풍선 끝 부분 위치 조정 */
-    left: 83%;
+    bottom: -30px; /* 말풍선 끝 부분 위치 조정 */
+    left: 50%;
     transform: translateX(-50%);
     border-width: 30px;
     border-style: solid;
     border-color: #fff transparent transparent transparent;
+}
+
+.min-h-screen {
+    overflow: hidden;
 }
 
 .services-container {
