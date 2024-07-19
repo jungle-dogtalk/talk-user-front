@@ -736,6 +736,57 @@ const VideoChatPage = () => {
 
     const [useTestTopics, setUseTestTopics] = useState(false);
 
+    {
+        showQuizSuccess && (
+            <div className="absolute inset-0 flex items-center justify-center z-50">
+                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                    <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
+                        미션 성공 !!
+                    </h1>
+                    <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
+                        정답: "{quizAnswerRef.current}"
+                    </h2>
+                </div>
+            </div>
+        );
+    }
+    {
+        showQuizFailure && (
+            <div className="absolute inset-0 flex items-center justify-center z-50">
+                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                    <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
+                        미션 실패 ..
+                    </h1>
+                </div>
+            </div>
+        );
+    }
+    const RecommendedTopicsModal = () => {
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
+                    <h3
+                        className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
+                        style={{ fontSize: '24px' }}
+                    >
+                        추천 주제
+                    </h3>
+                    <ul className="list-disc list-inside">
+                        {recommendedTopics.map((topic, index) => (
+                            <li
+                                key={index}
+                                className="text-xl text-gray-700 mb-2"
+                                style={{ fontSize: '22px' }}
+                            >
+                                {topic}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+        );
+    };
+
     const testTopics = ['테스트 주제 1', '테스트 주제 2', '테스트 주제 3'];
 
     const InitialQuestionModal = () => {
@@ -812,6 +863,14 @@ const VideoChatPage = () => {
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
+
+                                {quizChallenger ===
+                                    publisher.stream.connection.data && (
+                                    <div className="absolute top-0 left-0 w-full bg-red-500 bg-opacity-75 text-white p-2 text-center">
+                                        {quizChallenger} 유저 퀴즈 미션 수행중!
+                                    </div>
+                                )}
+
                                 <div className="absolute bottom-2 left-2 z-10">
                                     <div className="flex flex-col space-y-1">
                                         {sessionData
@@ -860,33 +919,33 @@ const VideoChatPage = () => {
                                     {subscriber.stream.connection.data}
                                 </div>
 
-                                {/* <div className="absolute bottom-2 left-2 z-10">
+                                {quizChallenger ===
+                                    subscriber.stream.connection.data && (
+                                    <div className="absolute top-0 left-0 w-full bg-red-500 bg-opacity-75 text-white p-2 text-center">
+                                        {quizChallenger} 유저 퀴즈 미션 수행중!
+                                    </div>
+                                )}
+
+                                <div className="absolute bottom-2 left-2 z-10">
                                     <div className="flex flex-col space-y-1">
-                                        {(() => {
-                                            const subscriberNickname =
-                                                JSON.parse(
+                                        {sessionData
+                                            .find(
+                                                (user) =>
+                                                    user.userId ===
                                                     subscriber.stream.connection
                                                         .data
-                                                ).clientData;
-                                            const subscriberData =
-                                                sessionData.find(
-                                                    (user) =>
-                                                        user.nickname ===
-                                                        subscriberNickname
-                                                );
-                                            return subscriberData?.userInterests
-                                                .slice(0, 3)
-                                                .map((interest, index) => (
-                                                    <span
-                                                        key={index}
-                                                        className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium"
-                                                    >
-                                                        {interest}
-                                                    </span>
-                                                ));
-                                        })()}
+                                            )
+                                            ?.userInterests.slice(0, 3)
+                                            .map((interest, index) => (
+                                                <span
+                                                    key={index}
+                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                >
+                                                    {interest}
+                                                </span>
+                                            ))}
                                     </div>
-                                </div> */}
+                                </div>
                             </div>
                         ))}
                         {Array.from({ length: 4 - subscribers.length - 1 }).map(
@@ -945,7 +1004,7 @@ const VideoChatPage = () => {
                         className="w-full flex flex-col items-center absolute"
                         style={{ top: '400px', left: '4px' }}
                     >
-                        {recommendedTopics.length === 0 && (
+                        {/* {recommendedTopics.length === 0 && (
                             <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
                                 <h3
                                     className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
@@ -974,7 +1033,7 @@ const VideoChatPage = () => {
                                     </li>
                                 </ul>
                             </div>
-                        )}
+                        )} */}
 
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
@@ -1026,7 +1085,7 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         )}
-                        {showQuizSuccess && (
+                        {/* {showQuizSuccess && (
                             <div className="absolute inset-0 flex items-center justify-center z-50">
                                 <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
                                     <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
@@ -1046,11 +1105,13 @@ const VideoChatPage = () => {
                                     </h1>
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
+            {recommendedTopics.length > 0 && <RecommendedTopicsModal />}
+            {recommendedTopics.length > 0 && <RecommendedTopicsModal />}
         </div>
     );
 };
