@@ -346,12 +346,12 @@ function RaccoonHand(props) {
             >
                 Change Raccoon Hand Color
             </button> */}
-            <button
+            {/* <button
                 onClick={handleIceBreaking}
                 style={{ position: 'absolute', top: 10, right: 30 }}
             >
                 ICE BREAKING
-            </button>
+            </button> */}
         </div>
     );
 }
@@ -426,12 +426,13 @@ function IceBreakingBackground({ handPositions, onPercentageChange }) {
         ) {
             const ctx = canvasRef.current.getContext('2d');
 
-            if (currentGesture === 'Closed_Fist' && handPositions.length >= 1) {
+            // if (currentGesture === 'Closed_Fist' && handPositions.length >= 1) {
+            if (handPositions.length >= 1) {
                 ctx.globalCompositeOperation = 'destination-out';
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.000000000001)'; //지우는 강도
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'; // 지우는 강도 조절 (여기서 알파 값을 조정)
 
-                ctx.lineWidth = 2; // 브러쉬 크기 조절
-                ctx.globalAlpha = 0.1; // 투명도
+                ctx.lineWidth = 3; // 브러쉬 크기 조절
+                ctx.globalAlpha = 1; // 투명도
 
                 handPositions.forEach((hand) => {
                     ctx.beginPath();
