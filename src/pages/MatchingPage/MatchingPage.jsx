@@ -49,7 +49,7 @@ const MatchingPage = () => {
     }, [userInfo, socket]);
 
     const handleCancelClick = () => {
-        navigate('/main');
+        navigate(-1);
     };
 
     // 백엔드 서버 콘솔로그에서 OpenVidu 가용 세션 확인하기 위한 API 호출
@@ -84,13 +84,16 @@ const MatchingPage = () => {
                         </h2>
                         <p
                             className="text-gray-700 mt-4 text-lg sm:text-2xl" // mt-4로 조정
-                            style={{ fontSize: '20px' }}
+                            style={{ fontSize: '25px' }}
                         >
                             나의 관심사 : {userInfo.interests.join(', ')}
                         </p>
                     </div>
                     <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />
-                    <p className="mt-4"> 상: 👍 하: 👎 좌: 🖐️ 우: ✊</p>
+                    <p className="mt-4" style={{ fontSize: '25px' }}>
+                        {' '}
+                        상: 👍 하: 👎 좌: 🖐️ 우: ✊
+                    </p>
                     <div className="flex justify-center mt-4">
                         {' '}
                         {/* mt-4로 조정 */}
