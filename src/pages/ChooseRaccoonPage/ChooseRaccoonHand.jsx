@@ -10,6 +10,8 @@ import {
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
+import { saveToLocalStorage, loadFromLocalStorage } from '../../utils/localStorage.js';
+import { useNavigate } from 'react-router-dom';
 
 let video;
 let faceLandmarker;
@@ -41,6 +43,7 @@ function ChooseRaccoonHand() {
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
+    const navigate = useNavigate();
 
     const setup = async () => {
         const vision = await FilesetResolver.forVisionTasks(
@@ -188,10 +191,13 @@ function ChooseRaccoonHand() {
     /* 버튼 클릭 시 라쿤 모델 변경 */
     const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
-        setModelIndex(nextIndex);
         const newModel = models[nextIndex];
+
+        setModelIndex(nextIndex);
         setModelPath(newModel);
         dispatch(setSelectedModel(newModel));
+
+        saveToLocalStorage('racoon', newModel); // 사용자의 선택 기억
         
         // Redux 상태 출력
         console.log('Model changed. New Redux State:', {
@@ -199,6 +205,8 @@ function ChooseRaccoonHand() {
             newModel: newModel,
             // fullState: store.getState() // 이 부분은 제거하거나 다른 방식으로 구현해야 합니다
         });
+
+        // navigate('/videochat');
     }, [modelIndex, currentModel, dispatch]);
 
     const changeHandColor = () => {
