@@ -362,7 +362,7 @@ const VideoChatPage = () => {
             const publisher = OV.initPublisher(undefined, {
                 audioSource: mediaStream.getAudioTracks()[0],
                 videoSource: compositeStream.getVideoTracks()[0],
-                frameRate: 30, // 프레임 레이트 낮추기
+                frameRate: FRAME_RATE, // 프레임 레이트 낮추기
                 filter: filterOptions,
                 videoCodec: 'VP8', // VP8 코덱
             });
