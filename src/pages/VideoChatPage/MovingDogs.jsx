@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dog.png';
-import dogHouseImage from '../../assets/doghouse.gif'; // doghouse.gif 이미지로 변경
+import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
 
 const MovingDogs = ({ sessionData }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
     const dogHouses = [
-        { x: 8, y: 9 }, // 왼쪽 위
-        { x: 36, y: 9 }, // 오른쪽 위
-        { x: 64, y: 9 }, // 왼쪽 아래
-        { x: 92, y: 9 }, // 오른쪽 아래
+        { x: 23, y: 15 }, // 왼쪽 위
+        { x: 78, y: 15 }, // 오른쪽 위
+        { x: 23, y: 42 }, // 왼쪽 아래
+        { x: 78, y: 42 }, // 오른쪽 아래
     ];
 
     // 모달 상태와 선택된 사용자 상태 추가
@@ -58,19 +58,17 @@ const MovingDogs = ({ sessionData }) => {
                     }}
                 >
                     <div
-                        className="relative w-20 h-20"
+                        className="relative w-32 h-32"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-24px] left-0 w-full text-center text-xs bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 shadow-md">
-                            "
+                        <div className="absolute top-[-40px] left-0 w-full text-center text-2xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
-                            "님
                         </div>
                         <img
                             src={dogHouseImage}
                             alt={`Dog house ${index + 1}`}
-                            className="w-full h-full object-cover rounded-lg shadow-md"
+                            className="w-full h-full object-cover rounded-lg "
                         />
                     </div>
                     <div
@@ -85,32 +83,14 @@ const MovingDogs = ({ sessionData }) => {
             ))}
 
             {showModal && selectedUser && (
-                <div
-                    className="absolute bg-white rounded-lg shadow-lg z-50"
-                    style={{
-                        left: '50%',
-                        top: '30%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '85%',
-                        maxWidth: '380px',
-                    }}
-                >
-                    <header className="bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] text-white p-3 flex justify-between items-center rounded-t-lg shadow-md relative overflow-hidden">
-                        <div className="absolute inset-0 bg-black opacity-10"></div>
-                        <h2 className="text-lg font-bold text-center w-full relative z-10">
-                            <span className="bg-white text-[#a16e47] px-1.5 py-0.5 rounded-full text-xs mr-2">
-                                Q
-                            </span>
-                            <span class="text-white ">
-                                {selectedUser.nickname}님의 질문
-                            </span>
-                        </h2>
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-2xl shadow-2xl w-4/5 max-w-lg text-center transform transition-all duration-300 scale-105 hover:scale-110 flex flex-col items-center justify-center overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm relative">
                         <button
                             onClick={closeModal}
-                            className="absolute right-2 top-2 text-white hover:text-gray-200 transition-colors duration-300 transform hover:rotate-90 z-10"
+                            className="absolute top-4 right-4 text-orange-800 hover:text-red-500 transition-colors duration-300 z-10"
                         >
                             <svg
-                                className="w-5 h-5"
+                                className="w-6 h-6"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -124,23 +104,26 @@ const MovingDogs = ({ sessionData }) => {
                                 ></path>
                             </svg>
                         </button>
-                    </header>
-                    <div className="p-4 bg-gradient-to-b from-white to-gray-100 rounded-b-lg space-y-4">
-                        <p className="text-lg text-gray-700 text-center font-medium leading-snug relative">
-                            <span className="absolute -left-2 top-0 text-3xl text-[#a16e47] opacity-25">
+                        <h1 className="text-5xl font-extrabold text-orange-800 mb-4 animate-pulse">
+                            <span className="relative">
+                                질문
+                                <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-300 to-red-500 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
+                            </span>
+                        </h1>
+                        <p className="text-2xl text-orange-700 font-medium relative leading-snug">
+                            <span className="absolute -left-5 top-0 text-5xl text-[#a16e47] opacity-25">
                                 "
                             </span>
-                            {selectedUser.question}
-                            <span className="absolute -right-2 bottom-0 text-3xl text-[#a16e47] opacity-25">
+                            <span className="relative z-10">
+                                {selectedUser.question}
+                            </span>
+                            <span className="absolute -right-5 top-0 text-5xl text-[#a16e47] opacity-25">
                                 "
                             </span>
                         </p>
-                        <button
-                            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-full font-semibold shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
-                            onClick={closeModal}
-                        >
-                            닫기
-                        </button>
+                        <p className="text-lg text-orange-600 mt-4 animate-pulse">
+                            5초 후 자동으로 닫힘
+                        </p>
                     </div>
                 </div>
             )}
