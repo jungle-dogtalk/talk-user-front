@@ -10,7 +10,10 @@ import {
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
-import { saveToLocalStorage, loadFromLocalStorage } from '../../utils/localStorage.js';
+import {
+    saveToLocalStorage,
+    loadFromLocalStorage,
+} from '../../utils/localStorage.js';
 import { useNavigate } from 'react-router-dom';
 
 let video;
@@ -33,6 +36,8 @@ const models = [
     '/blue_raccoon.glb',
     '/jungle_raccoon_head.glb',
     '/warrior_raccoon_head.glb',
+    '/panda.glb',
+    '/monkey.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -198,7 +203,7 @@ function ChooseRaccoonHand() {
         dispatch(setSelectedModel(newModel));
 
         saveToLocalStorage('racoon', newModel); // 사용자의 선택 기억
-        
+
         // Redux 상태 출력
         console.log('Model changed. New Redux State:', {
             previousModel: currentModel,
