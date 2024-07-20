@@ -932,13 +932,13 @@ const VideoChatPage = () => {
                     />
                     <div className="grid grid-cols-2 grid-rows-2 gap-2 p-2 h-full">
                         {publisher && (
-                            <div className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden">
+                            <div className="relative w-full h-full border-2 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden">
                                 <OpenViduVideo
                                     streamManager={publisher}
                                     className="w-full h-full object-cover"
                                 />
 
-                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
+                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {publisher.stream.connection.data}
                                 </div>
 
@@ -981,7 +981,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xl px-6 py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
+                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -989,13 +989,13 @@ const VideoChatPage = () => {
                                     </div>
                                 </div>
 
-                                <img
+                                {/* <img
                                     src={settingsIcon}
                                     alt="설정"
                                     className="absolute top-3 right-3 w-9 h-9 cursor-pointer bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors duration-300"
                                     onClick={toggleSettings}
-                                />
-                                {showSettings && (
+                                /> */}
+                                {/* {showSettings && (
                                     <div className="absolute top-14 right-3 z-50">
                                         <SettingMenu
                                             publisher={publisher}
@@ -1004,19 +1004,19 @@ const VideoChatPage = () => {
                                             }
                                         />
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         )}
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden"
+                                className="relative w-full h-full border-2 border-[#d4b894] rounded-xl shadow-lg overflow-hidden "
                             >
                                 <OpenViduVideo
                                     streamManager={subscriber}
                                     className="w-full h-full object-cover"
                                 />
-                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
+                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {subscriber.stream.connection.data}
                                 </div>
 
@@ -1025,7 +1025,7 @@ const VideoChatPage = () => {
                                     <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                         <div className="flex flex-col items-center justify-center space-y-2">
                                             <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                🔥 미션 진행 중!!
+                                                🔥 미션 진행 중!
                                             </p>
                                             <div className="overflow-hidden w-full">
                                                 <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
@@ -1049,7 +1049,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xl px-6 py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
+                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -1095,6 +1095,7 @@ const VideoChatPage = () => {
                         ))}
                     </div>
                 </div>
+
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
                     <MovingDogs sessionData={sessionData} />
 
@@ -1103,7 +1104,7 @@ const VideoChatPage = () => {
                         className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
                         style={{
                             fontSize: '24px',
-                            top: '400px',
+                            top: '450px',
                             left: '50%',
                             transform: 'translateX(-50%)',
                         }}
