@@ -53,9 +53,12 @@ const victoryModels = [
 
 const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
 const randomElement = combinedModels[Math.floor(Math.random() * combinedModels.length)];
+const modelVictoryMap = models.reduce((acc, model, index) => ({ ...acc, [model]: victoryModels[index] }), {});
+
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 console.log(randomElement);
+console.log(modelVictoryMap, '매핑정보');
 
 
 const RaccoonHand = React.memo((props) => {
@@ -70,10 +73,12 @@ const RaccoonHand = React.memo((props) => {
     const quizInProgressRef = useRef(false);
     const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
     const dispatch = useDispatch();
+    const savedModel = loadFromLocalStorage('racoon');
+    const victoryModel = modelVictoryMap[savedModel];
 
     /* 선택한 라쿤 모델 로딩 */
     useEffect(() => {
-        const savedModel = loadFromLocalStorage('racoon');
+        
         if (savedModel) {
             dispatch(setSelectedModel(savedModel));
             setModelPath(savedModel);
@@ -286,11 +291,10 @@ const RaccoonHand = React.memo((props) => {
 
     // TODO: 왕관 모델로 변경
     const changeVictoryModel = () => {
-        console.log(randomElement);
         setIsVictoryModelLoading(true); // 모델 로딩 시작
         // const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
         // setVictoryModelIndex(nextIndex);
-        setModelPath(randomElement[1]);
+        setModelPath(victoryModel);
         setIsVictoryModelLoading(false); // 모델 로딩
     };
 
