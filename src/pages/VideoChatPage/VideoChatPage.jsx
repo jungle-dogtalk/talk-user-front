@@ -180,6 +180,11 @@ const VideoChatPage = () => {
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
             setRecommendedTopics((prevTopics) => [...prevTopics, data.trim()]);
+
+            // 5초후에 모달 닫기
+            setTimeout(() => {
+                setRecommendedTopics([]);
+            }, 5000);
         });
 
         socket.current.on('endOfStream', () => {
@@ -211,7 +216,6 @@ const VideoChatPage = () => {
             clearInterval(interval);
         };
     }, [location, sessionId]);
-
 
     // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
@@ -604,10 +608,6 @@ const VideoChatPage = () => {
     const requestTopicRecommendations = () => {
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
-        // 5초 후에 추천 주제 모달 닫기
-        setTimeout(() => {
-            setRecommendedTopics([]);
-        }, 5000);
     };
 
     // 음성인식 시작
@@ -1133,29 +1133,29 @@ const VideoChatPage = () => {
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
-                        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                            <div className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-40 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-200 backdrop-filter backdrop-blur-sm">
-                                <div className="flex-1 text-left space-y-2">
-                                    <h1 className="text-4xl font-extrabold text-orange-700 animate-pulse">
-                                        🎯 추천 주제
-                                    </h1>
-                                    <p className="text-xl text-orange-600">
-                                        오늘의 대화 주제입니다!
-                                    </p>
+                                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                                    <div className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-40 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-200 backdrop-filter backdrop-blur-sm">
+                                        <div className="flex-1 text-left space-y-2">
+                                            <h1 className="text-4xl font-extrabold text-orange-700 animate-pulse">
+                                                🎯 추천 주제
+                                            </h1>
+                                            <p className="text-xl text-orange-600">
+                                                오늘의 대화 주제입니다!
+                                            </p>
+                                        </div>
+                                        <div className="flex-2 font-bold text-2xl text-orange-700 bg-orange-100 bg-opacity-60 p-4 rounded-xl shadow-inner mx-4 transform rotate-1 w-1/2 flex items-center justify-center">
+                                            <p className="animate-bounce text-center">
+                                                "{recommendedTopics[0]}"
+                                            </p>
+                                        </div>
+                                        <div className="flex-1/2 text-right space-y-2">
+                                            <p className="text-base text-orange-500 animate-pulse">
+                                                5초 후 자동으로 닫힘
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="flex-2 font-bold text-2xl text-orange-700 bg-orange-100 bg-opacity-60 p-4 rounded-xl shadow-inner mx-4 transform rotate-1 w-1/2 flex items-center justify-center">
-                                    <p className="animate-bounce text-center">
-                                        "{recommendedTopics[0]}"
-                                    </p>
-                                </div>
-                                <div className="flex-1/2 text-right space-y-2">
-                                    <p className="text-base text-orange-500 animate-pulse">
-                                        5초 후 자동으로 닫힘
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                         )}
+                            )}
                         {quizChallenger && (
                             <div className="absolute inset-0 flex items-center justify-center z-50">
                                 <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
