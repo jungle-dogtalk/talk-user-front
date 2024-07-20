@@ -54,29 +54,24 @@ const VideoChatPage = () => {
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
 
-    let ovSocket = null;
-
     const handleQuizInProgress = (data) => {
-        console.log('자식에서 넘겨받은 데이터 -> ', data);
-        console.log('세션정보 -> ', session);
-        ovSocket
-            .signal({
-                data: JSON.stringify({
-                    userId: userInfo.username,
-                    message: `${userInfo.username} 유저가 미션을 시작합니다.`,
-                }),
-                to: [],
-                type: 'quizStart',
-            })
-            .then(() => {
-                console.log('시그널 성공적으로 전송');
-            })
-            .catch((error) => {
-                console.error('시그널 도중 에러 발생 -> ', error);
-            });
-        console.log('스타트 퀴즈 미션');
+        console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
+        setSession((currentSession) => {
+            if (currentSession) {
+                currentSession.signal({
+                    data: JSON.stringify({
+                        userId: userInfo.username,
+                        message: `${userInfo.username} 유저가 미션을 시작합니다.`,
+                    }),
+                    to: [],
+                    type: 'quizStart',
+                });
+            } else {
+                console.error('퀴즈 미션수행 에러');
+            }
+            return currentSession;
+        });
     };
-
     const finishQuizMission = () => {
         console.log('세션정보 -> ', session);
         session
@@ -422,7 +417,6 @@ const VideoChatPage = () => {
             setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
             setSession(session);
-            ovSocket = session;
 
             session.on('streamCreated', (event) => {
                 let subscriber = session.subscribe(event.stream, undefined);
@@ -515,6 +509,8 @@ const VideoChatPage = () => {
                 'sessionC',
                 'sessionD',
                 'sessionE',
+                'sessionF',
+                'sessionG',
                 'sessionH',
             ];
             if (!allowedSessionIdList.includes(sessionId)) {
@@ -663,14 +659,22 @@ const VideoChatPage = () => {
                             setQuizMode(false); // 퀴즈 모드 해제
                             quizModeRef.current = false; // ref 상태 업데이트
                             setQuizTime(0); // 타이머 초기화
-                            ovSocket.signal({
-                                data: JSON.stringify({
-                                    userId: userInfo.username,
-                                    message: `${userInfo.username} 유저 미션 종료`,
-                                    result: true,
-                                }),
-                                to: [],
-                                type: 'quizEnd',
+
+                            setSession((currentSession) => {
+                                if (currentSession) {
+                                    currentSession.signal({
+                                        data: JSON.stringify({
+                                            userId: userInfo.username,
+                                            message: `${userInfo.username} 유저 미션 종료`,
+                                            result: true,
+                                        }),
+                                        to: [],
+                                        type: 'quizEnd',
+                                    });
+                                } else {
+                                    console.error('퀴즈 미션수행 에러');
+                                }
+                                return currentSession;
                             });
                         }
                     }
