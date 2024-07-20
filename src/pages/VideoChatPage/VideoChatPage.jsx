@@ -969,8 +969,8 @@ const VideoChatPage = () => {
                                     }
                                 `}</style>
 
-                                <div className="absolute bottom-2 left-2 z-10">
-                                    <div className="flex flex-col space-y-1">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                    <div className="flex justify-center items-center w-full">
                                         {sessionData
                                             .find(
                                                 (user) =>
@@ -981,7 +981,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                    className="text-xl px-6 py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -1025,7 +1025,7 @@ const VideoChatPage = () => {
                                     <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                         <div className="flex flex-col items-center justify-center space-y-2">
                                             <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                🔥 미션 진행 중!
+                                                🔥 미션 진행 중!!
                                             </p>
                                             <div className="overflow-hidden w-full">
                                                 <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
@@ -1036,8 +1036,8 @@ const VideoChatPage = () => {
                                     </div>
                                 )}
 
-                                <div className="absolute bottom-2 left-2 z-10">
-                                    <div className="flex flex-col space-y-1">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                    <div className="flex justify-center items-center w-full">
                                         {sessionData
                                             .find(
                                                 (user) =>
@@ -1049,7 +1049,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                    className="text-xl px-6 py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
