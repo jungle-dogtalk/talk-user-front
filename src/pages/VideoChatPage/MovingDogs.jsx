@@ -95,16 +95,20 @@ const MovingDogs = ({ sessionData }) => {
                         maxWidth: '380px',
                     }}
                 >
-                    <header className="bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] text-white p-3 flex justify-between items-center">
-                        <h2 className="text-lg font-bold text-center w-full">
+                    <header className="bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] text-white p-3 flex justify-between items-center rounded-t-lg shadow-md relative overflow-hidden">
+                        <div className="absolute inset-0 bg-black opacity-10"></div>
+                        <h2 className="text-lg font-bold text-center w-full relative z-10">
+                            <span className="bg-white text-[#a16e47] px-1.5 py-0.5 rounded-full text-xs mr-2">
+                                Q
+                            </span>
                             "{selectedUser.nickname}"님의 질문
                         </h2>
                         <button
                             onClick={closeModal}
-                            className="absolute right-4 top-4 text-white hover:text-gray-200 transition-colors"
+                            className="absolute right-2 top-2 text-white hover:text-gray-200 transition-colors duration-300 transform hover:rotate-90 z-10"
                         >
                             <svg
-                                className="w-6 h-6"
+                                className="w-5 h-5"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -119,12 +123,18 @@ const MovingDogs = ({ sessionData }) => {
                             </svg>
                         </button>
                     </header>
-                    <div className="p-4 bg-gradient-to-b from-white to-gray-50">
-                        <p className="text-xl mb-4 text-gray-700 text-center">
+                    <div className="p-4 bg-gradient-to-b from-white to-gray-100 rounded-b-lg space-y-4">
+                        <p className="text-lg text-gray-700 text-center font-medium leading-snug relative">
+                            <span className="absolute -left-2 top-0 text-3xl text-[#a16e47] opacity-25">
+                                "
+                            </span>
                             {selectedUser.question}
+                            <span className="absolute -right-2 bottom-0 text-3xl text-[#a16e47] opacity-25">
+                                "
+                            </span>
                         </p>
                         <button
-                            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-full font-semibold shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                            className="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-full font-semibold shadow-md hover:from-red-600 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
                             onClick={closeModal}
                         >
                             닫기
