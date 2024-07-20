@@ -191,7 +191,6 @@ const VideoChatPage = () => {
             console.log('Streaming ended');
         });
 
-
         // 주기적으로 발화량 계산 요청 보내기
         const interval = setInterval(() => {
             console.log('발화량 계산 요청 보내기');
@@ -1179,24 +1178,67 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         )}
+
                         {showQuizSuccess && (
-                            <div className="absolute inset-0 flex items-center justify-center z-50">
-                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                    <h1 className="text-green-600 text-2xl font-bold mb-3 text-center border-b-2 border-green-400 pb-2">
-                                        미션 성공 !!
-                                    </h1>
-                                    <h2 className="text-[#2c4021] text-xl font-semibold text-center mt-3">
-                                        정답: "{quizAnswerRef.current}"
-                                    </h2>
+                            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="flex-1 text-left space-y-2">
+                                        <h1 className="text-5xl font-extrabold text-orange-800 animate-pulse">
+                                            🎉 미션 성공 !!
+                                        </h1>
+                                        <p className="text-2xl text-orange-700">
+                                            축하합니다!{' '}
+                                            <span className="font-semibold text-orange-800 text-3xl">
+                                                {userInfo.username}
+                                            </span>{' '}
+                                            님
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform rotate-3">
+                                        <p className="animate-bounce">
+                                            "{quizAnswerRef.current}"
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 text-right space-y-2">
+                                        <p className="text-2xl text-orange-700">
+                                            멋진 추리력을 보여주셨어요!
+                                        </p>
+                                        <p className="text-lg text-orange-600 animate-pulse">
+                                            5초 후 자동으로 닫힘
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}
+
                         {showQuizFailure && (
-                            <div className="absolute inset-0 flex items-center justify-center z-50">
-                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                    <h1 className="text-blue-600 text-2xl font-bold text-center border-b-2 border-blue-400 pb-2">
-                                        미션 실패 ..
-                                    </h1>
+                            <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="flex-1 text-left space-y-2">
+                                        <h1 className="text-5xl font-extrabold text-orange-800 animate-pulse">
+                                            😢 미션 실패
+                                        </h1>
+                                        <p className="text-2xl text-orange-700">
+                                            아쉽게도{' '}
+                                            <span className="font-semibold text-orange-800 text-3xl">
+                                                {userInfo.username}
+                                            </span>{' '}
+                                            님
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform -rotate-3">
+                                        <p className="animate-bounce">
+                                            정답이 틀렸습니다..
+                                        </p>
+                                    </div>
+                                    <div className="flex-1 text-right space-y-2">
+                                        <p className="text-2xl text-orange-700">
+                                            다음에 더 잘하실 거예요!
+                                        </p>
+                                        <p className="text-lg text-orange-600 animate-pulse">
+                                            5초 후 자동으로 닫힘
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         )}
