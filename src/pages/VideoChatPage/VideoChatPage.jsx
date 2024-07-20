@@ -602,10 +602,8 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
-        setRecommendedTopics([]); // 기존 추천 주제를 초기화
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
-        // setShowRecommendedTopics(true);
         // 5초 후에 추천 주제 모달 닫기
         setTimeout(() => {
             setRecommendedTopics([]);
@@ -1251,19 +1249,6 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
-            {showRecommendedTopics && (
-                <RecommendedTopicsModal
-                    topics={recommendedTopics}
-                    onClose={() => setShowRecommendedTopics(false)}
-                />
-            )}
-            {showQuizResult && (
-                <QuizResultModal
-                    success={quizResult === 'success'}
-                    answer={quizAnswerRef.current}
-                    onClose={() => setShowQuizResult(false)}
-                />
-            )}
             {showInitialModal && <InitialQuestionModal />}
         </div>
     );
