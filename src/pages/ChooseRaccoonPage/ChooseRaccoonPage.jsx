@@ -102,6 +102,55 @@ const ChooseRaccoonPage = () => {
         navigate('/questions');
     };
 
+    //마이크
+
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+        const audioDevices = devices.filter(
+            (device) => device.kind === 'audioinput'
+        );
+        console.log(audioDevices);
+    });
+
+    useEffect(() => {
+        const audioContext = new (window.AudioContext ||
+            window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+
+        navigator.mediaDevices
+            .getUserMedia({ audio: true })
+            .then((stream) => {
+                const source = audioContext.createMediaStreamSource(stream);
+                source.connect(analyser);
+
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                const updateMeter = () => {
+                    analyser.getByteFrequencyData(dataArray);
+                    const average =
+                        dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+                    const height = (average / 255) * 100;
+
+                    document.querySelectorAll('.bar').forEach((bar, index) => {
+                        if (index < Math.floor(height / 10)) {
+                            bar.style.height = '100px';
+                            bar.style.backgroundColor = 'orange';
+                        } else {
+                            bar.style.height = '100px';
+                            bar.style.backgroundColor = 'lightgray';
+                        }
+                    });
+
+                    requestAnimationFrame(updateMeter);
+                };
+
+                updateMeter();
+            })
+            .catch((err) => {
+                console.error('Error accessing the microphone', err);
+            });
+    }, []);
+
     return (
         <div className="flex flex-col h-screen bg-gradient-to-b from-[#FFF8E1] to-[#FFE0B2]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 flex items-center justify-between shadow-lg">
@@ -154,6 +203,26 @@ const ChooseRaccoonPage = () => {
                     </div>
                 </div>
             </div>
+            <div className="flex flex-col items-center justify-center my-6">
+                <h2
+                    className="text-3xl sm:text-4xl font-bold mb-6 sm:mb-8 text-[#8B4513]"
+                    style={{
+                        fontSize: '40px',
+                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                    }}
+                >
+                    마이크 입력 테스트
+                </h2>
+                <div className="flex space-x-2">
+                    {[...Array(10)].map((_, index) => (
+                        <div
+                            key={index}
+                            className="bar w-4 h-16 bg-lightgray"
+                        ></div>
+                    ))}
+                </div>
+            </div>
+
             <div className="flex justify-center space-x-8 py-6 mb-6">
                 <button
                     className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-3 px-8 sm:py-4 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-2xl font-bold"

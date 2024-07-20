@@ -15,6 +15,9 @@ import {
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
+import { loadFromLocalStorage } from '../../utils/localStorage';
+import { useDispatch } from 'react-redux';
+import { setSelectedModel } from '../../redux/slices/racoonSlice';
 
 let video;
 let faceLandmarker;
@@ -66,6 +69,16 @@ const RaccoonHand = React.memo((props) => {
     const isQuizCompletedRef = useRef(false);
     const quizInProgressRef = useRef(false);
     const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
+    const dispatch = useDispatch();
+
+    /* 선택한 라쿤 모델 로딩 */
+    useEffect(() => {
+        const savedModel = loadFromLocalStorage('racoon');
+        if (savedModel) {
+            dispatch(setSelectedModel(savedModel));
+            setModelPath(savedModel);
+        }
+    }, [dispatch]);
 
     useEffect(() => {
         if (props.quizResult === 'success') {
@@ -581,7 +594,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                        blendshape.categoryName
+                    blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
