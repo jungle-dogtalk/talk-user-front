@@ -509,6 +509,8 @@ const VideoChatPage = () => {
                 'sessionC',
                 'sessionD',
                 'sessionE',
+                'sessionF',
+                'sessionG',
                 'sessionH',
             ];
             if (!allowedSessionIdList.includes(sessionId)) {
