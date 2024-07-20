@@ -1041,7 +1041,7 @@ const VideoChatPage = () => {
                                         {sessionData
                                             .find(
                                                 (user) =>
-                                                    user.userId ===
+                                                    user.nickname ===
                                                     subscriber.stream.connection
                                                         .data
                                             )
@@ -1115,36 +1115,7 @@ const VideoChatPage = () => {
                         className="w-full flex flex-col items-center absolute"
                         style={{ top: '400px', left: '4px' }}
                     >
-                        {/* {recommendedTopics.length === 0 && (
-                            <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h3
-                                    className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
-                                    style={{ fontSize: '24px' }}
-                                >
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 1
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 2
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 3
-                                    </li>
-                                </ul>
-                            </div>
-                        )} */}
+                        
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
@@ -1171,34 +1142,7 @@ const VideoChatPage = () => {
                                     </div>
                                 </div>
                             )}
-                        {quizChallenger && (
-                            <div className="absolute inset-0 flex items-center justify-center z-50">
-                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                    <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
-                                        {quizChallenger} 유저 퀴즈 미션 수행중!
-                                    </h1>
-                                    <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
-                                        <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].nickname
-                                            }{' '}
-                                            님의 질문
-                                        </h2>
-                                        <p className="text-[#4a6741] text-lg text-center italic">
-                                            "
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].question
-                                            }
-                                            "
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        
                         {showQuizSuccess && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                                 <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
