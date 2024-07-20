@@ -191,13 +191,26 @@ const VideoChatPage = () => {
             console.log('Streaming ended');
         });
 
+
+        // 주기적으로 발화량 계산 요청 보내기
+        const interval = setInterval(() => {
+            console.log('발화량 계산 요청 보내기');
+            socket.current.emit('requestSpeechLengths', { sessionId });
+        }, 60000); // 1분 (60000 밀리초) 단위로 실행
+
+        // 발화량 순위 데이터 수신
+        socket.current.on('speechLengths', (data) => {
+            console.log('발화량 순위 데이터 수신:', data);
+        });
+
         return () => {
             if (socket.current) {
                 socket.current.emit('leaveSession', sessionId);
                 socket.current.disconnect();
             }
+            clearInterval(interval);
         };
-    }, [location]);
+    }, [location, sessionId]);
 
     // useEffect(() => {
     //     if (quizResult === 'success' || quizResult === 'failure') {

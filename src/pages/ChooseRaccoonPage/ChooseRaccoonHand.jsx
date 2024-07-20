@@ -39,7 +39,7 @@ const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 function ChooseRaccoonHand() {
     const dispatch = useDispatch(); // 상태관리를 위한 dispatch 함수
-    const currentModel = useSelector(state => state.racoon.selectedModel);
+    const currentModel = useSelector((state) => state.racoon.selectedModel);
     const [modelPath, setModelPath] = useState(models[0]);
     const [modelIndex, setModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
