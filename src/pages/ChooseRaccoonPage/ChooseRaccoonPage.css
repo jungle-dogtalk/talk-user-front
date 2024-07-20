@@ -1,8 +1,6 @@
-/* ChooseAvatarPage.css */
-
 :root {
     --background-color: #f7f3e9;
-    --header-background-color: #a16e47; /* 수정된 네비게이션 바 색상 */
+    --header-background-color: #a16e47;
     --text-color: #333;
     --button-background-color: #d2691e;
     --button-hover-color: #b5521e;
@@ -10,7 +8,8 @@
     --font-family: 'Noto Sans KR', sans-serif;
 }
 
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -30,13 +29,13 @@ body, html {
     padding: 10px 20px;
     background-color: var(--header-background-color);
     display: flex;
-    justify-content: space-between; /* 공간을 균등하게 배분 */
+    justify-content: space-between;
     align-items: center;
 }
 
 .logo {
     height: 70px;
-    margin-right: auto; /* 로고를 왼쪽 정렬 */
+    margin-right: auto;
 }
 
 .header-links {
@@ -44,7 +43,8 @@ body, html {
     align-items: center;
 }
 
-.header-links span, .header-links a {
+.header-links span,
+.header-links a {
     color: white;
     margin: 0 10px;
     text-decoration: none;
@@ -60,17 +60,18 @@ body, html {
     align-items: center;
     flex: 1;
     width: 100%;
+    padding-top: 20px; /* 헤더와의 간격을 늘림 */
 }
 
 .section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px 0;
+    margin: 5px 0; /* 섹션 간의 간격을 줄임 */
 }
 
 h2 {
-    margin: 20px 0;
+    margin: 10px 0;
     font-family: var(--font-family);
     color: var(--text-color);
 }
@@ -82,7 +83,12 @@ h2 {
     border: 1px solid #ccc;
     border-radius: 10px;
     object-fit: cover;
-    /* transform: scaleX(-1); 비디오 반전 */
+    /* transform: scaleX(-1); */
+}
+
+.fixed-size {
+    width: 520px;
+    height: 390px;
 }
 
 .avatar-box {
@@ -96,7 +102,7 @@ h2 {
 .buttons {
     display: flex;
     justify-content: center;
-    margin: 20px 0;
+    margin: 10px 0; /* 버튼 간의 간격을 동일하게 설정 */
 }
 
 button.action-button {
@@ -110,7 +116,7 @@ button.action-button {
     font-size: 16px;
     transition: background-color 0.3s;
     font-family: var(--font-family);
-    min-width: 100px; /* 버튼 최소 너비 설정 */
+    min-width: 100px;
 }
 
 button.action-button:hover {

@@ -14,7 +14,6 @@ h2,
 h3 {
     font-family: 'MyCustomFont', sans-serif !important;
     color: #5b484a;
-    /* font-style: italic; */
 }
 
 .text-lg,
@@ -25,19 +24,18 @@ h3 {
 }
 
 .left-container {
-    flex: 0 0 20%; /* 왼쪽 영역을 33%로 고정 */
+    flex: 0 0 20%;
     max-width: 33%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 24px 24px;
+    padding: 24px;
     overflow: hidden;
 }
 
 .right-container {
-    flex: 1; /* 오른쪽 영역을 나머지 공간으로 설정 */
+    flex: 1;
     display: flex;
-    /* align-items: center; */
     justify-content: center;
     padding: 24px;
     overflow: hidden;
@@ -45,7 +43,7 @@ h3 {
 
 .speech-bubble-container {
     width: 90%;
-    height: 75%; /* 오른쪽 영역의 75% 높이 */
+    height: 75%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,7 +68,7 @@ h3 {
 .speech-bubble:after {
     content: '';
     position: absolute;
-    bottom: -30px; /* 말풍선 끝 부분 위치 조정 */
+    bottom: -30px;
     left: 50%;
     transform: translateX(-50%);
     border-width: 15px;
@@ -87,6 +85,7 @@ h3 {
     justify-content: space-between;
     margin: 20px;
     padding: 5px;
+    flex-wrap: wrap;
 }
 
 .service-item {
@@ -94,11 +93,12 @@ h3 {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width: 22%;
+    width: 24%;
+    margin-bottom: 20px;
 }
 
 .service-image {
-    max-width: 30%;
+    max-width: 45%;
     height: auto;
 }
 
@@ -106,4 +106,147 @@ h3 {
     margin-top: 10px;
     font-size: 16px;
     font-weight: bold;
+}
+
+@media (max-width: 1200px) {
+    .left-container,
+    .right-container {
+        padding: 16px;
+    }
+
+    .service-item {
+        width: 45%;
+    }
+
+    .speech-bubble {
+        font-size: 18px;
+    }
+
+    .speech-bubble-container {
+        width: 80%;
+        height: 70%;
+    }
+}
+
+@media (max-width: 768px) {
+    .left-container,
+    .right-container {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 12px;
+    }
+
+    .service-item {
+        width: 100%;
+    }
+
+    .speech-bubble {
+        font-size: 16px;
+    }
+
+    .speech-bubble-container {
+        width: 70%;
+        height: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    .speech-bubble {
+        font-size: 14px;
+    }
+
+    .services-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .service-item {
+        width: 90%;
+    }
+
+    .speech-bubble-container {
+        width: 60%;
+        height: 50%;
+    }
+}
+
+/* GLTF 모델 크기 조정 */
+.gltf-canvas {
+    height: 300px;
+    width: 300px;
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+@media (max-width: 1200px) {
+    .gltf-canvas {
+        height: 250px;
+        width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .gltf-canvas {
+        height: 200px;
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gltf-canvas {
+        height: 150px;
+        width: 150px;
+    }
+}
+
+/* Slide 텍스트와 이미지 반응형 조정 */
+.slide-content h2 {
+    font-size: 35px;
+}
+
+.slide-content p {
+    font-size: 25px;
+}
+
+@media (max-width: 1200px) {
+    .slide-content h2 {
+        font-size: 30px;
+    }
+
+    .slide-content p {
+        font-size: 22px;
+    }
+
+    .slide-content img {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .slide-content h2 {
+        font-size: 25px;
+    }
+
+    .slide-content p {
+        font-size: 20px;
+    }
+
+    .slide-content img {
+        width: 60%;
+    }
+}
+
+@media (max-width: 480px) {
+    .slide-content h2 {
+        font-size: 20px;
+    }
+
+    .slide-content p {
+        font-size: 18px;
+    }
+
+    .slide-content img {
+        width: 50%;
+    }
 }
