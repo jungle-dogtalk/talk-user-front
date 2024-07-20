@@ -944,14 +944,14 @@ const VideoChatPage = () => {
 
                                 {quizChallenger ===
                                     publisher.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
-                                        <div className="flex items-center justify-center space-x-4">
-                                            <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
                                                 🔥 미션 진행 중!
                                             </p>
-                                            <div className="overflow-hidden w-64">
-                                                <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                    {quizChallenger} 님{' '}
+                                            <div className="overflow-hidden w-full">
+                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님
                                                 </p>
                                             </div>
                                         </div>
@@ -1022,14 +1022,14 @@ const VideoChatPage = () => {
 
                                 {quizChallenger ===
                                     subscriber.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
-                                        <div className="flex items-center justify-center space-x-4">
-                                            <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
                                                 🔥 미션 진행 중!
                                             </p>
-                                            <div className="overflow-hidden w-64">
-                                                <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                    {quizChallenger} 님{' '}
+                                            <div className="overflow-hidden w-full">
+                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님
                                                 </p>
                                             </div>
                                         </div>
@@ -1103,7 +1103,7 @@ const VideoChatPage = () => {
                         className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
                         style={{
                             fontSize: '24px',
-                            top: '350px',
+                            top: '400px',
                             left: '50%',
                             transform: 'translateX(-50%)',
                         }}
@@ -1115,7 +1115,6 @@ const VideoChatPage = () => {
                         className="w-full flex flex-col items-center absolute"
                         style={{ top: '400px', left: '4px' }}
                     >
-                        
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
@@ -1142,7 +1141,7 @@ const VideoChatPage = () => {
                                     </div>
                                 </div>
                             )}
-                        
+
                         {showQuizSuccess && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                                 <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
