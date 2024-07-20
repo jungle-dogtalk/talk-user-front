@@ -930,27 +930,29 @@ const VideoChatPage = () => {
                             isChallengeCompletedTrigger
                         }
                     />
-                    <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
+                    <div className="grid grid-cols-2 grid-rows-2 gap-2 p-2 h-full">
                         {publisher && (
-                            <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video">
-                                <OpenViduVideo streamManager={publisher} />
+                            <div className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden">
+                                <OpenViduVideo
+                                    streamManager={publisher}
+                                    className="w-full h-full object-cover"
+                                />
+
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {publisher.stream.connection.data}
                                 </div>
 
                                 {quizChallenger ===
                                     publisher.stream.connection.data && (
-                                    <div className="fixed top-0 left-0 w-full flex justify-center items-center z-50">
-                                        <div className="bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm">
-                                            <div className="flex items-center justify-center space-x-4">
-                                                <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex items-center justify-center space-x-4">
+                                            <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                🔥 미션 진행 중!
+                                            </p>
+                                            <div className="overflow-hidden w-64">
+                                                <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님{' '}
                                                 </p>
-                                                <div className="overflow-hidden w-64">
-                                                    <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                        {quizChallenger} 님{' '}
-                                                    </p>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1008,26 +1010,27 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video"
+                                className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden"
                             >
-                                <OpenViduVideo streamManager={subscriber} />
+                                <OpenViduVideo
+                                    streamManager={subscriber}
+                                    className="w-full h-full object-cover"
+                                />
                                 <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
                                     {subscriber.stream.connection.data}
                                 </div>
 
                                 {quizChallenger ===
                                     subscriber.stream.connection.data && (
-                                    <div className="fixed top-0 left-0 w-full flex justify-center items-center z-50">
-                                        <div className="bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm">
-                                            <div className="flex items-center justify-center space-x-4">
-                                                <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex items-center justify-center space-x-4">
+                                            <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                🔥 미션 진행 중!
+                                            </p>
+                                            <div className="overflow-hidden w-64">
+                                                <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님{' '}
                                                 </p>
-                                                <div className="overflow-hidden w-64">
-                                                    <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                        {quizChallenger} 님{' '}
-                                                    </p>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1055,40 +1058,41 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         ))}
-                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
-                            (_, index) => (
-                                <div
-                                    key={index}
-                                    className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] aspect-video"
-                                >
-                                    <div className="text-[#8b5e3c] flex flex-col items-center">
-                                        <svg
-                                            className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        <span className="text-lg font-semibold">
-                                            로딩 중...
-                                        </span>
-                                    </div>
+                        {Array.from({
+                            length:
+                                4 - subscribers.length - (publisher ? 1 : 0),
+                        }).map((_, index) => (
+                            <div
+                                key={`empty-${index}`}
+                                className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
+                            >
+                                <div className="text-[#8b5e3c] flex flex-col items-center">
+                                    <svg
+                                        className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    <span className="text-lg font-semibold">
+                                        로딩 중...!
+                                    </span>
                                 </div>
-                            )
-                        )}
+                            </div>
+                        ))}
                     </div>
                 </div>
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
