@@ -1184,7 +1184,7 @@ const VideoChatPage = () => {
                                 <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
                                     <div className="flex-1 text-left space-y-2">
                                         <h1 className="text-5xl font-extrabold text-orange-800 animate-pulse">
-                                            🎉 미션 성공 !!
+                                            🎉 미션 성공
                                         </h1>
                                         <p className="text-2xl text-orange-700">
                                             축하합니다!{' '}
@@ -1201,7 +1201,7 @@ const VideoChatPage = () => {
                                     </div>
                                     <div className="flex-1 text-right space-y-2">
                                         <p className="text-2xl text-orange-700">
-                                            멋진 추리력을 보여주셨어요!
+                                            멋있는 추리력입니다.
                                         </p>
                                         <p className="text-lg text-orange-600 animate-pulse">
                                             5초 후 자동으로 닫힘
