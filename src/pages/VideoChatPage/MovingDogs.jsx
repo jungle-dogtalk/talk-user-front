@@ -101,7 +101,9 @@ const MovingDogs = ({ sessionData }) => {
                             <span className="bg-white text-[#a16e47] px-1.5 py-0.5 rounded-full text-xs mr-2">
                                 Q
                             </span>
-                            "{selectedUser.nickname}"님의 질문
+                            <span class="text-white ">
+                                {selectedUser.nickname}님의 질문
+                            </span>
                         </h2>
                         <button
                             onClick={closeModal}
