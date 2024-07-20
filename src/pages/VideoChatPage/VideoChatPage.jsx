@@ -191,7 +191,6 @@ const VideoChatPage = () => {
             console.log('Streaming ended');
         });
 
-
         // 주기적으로 발화량 계산 요청 보내기
         const interval = setInterval(() => {
             console.log('발화량 계산 요청 보내기');
@@ -201,6 +200,12 @@ const VideoChatPage = () => {
         // 발화량 순위 데이터 수신
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
+
+            data.forEach((user) => {
+                console.log(
+                    `Username: ${user.username}, Percentage: ${user.percentage}%`
+                );
+            });
         });
 
         return () => {
