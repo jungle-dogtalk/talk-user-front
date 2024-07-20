@@ -1017,8 +1017,19 @@ const VideoChatPage = () => {
 
                                 {quizChallenger ===
                                     subscriber.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-red-500 bg-opacity-75 text-white p-2 text-center">
-                                        {quizChallenger} 유저 퀴즈 미션 수행중!
+                                    <div className="fixed top-0 left-0 w-full flex justify-center items-center z-50">
+                                        <div className="bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm">
+                                            <div className="flex items-center justify-center space-x-4">
+                                                <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                    🔥 미션 진행 중!
+                                                </p>
+                                                <div className="overflow-hidden w-64">
+                                                    <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                        {quizChallenger} 님{' '}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
