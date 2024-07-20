@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import waitingDogImage from '../../assets/dog.png'; // 강아지 이미지
@@ -13,6 +13,7 @@ import './MatchingPage.css';
 const MatchingPage = () => {
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.user.userInfo);
+    const [queueLength, setQueueLength] = useState(0);
     const socket = io(import.meta.env.VITE_API_URL);
 
     // 사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
@@ -39,6 +40,12 @@ const MatchingPage = () => {
             } else {
                 console.error('No sessionId in matched event data');
             }
+        });
+
+        // queueLengthUpdate 이벤트 수신
+        socket.on('queueLengthUpdate', (newQueueLength) => {
+            console.log(queueLength);
+            setQueueLength(newQueueLength);
         });
 
         getSessionList();
@@ -78,15 +85,21 @@ const MatchingPage = () => {
                         {' '}
                         <h2
                             className="text-3xl sm:text-5xl font-bold bouncing-text"
-                            style={{ fontSize: '50px' }}
+                            style={{ fontSize: '70px' }}
                         >
                             {createBouncingText('매칭 중 . . .')}
                         </h2>
                         <p
                             className="text-gray-700 mt-4 text-lg sm:text-2xl" // mt-4로 조정
-                            style={{ fontSize: '30px' }}
+                            style={{ fontSize: '40px' }}
                         >
                             나의 관심사 : {userInfo.interests.join(', ')}
+                        </p>
+                        <p
+                            className="text-gray-700 mt-4 text-lg sm:text-2xl"
+                            style={{ fontSize: '35px' }}
+                        >
+                            {queueLength}명 대기 중
                         </p>
                     </div>
                     <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />

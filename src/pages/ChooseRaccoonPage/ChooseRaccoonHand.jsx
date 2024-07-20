@@ -10,7 +10,10 @@ import {
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
-import { saveToLocalStorage, loadFromLocalStorage } from '../../utils/localStorage.js';
+import {
+    saveToLocalStorage,
+    loadFromLocalStorage,
+} from '../../utils/localStorage.js';
 import { useNavigate } from 'react-router-dom';
 
 let video;
@@ -28,11 +31,13 @@ let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
 const models = [
-    '/raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
     '/blue_raccoon.glb',
     '/jungle_raccoon_head.glb',
+    '/raccoon_head.glb',
     '/warrior_raccoon_head.glb',
+    '/yellow_raccoon_head.glb',
+    '/monkey.glb',
+    '/panda.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -40,7 +45,10 @@ const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 function ChooseRaccoonHand() {
     const dispatch = useDispatch(); // 상태관리를 위한 dispatch 함수
     const currentModel = useSelector((state) => state.racoon.selectedModel);
-    const [modelPath, setModelPath] = useState(models[0]);
+    saveToLocalStorage('racoon', currentModel);
+    // console.log('Current Model:', currentModel);
+
+    const [modelPath, setModelPath] = useState(currentModel);
     const [modelIndex, setModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
     const navigate = useNavigate();
@@ -198,7 +206,7 @@ function ChooseRaccoonHand() {
         dispatch(setSelectedModel(newModel));
 
         saveToLocalStorage('racoon', newModel); // 사용자의 선택 기억
-        
+
         // Redux 상태 출력
         console.log('Model changed. New Redux State:', {
             previousModel: currentModel,

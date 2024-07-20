@@ -136,7 +136,10 @@ const PuppyGame = () => {
                 })
                 .then((stream) => {
                     videoRef.current.srcObject = stream;
-                    videoRef.current.addEventListener('loadeddata', predict);
+                    videoRef.current.addEventListener('loadedmetadata', () => {
+                        videoRef.current.play();
+                        requestAnimationFrame(predict);
+                    });
                 });
         };
 

@@ -39,7 +39,8 @@ const models = [
     '/raccoon_head.glb',
     '/warrior_raccoon_head.glb',
     '/yellow_raccoon_head.glb',
-    '/yupyup_raccoon_head.glb',
+    '/monkey.glb',
+    '/panda.glb',
 ];
 
 const victoryModels = [
@@ -48,7 +49,8 @@ const victoryModels = [
     '/raccoon_crown.glb',
     '/warrior_raccoon_crown.glb',
     '/yellow_raccoon_crown.glb',
-    '/yupyup_raccoon_crown.glb',
+    '/monkey.glb',
+    '/panda.glb',
 ];
 
 const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
