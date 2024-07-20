@@ -70,20 +70,18 @@ const MainPage = () => {
                     <button
                         className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-base"
                         onClick={() => navigate('/profile')}
-                        style={{ fontSize: '20px' }}
                     >
                         마이 페이지
                     </button>
                     <button
                         className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-base"
                         onClick={handleLogout}
-                        style={{ fontSize: '20px' }}
                     >
                         로그아웃
                     </button>
                 </div>
             </header>
-            <div className="flex flex-grow overflow-hidden">
+            <div className="flex flex-grow overflow-hidden relative">
                 <div className="left-container">
                     <div
                         className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg mb-6"
@@ -95,18 +93,12 @@ const MainPage = () => {
                                 alt="프로필 사진"
                                 className="w-32 h-32 sm:w-30 sm:h-30 rounded-full mb-3 sm:mb-4"
                             />
-                            <h2
-                                className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
-                                style={{ fontSize: '23px' }}
-                            >
+                            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">
                                 이름: {userInfo?.name}
                             </h2>
                             <div className="w-full mb-6 sm:mb-8 px-4 sm:px-0 text-center">
                                 <div className="flex items-center justify-center mb-3 sm:mb-4">
-                                    <span
-                                        className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
-                                        style={{ fontSize: '17px' }}
-                                    >
+                                    <span className="text-gray-700 font-bold text-xs sm:text-sm mr-2">
                                         발화지수
                                     </span>
                                     <div className="w-1/2 bg-red-200 h-4 sm:h-6 rounded-full overflow-hidden">
@@ -122,10 +114,7 @@ const MainPage = () => {
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-center">
-                                    <span
-                                        className="text-gray-700 font-bold text-xs sm:text-sm mr-2"
-                                        style={{ fontSize: '17px' }}
-                                    >
+                                    <span className="text-gray-700 font-bold text-xs sm:text-sm mr-2">
                                         매너지수
                                     </span>
                                     <div className="w-1/2 bg-blue-200 h-4 sm:h-6 rounded-full overflow-hidden">
@@ -146,10 +135,7 @@ const MainPage = () => {
                             className="bg-pink-100 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center"
                             onClick={() => navigate('/choose-raccoon')}
                         >
-                            <span
-                                className="text-sm sm:text-lg font-bold"
-                                style={{ fontSize: '30px' }}
-                            >
+                            <span className="text-sm sm:text-lg font-bold">
                                 통화하기
                             </span>
                         </button>
@@ -158,10 +144,7 @@ const MainPage = () => {
                         className="flex flex-col items-center justify-start p-4 sm:p-6 w-full bg-white rounded-lg shadow-lg"
                         style={{ maxWidth: '300px', height: '450px' }}
                     >
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center"
-                            style={{ fontSize: '25px' }}
-                        >
+                        <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-center">
                             지금 사람들이
                             <br />
                             가장 관심있어 해요!
@@ -177,13 +160,7 @@ const MainPage = () => {
                                         height: '55px',
                                     }}
                                 >
-                                    <h2
-                                        className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center"
-                                        style={{
-                                            fontSize: '24px',
-                                            marginBottom: '0',
-                                        }}
-                                    >
+                                    <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-center">
                                         {index + 1}. {interest}
                                     </h2>
                                 </div>
@@ -200,8 +177,8 @@ const MainPage = () => {
                         <SpeechBubble />
                     </div>
                 </div>
+                <GLTFModel />
             </div>
-            <GLTFModel />
         </div>
     );
 };

@@ -29,7 +29,6 @@ const SpeechBubble = () => {
                         )
                     }
                     className="text-3xl font-bold"
-                    style={{ fontSize: '50px' }}
                 >
                     {'<<'}
                 </button>
@@ -40,7 +39,6 @@ const SpeechBubble = () => {
                         setCurrentSlide((prev) => (prev + 1) % slides.length)
                     }
                     className="text-3xl font-bold"
-                    style={{ fontSize: '50px' }}
                 >
                     {'>>'}
                 </button>
