@@ -42,6 +42,10 @@ const VideoChatPage = () => {
     const [isChallengeCompleted, setIsChallengeCompleted] = useState(false); // 미션 종료 여부
     const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
         useState(0);
+
+    const [quizQuestion, setQuizQuestion] = useState('');
+    const [quizAnswer, setQuizAnswer] = useState('');
+    const quizQuestionRef = useRef('');
     const quizAnswerRef = useRef('');
 
     const [showInitialModal, setShowInitialModal] = useState(true);
@@ -78,6 +82,8 @@ const VideoChatPage = () => {
                     data: JSON.stringify({
                         userId: userInfo.username,
                         message: `${userInfo.username} 유저가 미션을 시작합니다.`,
+                        nickname: userInfo.nickname,
+                        quizQuestion: quizQuestionRef.current,
                     }),
                     to: [],
                     type: 'quizStart',
@@ -442,8 +448,10 @@ const VideoChatPage = () => {
 
             // 퀴즈 미션 시작
             session.on('signal:quizStart', (event) => {
+                setIsChallengeCompleted(false);
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
+
                 // recognition.start();
                 setQuizChallenger((prevQuizChallenger) => {
                     if (prevQuizChallenger === '') {
@@ -451,6 +459,8 @@ const VideoChatPage = () => {
                     }
                     return prevQuizChallenger;
                 });
+
+                setQuizQuestion(data.quizQuestion);
             });
 
             // 퀴즈 미션 종료
@@ -460,15 +470,16 @@ const VideoChatPage = () => {
 
                 setIsChallengeCompleted(true);
                 setIsChallengeCompletedTrigger((prev) => prev + 1);
-                setQuizChallenger(''); // 퀴즈 도전자 초기화
 
                 if (data.result === true) {
+                    setQuizAnswer(data.quizAnswer);
                     setShowQuizSuccess(true);
                 } else {
                     setShowQuizFailure(true);
                 }
 
                 setTimeout(() => {
+                    setQuizChallenger(''); // 퀴즈 도전자 초기화
                     setQuizResult('');
                     setShowQuizSuccess(false);
                     setShowQuizFailure(false);
@@ -707,6 +718,7 @@ const VideoChatPage = () => {
                                             userId: userInfo.username,
                                             message: `${userInfo.username} 유저 미션 종료`,
                                             result: true,
+                                            quizAnswer: quizAnswerRef.current,
                                         }),
                                         to: [],
                                         type: 'quizEnd',
@@ -864,6 +876,10 @@ const VideoChatPage = () => {
         const currentUserIndex = sessionData.findIndex(
             (user) => user.userId === userInfo.username
         );
+
+        quizQuestionRef.current =
+            sessionData[targetUserIndexRef.current].nickname +
+            '님의 MBTI는 뭘까요?';
         targetUserIndexRef.current = (currentUserIndex + 1) % 4;
 
         const answer = sessionData[targetUserIndexRef.current].mbti;
@@ -1068,24 +1084,36 @@ const VideoChatPage = () => {
                                 />
 
                                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
-                                    {publisher.stream.connection.data}
+                                    {
+                                        JSON.parse(
+                                            publisher.stream.connection.data
+                                        ).nickname
+                                    }
                                 </div>
 
                                 {quizChallenger ===
-                                    publisher.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
-                                        <div className="flex flex-col items-center justify-center space-y-2">
-                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                🔥 미션 진행 중!
-                                            </p>
-                                            <div className="overflow-hidden w-full">
-                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                    {quizChallenger} 님
+                                    JSON.parse(publisher.stream.connection.data)
+                                        .userId &&
+                                    !isChallengeCompleted && (
+                                        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                            <div className="flex flex-col items-center justify-center space-y-2">
+                                                <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                    🔥 미션 진행 중!
                                                 </p>
+                                                <div className="overflow-hidden w-full">
+                                                    <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                        {
+                                                            sessionData[
+                                                                targetUserIndexRef
+                                                                    .current
+                                                            ].nickname
+                                                        }
+                                                        님의 MBTI는 뭘까요?
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
                                 <style jsx>{`
                                     @keyframes slideLeft {
@@ -1160,43 +1188,53 @@ const VideoChatPage = () => {
                                     }`}
                                 />
                                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
-                                    {subscriber.stream.connection.data}
+                                    {subscriber.stream.connection.data &&
+                                        JSON.parse(
+                                            subscriber.stream.connection.data
+                                        ).nickname}
                                 </div>
 
-                                {quizChallenger ===
-                                    subscriber.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
-                                        <div className="flex flex-col items-center justify-center space-y-2">
-                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                🔥 미션 진행 중!
-                                            </p>
-                                            <div className="overflow-hidden w-full">
-                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                    {quizChallenger} 님
+                                {subscriber.stream.connection.data &&
+                                    quizChallenger ===
+                                        JSON.parse(
+                                            subscriber.stream.connection.data
+                                        ).userId &&
+                                    !isChallengeCompleted && (
+                                        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                            <div className="flex flex-col items-center justify-center space-y-2">
+                                                <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                    🔥 미션 진행 중!
                                                 </p>
+                                                <div className="overflow-hidden w-full">
+                                                    <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                        {quizQuestion}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
                                 <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
                                     <div className="flex justify-center items-center w-full">
-                                        {sessionData
-                                            .find(
-                                                (user) =>
-                                                    user.nickname ===
-                                                    subscriber.stream.connection
-                                                        .data
-                                            )
-                                            ?.userInterests.slice(0, 3)
-                                            .map((interest, index) => (
-                                                <span
-                                                    key={index}
-                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
-                                                >
-                                                    {interest}
-                                                </span>
-                                            ))}
+                                        {subscriber.stream.connection.data &&
+                                            sessionData
+                                                .find(
+                                                    (user) =>
+                                                        user.nickname ===
+                                                        JSON.parse(
+                                                            subscriber.stream
+                                                                .connection.data
+                                                        ).nickname
+                                                )
+                                                ?.userInterests.slice(0, 3)
+                                                .map((interest, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
+                                                    >
+                                                        {interest}
+                                                    </span>
+                                                ))}
                                     </div>
                                 </div>
                             </div>
@@ -1286,19 +1324,24 @@ const VideoChatPage = () => {
                                         <p className="text-2xl text-orange-700">
                                             축하합니다!{' '}
                                             <span className="font-semibold text-orange-800 text-3xl">
-                                                {userInfo.username}
+                                                {sessionData.map((item) =>
+                                                    item.userId ==
+                                                    quizChallenger
+                                                        ? item.nickname
+                                                        : ''
+                                                )}
                                             </span>{' '}
                                             님
                                         </p>
                                     </div>
                                     <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform rotate-3">
                                         <p className="animate-bounce">
-                                            "{quizAnswerRef.current}"
+                                            "{quizAnswer}"
                                         </p>
                                     </div>
                                     <div className="flex-1 text-right space-y-2">
                                         <p className="text-2xl text-orange-700">
-                                            멋있는 추리력입니다.
+                                            멋진 추리력입니다.
                                         </p>
                                         <p className="text-lg text-orange-600 animate-pulse">
                                             5초 후 자동으로 닫힘
@@ -1317,7 +1360,12 @@ const VideoChatPage = () => {
                                         <p className="text-2xl text-orange-700">
                                             아쉽게도{' '}
                                             <span className="font-semibold text-orange-800 text-3xl">
-                                                {userInfo.username}
+                                                {sessionData.map((item) =>
+                                                    item.userId ==
+                                                    quizChallenger
+                                                        ? item.nickname
+                                                        : ''
+                                                )}
                                             </span>{' '}
                                             님
                                         </p>
