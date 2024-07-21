@@ -155,7 +155,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                     실시간 토크왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-1">
-                    {speechLengths.slice(0, 4).map((user, index) => (
+                    {speechLengths.map((user, index) => (
                         <div
                             key={user.username}
                             className="transition-all duration-500 ease-in-out flex items-center space-x-2 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
