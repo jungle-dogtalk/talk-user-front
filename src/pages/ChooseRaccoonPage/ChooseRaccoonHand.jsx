@@ -30,29 +30,30 @@ let handLandmarks = [];
 let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
-const models = [
-    '/raccoon_head.glb',
-    '/blue_raccoon.glb',
-    '/jungle_raccoon_head.glb',
-    '/warrior_raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
-    '/monkey.glb',
-    '/panda.glb',
-    '/cat.glb',
-];
-
+const models = ['/raccoon_head.glb', '/monkey.glb', '/panda.glb', '/cat.glb'];
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
-function ChooseRaccoonHand() {
-    const dispatch = useDispatch(); // 상태관리를 위한 dispatch 함수
-    const currentModel = useSelector((state) => state.racoon.selectedModel);
-    saveToLocalStorage('racoon', currentModel);
-    console.log('Current Model:', currentModel);
+models.forEach(useGLTF.preload);
 
-    const [modelPath, setModelPath] = useState(currentModel);
-    const [modelIndex, setModelIndex] = useState(0);
+const MemoizedRaccoon = React.memo(Raccoon);
+
+function ChooseRaccoonHand() {
+    const dispatch = useDispatch();
+    const currentModel = useSelector((state) => state.racoon.selectedModel);
     const [handColorIndex, setHandColorIndex] = useState(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const savedModel = loadFromLocalStorage('racoon');
+        if (savedModel && models.includes(savedModel)) {
+            dispatch(setSelectedModel(savedModel));
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        saveToLocalStorage('racoon', currentModel);
+        // console.log('Current Model:', currentModel);
+    }, [currentModel]);
 
     const setup = async () => {
         const vision = await FilesetResolver.forVisionTasks(
@@ -79,7 +80,6 @@ function ChooseRaccoonHand() {
             numHands: 2,
         });
 
-        //Gesture
         gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
             baseOptions: {
                 modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
@@ -91,7 +91,6 @@ function ChooseRaccoonHand() {
             minTrackingConfidence: 0.5,
         });
 
-        //////
         video = document.getElementById('video');
         navigator.mediaDevices
             .getUserMedia({
@@ -106,7 +105,7 @@ function ChooseRaccoonHand() {
     const minX = -0.8,
         maxX = 1,
         minY = -0.5,
-        maxY = 0.5; // 바운더리 설정
+        maxY = 0.5;
 
     const predict = () => {
         const nowInMs = Date.now();
@@ -145,7 +144,6 @@ function ChooseRaccoonHand() {
                 handLandmarks = [];
             }
 
-            //TODO: 제스처 결과 수정 필요
             // Gesture result processing
             if (
                 gestureResult &&
@@ -154,7 +152,6 @@ function ChooseRaccoonHand() {
             ) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
-                // console.log('Current Gesture:', currentGesture);
 
                 // Update avatar position based on gesture
                 const moveSpeed = 0.1;
@@ -183,7 +180,6 @@ function ChooseRaccoonHand() {
                             maxX
                         );
                         break;
-
                     default:
                         // No movement for other gestures
                         break;
@@ -197,26 +193,13 @@ function ChooseRaccoonHand() {
         setup();
     }, []);
 
-    /* 버튼 클릭 시 라쿤 모델 변경 */
     const changeModel = useCallback(() => {
-        const nextIndex = (modelIndex + 1) % models.length;
+        const currentIndex = models.indexOf(currentModel);
+        const nextIndex = (currentIndex + 1) % models.length;
         const newModel = models[nextIndex];
-
-        setModelIndex(nextIndex);
-        setModelPath(newModel);
+        // console.log('Changing model from', currentModel, 'to', newModel);
         dispatch(setSelectedModel(newModel));
-
-        saveToLocalStorage('racoon', newModel); // 사용자의 선택 기억
-
-        // Redux 상태 출력
-        console.log('Model changed. New Redux State:', {
-            previousModel: currentModel,
-            newModel: newModel,
-            // fullState: store.getState() // 이 부분은 제거하거나 다른 방식으로 구현해야 합니다
-        });
-
-        // navigate('/videochat');
-    }, [modelIndex, currentModel, dispatch]);
+    }, [currentModel, dispatch]);
 
     const changeHandColor = () => {
         const nextColorIndex = (handColorIndex + 1) % handColors.length;
@@ -233,7 +216,6 @@ function ChooseRaccoonHand() {
                 id="video"
                 style={{ width: 640, height: 480 }}
             ></video>
-
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -261,28 +243,16 @@ function ChooseRaccoonHand() {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                <Raccoon modelPath={currentModel} />
+                <MemoizedRaccoon key={currentModel} modelPath={currentModel} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
             <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
-                {/* <button
-                    onClick={changeModel}
-                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
-                >
-                    Change
-                </button> */}
                 <button
                     onClick={changeModel}
                     className="bg-[white] text-[#5b484a] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#5b484a] shadow-md hover:bg-[white] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
                 >
                     Change
                 </button>
-                {/* <button
-                    onClick={changeHandColor}
-                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-4 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-sm"
-                >
-                    Change Hand Color
-                </button> */}
             </div>
         </div>
     );
@@ -302,7 +272,7 @@ function Raccoon({ modelPath }) {
         hairMeshRef.current = nodes.hair_geo;
         earsMeshRef.current = nodes.ears_geo;
         tuftsMeshRef.current = nodes.tufts_geo;
-    }, [nodes]);
+    }, [nodes, modelPath]);
 
     useFrame(() => {
         if (rotation) {
@@ -369,7 +339,9 @@ function Raccoon({ modelPath }) {
         }
     });
 
-    return <primitive object={scene} scale={modelScale} />;
+    return (
+        <primitive object={scene} scale={modelScale} position={modelPosition} />
+    );
 }
 
 function Hand({ handColor }) {
