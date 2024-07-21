@@ -45,6 +45,27 @@ const MovingDogs = ({ sessionData }) => {
         }
     }, [showModal]);
 
+    const [users, setUsers] = useState([
+        { name: 'user1', score: 80, image: 'user1.jpg' },
+        { name: 'user2', score: 65, image: 'user2.jpg' },
+        { name: 'user3', score: 50, image: 'user3.jpg' },
+        { name: 'user4', score: 35, image: 'user4.jpg' },
+    ]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setUsers((prevUsers) => {
+                const newUsers = [...prevUsers];
+                newUsers.forEach((user) => {
+                    user.score = Math.floor(Math.random() * 100);
+                });
+                return newUsers.sort((a, b) => b.score - a.score);
+            });
+        }, 60000); // 1분마다 업데이트
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouses.map((house, index) => (
@@ -61,7 +82,7 @@ const MovingDogs = ({ sessionData }) => {
                         className="relative w-32 h-32"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-40px] left-0 w-full text-center text-2xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
+                        <div className="absolute top-[-40px] left-0 w-full text-center text-3xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
                         </div>
@@ -127,6 +148,47 @@ const MovingDogs = ({ sessionData }) => {
                     </div>
                 </div>
             )}
+            {/* 실시간 수다왕 차트 추가 */}
+            <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
+                <h3 className="text-2xl font-bold text-amber-800 mb-2 text-center">
+                    실시간 토크왕
+                </h3>
+                <div className="space-y-3">
+                    {users.map((user, index) => (
+                        <div
+                            key={user.name}
+                            className="transition-all duration-500 ease-in-out flex items-center space-x-3 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
+                            style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                            <div className="flex-shrink-0 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center overflow-hidden">
+                                <img
+                                    src={user.image}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="flex-grow">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xl font-semibold text-amber-800">
+                                        {index + 1}등 {user.name}
+                                    </span>
+                                    <span className="text-lg font-medium text-amber-700">
+                                        {user.score}점
+                                    </span>
+                                </div>
+                                <div className="w-full bg-amber-200 rounded-full h-3 overflow-hidden">
+                                    <div
+                                        className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 h-full rounded-full transition-all duration-500 ease-in-out relative"
+                                        style={{ width: `${user.score}%` }}
+                                    >
+                                        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-30 animate-pulse"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 };
