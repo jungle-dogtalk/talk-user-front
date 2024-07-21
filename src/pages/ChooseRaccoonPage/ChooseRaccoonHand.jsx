@@ -31,13 +31,14 @@ let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
 const models = [
+    '/raccoon_head.glb',
     '/blue_raccoon.glb',
     '/jungle_raccoon_head.glb',
-    '/raccoon_head.glb',
     '/warrior_raccoon_head.glb',
     '/yellow_raccoon_head.glb',
     '/monkey.glb',
     '/panda.glb',
+    '/cat.glb',
 ];
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -46,7 +47,7 @@ function ChooseRaccoonHand() {
     const dispatch = useDispatch(); // 상태관리를 위한 dispatch 함수
     const currentModel = useSelector((state) => state.racoon.selectedModel);
     saveToLocalStorage('racoon', currentModel);
-    // console.log('Current Model:', currentModel);
+    console.log('Current Model:', currentModel);
 
     const [modelPath, setModelPath] = useState(currentModel);
     const [modelIndex, setModelIndex] = useState(0);
@@ -260,7 +261,7 @@ function ChooseRaccoonHand() {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                <Raccoon modelPath={modelPath} />
+                <Raccoon modelPath={currentModel} />
                 <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
             <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
