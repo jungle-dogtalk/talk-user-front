@@ -13,6 +13,7 @@ import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
+import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤 이미지 추가
 
 const VideoChatPage = () => {
     const FRAME_RATE = 30;
@@ -49,13 +50,14 @@ const VideoChatPage = () => {
     const [showRecommendedTopics, setShowRecommendedTopics] = useState(false);
     const [showQuizResult, setShowQuizResult] = useState(false);
 
+    // const [showWelcomeModal, setShowWelcomeModal] = useState(false); // 자기소개 상태
+
     const quizModeRef = useRef(quizMode);
     const targetUserIndexRef = useRef(0);
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
 
     const [speechLengths, setSpeechLengths] = useState([]);
-
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
     const handleQuizInProgress = (data) => {
@@ -159,6 +161,7 @@ const VideoChatPage = () => {
                     sessionId,
                 });
                 setSessionData(response.data); // 상태에 저장
+                console.log('----------SESSIONDATA: ', response);
             } catch (error) {
                 console.error('Error fetching session data:', error);
             }
@@ -506,6 +509,16 @@ const VideoChatPage = () => {
                     return newSet;
                 });
             });
+
+            // // WelcomeModal 이벤트 처리
+            // socket.current.on('welcome', () => {
+            //     setTimeout(() => {
+            //         setShowWelcomeModal(true);
+            //         setTimeout(() => {
+            //             setShowWelcomeModal(false);
+            //         }, 5000);
+            //     }, 3000); // 3초 후에 모달을 보여줌
+            // });
 
             const allowedSessionIdList = [
                 'sessionA',
@@ -907,6 +920,44 @@ const VideoChatPage = () => {
         clearTimeout(inactivityTimeoutRef.current);
     };
 
+    // // 자기소개 이벤트 모달
+    // const WelcomeModal = ({ sessionData }) => {
+    //     if (!sessionData || sessionData.length === 0) {
+    //         return null;
+    //     }
+
+    //     console.log('--------------WelcomeModal TRUE--------------');
+
+    //     // 모든 사용자에게 동일한 순서로 닉네임을 정렬되도록
+    //     const sortedUsers = sessionData
+    //         .slice()
+    //         .sort((a, b) => a.nickname.localeCompare(b.nickname));
+    //     const nicknames = sortedUsers.map((user) => user.nickname).join(', ');
+
+    //     return (
+    //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    //             <div className="bg-gradient-to-br from-green-100 to-green-200 p-8 rounded-2xl shadow-2xl max-w-2xl w-full flex items-center transform transition-transform scale-105 hover:scale-110">
+    //                 <div className="hidden md:block md:w-1/3">
+    //                     <img
+    //                         src={RaccoonImg}
+    //                         alt="Raccoon Mascot"
+    //                         className="w-full h-auto"
+    //                     />
+    //                 </div>
+    //                 <div className="w-full md:w-2/3 text-center md:text-left">
+    //                     <h2 className="text-2xl font-extrabold mb-4 text-green-800">
+    //                         안녕, 만나게 되어서 반가워! 난 라쿤이야!
+    //                         <br />
+    //                         {nicknames}순으로 소개해줘~
+    //                         <br />
+    //                         그리고나서 자연스럽게 대화해보자!
+    //                     </h2>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     );
+    // };
+
     // TODO: SKIP버튼 피드백 버튼으로 수정 후 해당 피드백 로직 요청하도록 추가하기
     // const response = await apiCall(API_LIST.GET_FEEDBACK, {
     //     username,
@@ -918,7 +969,7 @@ const VideoChatPage = () => {
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
-                    alt="명톡 로고"
+                    alt="멍톡 로고"
                     className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
                 />
                 <div className="flex items-center">
@@ -1051,7 +1102,14 @@ const VideoChatPage = () => {
                             >
                                 <OpenViduVideo
                                     streamManager={subscriber}
-                                    className={`w-full h-full object-cover ${speakingUsers.has(subscriber.stream.connection.connectionId) ? 'ring-4 ring-blue-500' : ''}`}
+                                    className={`w-full h-full object-cover ${
+                                        speakingUsers.has(
+                                            subscriber.stream.connection
+                                                .connectionId
+                                        )
+                                            ? 'ring-4 ring-blue-500'
+                                            : ''
+                                    }`}
                                 />
                                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {subscriber.stream.connection.data}
@@ -1249,6 +1307,7 @@ const VideoChatPage = () => {
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
+            {/* {showWelcomeModal && <WelcomeModal sessionData={sessionData} />} */}
         </div>
     );
 };
