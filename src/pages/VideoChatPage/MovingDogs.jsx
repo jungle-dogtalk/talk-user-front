@@ -149,30 +149,26 @@ const MovingDogs = ({ sessionData }) => {
                 </div>
             )}
             {/* 실시간 수다왕 차트 추가 */}
-            <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105">
+            <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
                 <h3 className="text-2xl font-bold text-amber-800 mb-2 text-center">
                     실시간 토크왕
                 </h3>
-                <div className="space-y-3">
-                    {users.map((user, index) => (
+                <div className="flex-grow flex flex-col justify-between space-y-1">
+                    {users.slice(0, 4).map((user, index) => (
                         <div
                             key={user.name}
-                            className="transition-all duration-500 ease-in-out flex items-center space-x-3 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
+                            className="transition-all duration-500 ease-in-out flex items-center space-x-2 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
-                            <div className="flex-shrink-0 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center overflow-hidden">
-                                <img
-                                    src={user.image}
-                                    alt={user.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
                             <div className="flex-grow">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="text-xl font-semibold text-amber-800">
-                                        {index + 1}등 {user.name}
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-2xl font-semibold text-amber-800">
+                                        {index + 1}등{' '}
+                                        <span className="text-2xl">
+                                            {user.name}
+                                        </span>
                                     </span>
-                                    <span className="text-lg font-medium text-amber-700">
+                                    <span className="text-2xl font-medium text-amber-700">
                                         {user.score}점
                                     </span>
                                 </div>
