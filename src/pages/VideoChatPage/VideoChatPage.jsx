@@ -56,6 +56,8 @@ const VideoChatPage = () => {
 
     const [speechLengths, setSpeechLengths] = useState([]);
 
+    const [speakingUsers, setSpeakingUsers] = useState(new Set());
+
     const handleQuizInProgress = (data) => {
         console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
         setSession((currentSession) => {
@@ -486,6 +488,9 @@ const VideoChatPage = () => {
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
                 resetInactivityTimer(); // Reset inactivity timer on speech detected
+                setSpeakingUsers((prev) =>
+                    new Set(prev).add(event.connection.connectionId)
+                );
             });
 
             // 발화 종료 감지
@@ -494,6 +499,11 @@ const VideoChatPage = () => {
                     'User ' + event.connection.connectionId + ' stop speaking'
                 );
                 startInactivityTimer(); // Start inactivity timer on speech stop detected
+                setSpeakingUsers((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(event.connection.connectionId);
+                    return newSet;
+                });
             });
 
             const allowedSessionIdList = [
@@ -930,10 +940,25 @@ const VideoChatPage = () => {
                     />
                     <div className="grid grid-cols-2 grid-rows-2 gap-2 p-2 h-full">
                         {publisher && (
-                            <div className="relative w-full h-full border-2 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden">
+                            <div
+                                className={`relative w-full h-full border-2 ${
+                                    speakingUsers.has(
+                                        publisher.stream.connection.connectionId
+                                    )
+                                        ? 'border-blue-500 border-4'
+                                        : 'border-[#d4b894]'
+                                } rounded-xl shadow-2xl overflow-hidden transition-all duration-300`}
+                            >
                                 <OpenViduVideo
                                     streamManager={publisher}
-                                    className="w-full h-full object-cover"
+                                    className={`w-full h-full object-cover ${
+                                        speakingUsers.has(
+                                            publisher.stream.connection
+                                                .connectionId
+                                        )
+                                            ? 'ring-4 ring-blue-500'
+                                            : ''
+                                    }`}
                                 />
 
                                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
@@ -1008,11 +1033,18 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative w-full h-full border-2 border-[#d4b894] rounded-xl shadow-lg overflow-hidden "
+                                className={`relative w-full h-full border-2 ${
+                                    speakingUsers.has(
+                                        subscriber.stream.connection
+                                            .connectionId
+                                    )
+                                        ? 'border-blue-500 border-4'
+                                        : 'border-[#d4b894]'
+                                } rounded-xl shadow-lg overflow-hidden transition-all duration-300`}
                             >
                                 <OpenViduVideo
                                     streamManager={subscriber}
-                                    className="w-full h-full object-cover"
+                                    className={`w-full h-full object-cover ${speakingUsers.has(subscriber.stream.connection.connectionId) ? 'ring-4 ring-blue-500' : ''}`}
                                 />
                                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {subscriber.stream.connection.data}
