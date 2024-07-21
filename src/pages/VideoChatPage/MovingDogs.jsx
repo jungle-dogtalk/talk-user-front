@@ -105,13 +105,13 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
 
             {showModal && selectedUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-2xl shadow-2xl w-4/5 max-w-lg text-center transform transition-all duration-300 scale-105 hover:scale-110 flex flex-col items-center justify-center overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm relative">
+                    <div className="bg-gradient-to-r from-blue-100 via-sky-50 to-indigo-100 bg-opacity-95 p-10 rounded-3xl shadow-2xl w-11/12 max-w-3xl text-center transform transition-all duration-300 scale-105 hover:scale-110 flex flex-col items-center justify-center overflow-hidden border-3 border-blue-300 backdrop-filter backdrop-blur-sm relative">
                         <button
                             onClick={closeModal}
-                            className="absolute top-4 right-4 text-orange-800 hover:text-red-500 transition-colors duration-300 z-10"
+                            className="absolute top-6 right-6 text-blue-700 hover:text-red-500 transition-colors duration-300 z-10"
                         >
                             <svg
-                                className="w-6 h-6"
+                                className="w-9 h-9"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -125,29 +125,30 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                                 ></path>
                             </svg>
                         </button>
-                        <h1 className="text-5xl font-extrabold text-orange-800 mb-4 animate-pulse">
+                        <h1 className="text-7xl font-extrabold text-blue-800 mb-6 animate-pulse">
                             <span className="relative">
                                 질문
-                                <span className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-300 to-red-500 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
-                        <p className="text-2xl text-orange-700 font-medium relative leading-snug">
-                            <span className="absolute -left-5 top-0 text-5xl text-[#a16e47] opacity-25">
+                        <p className="text-5xl text-blue-700 font-medium relative leading-relaxed mx-8">
+                            <span className="absolute -left-8 top-0 text-8xl text-[#1e40af] opacity-25">
                                 "
                             </span>
                             <span className="relative z-10">
                                 {selectedUser.question}
                             </span>
-                            <span className="absolute -right-5 top-0 text-5xl text-[#a16e47] opacity-25">
+                            <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
                                 "
                             </span>
                         </p>
-                        <p className="text-lg text-orange-600 mt-4 animate-pulse">
+                        <p className="text-xl text-blue-600 mt-8 animate-pulse">
                             5초 후 자동으로 닫힘
                         </p>
                     </div>
                 </div>
             )}
+
             {/* 실시간 수다왕 차트 추가 */}
             <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
                 <h3 className="text-2xl font-bold text-amber-800 mb-2 text-center">
