@@ -82,7 +82,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                         className="relative w-32 h-32"
                         onClick={() => handleDogHouseClick(index)}
                     >
-                        <div className="absolute top-[-40px] left-0 w-full text-center text-3xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
+                        <div className="absolute top-[-48px] left-0 w-full text-center text-3xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
                         </div>
