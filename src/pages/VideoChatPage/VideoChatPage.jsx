@@ -13,6 +13,7 @@ import RaccoonHand from '../../components/common/RaccoonHand';
 import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
+import raccoonImage from '../../assets/raccoon.png';
 
 const VideoChatPage = () => {
     const FRAME_RATE = 30;
@@ -59,6 +60,9 @@ const VideoChatPage = () => {
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
     const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
+
+
+    const [isRecommending, setIsRecommending] = useState(false);
 
     const handleLogoClick = () => {
         setShowFaceRevealModal(true);
@@ -622,6 +626,8 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
+        if (isRecommending) return; // 이미 추천 중이면 중복 요청 방지
+        setIsRecommending(true);
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
     };
@@ -940,12 +946,21 @@ const VideoChatPage = () => {
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
-                <img
-                    src={logo}
-                    alt="명톡 로고"
-                    className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
-                    onClick={handleLogoClick}
-                />
+                <div className="flex items-center space-x-4">
+                    <img
+                        src={logo}
+                        alt="명톡 로고"
+                        className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                        onClick={handleLogoClick}
+                    />
+                    <img
+                        src={raccoonImage}
+                        alt="라쿤"
+                        className={`w-14 h-14 sm:w-18 sm:h-18 cursor-pointer transform hover:scale-105 transition-transform duration-300 ${isRecommending ? 'animate-pulse' : ''}`}
+                        onClick={requestTopicRecommendations}
+                    />
+                </div>
+
                 <div className="flex items-center">
                     <h2 className="text-white text-2xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
@@ -1170,19 +1185,6 @@ const VideoChatPage = () => {
                         sessionData={sessionData}
                         speechLengths={speechLengths}
                     />
-
-                    <button
-                        onClick={requestTopicRecommendations}
-                        className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
-                        style={{
-                            fontSize: '24px',
-                            top: '10px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                        }}
-                    >
-                        주제 추천
-                    </button>
 
                     <div
                         className="w-full flex flex-col items-center absolute"
