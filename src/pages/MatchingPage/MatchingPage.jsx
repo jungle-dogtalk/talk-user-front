@@ -26,6 +26,7 @@ const MatchingPage = () => {
             userInterests: userInfo.interests,
             aiInterests: userInfo.interests2,
             nickname: userInfo.nickname,
+            mbti: userInfo.mbti,
             question: storedQuestion,
             answer: storedAnswer,
         });

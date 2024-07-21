@@ -14,6 +14,7 @@ import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤 이미지 추가
+import raccoonImage from '../../assets/raccoon.png';
 
 const VideoChatPage = () => {
     const FRAME_RATE = 30;
@@ -59,6 +60,16 @@ const VideoChatPage = () => {
 
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
+
+    const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
+
+
+    const [isRecommending, setIsRecommending] = useState(false);
+
+    const handleLogoClick = () => {
+        setShowFaceRevealModal(true);
+        setTimeout(() => setShowFaceRevealModal(false), 5000);
+    };
 
     const handleQuizInProgress = (data) => {
         console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
@@ -628,6 +639,8 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
+        if (isRecommending) return; // 이미 추천 중이면 중복 요청 방지
+        setIsRecommending(true);
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
     };
@@ -841,7 +854,7 @@ const VideoChatPage = () => {
         );
         targetUserIndexRef.current = (currentUserIndex + 1) % 4;
 
-        const answer = sessionData[targetUserIndexRef.current].answer;
+        const answer = sessionData[targetUserIndexRef.current].mbti;
         quizAnswerRef.current = answer;
         console.log('answer는? -> ', quizAnswerRef.current);
 
@@ -855,10 +868,11 @@ const VideoChatPage = () => {
                         <span className="font-semibold text-orange-800">
                             "{sessionData[targetUserIndexRef.current].nickname}"
                         </span>{' '}
-                        님에 대한 질문의 답변을 맞춰보세요
+                        님에 대한 MBTI를 맞춰보세요.
                     </p>
                     <p className="mb-4 font-bold text-xl text-orange-800 bg-orange-200 p-4 rounded-lg shadow-inner">
-                        "{sessionData[targetUserIndexRef.current].question}"
+                        힌트 : "
+                        {sessionData[targetUserIndexRef.current].question}"
                     </p>
                     <p className="text-sm text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
@@ -964,14 +978,40 @@ const VideoChatPage = () => {
     //     sessionId,
     // });
 
+    const FaceRevealModal = () => (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
+            <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
+                <h2 className="text-5xl font-extrabold mb-6 text-orange-800 animate-pulse">
+                    🎭 얼굴 공개 타임!
+                </h2>
+                <div className="text-4xl font-bold text-orange-800 bg-yellow-100 bg-opacity-80 p-6 rounded-xl shadow-inner inline-block transform -rotate-2 hover:rotate-2 transition-transform duration-300 animate-float">
+                    "드디어 진짜 우리의 모습을 볼 시간이에요!"
+                </div>
+                <p className="mt-6 text-xl text-orange-700 animate-pulse">
+                    이 창은 5초 후 자동으로 사라집니다...
+                </p>
+            </div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
-                <img
-                    src={logo}
-                    alt="멍톡 로고"
-                    className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
-                />
+                <div className="flex items-center space-x-4">
+                    <img
+                        src={logo}
+                        alt="명톡 로고"
+                        className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                        onClick={handleLogoClick}
+                    />
+                    <img
+                        src={raccoonImage}
+                        alt="라쿤"
+                        className={`w-14 h-14 sm:w-18 sm:h-18 cursor-pointer transform hover:scale-105 transition-transform duration-300 ${isRecommending ? 'animate-pulse' : ''}`}
+                        onClick={requestTopicRecommendations}
+                    />
+                </div>
+
                 <div className="flex items-center">
                     <h2 className="text-white text-2xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
@@ -1163,7 +1203,7 @@ const VideoChatPage = () => {
                             >
                                 <div className="text-[#8b5e3c] flex flex-col items-center">
                                     <svg
-                                        className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
+                                        className="animate-spin-slow h-32 w-32 text-[#8b5e3c] mb-6"
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
@@ -1182,7 +1222,7 @@ const VideoChatPage = () => {
                                             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                                         ></path>
                                     </svg>
-                                    <span className="text-lg font-semibold">
+                                    <span className="text-4xl font-extrabold text-[#8b5e3c] animate-pulse">
                                         로딩 중...!
                                     </span>
                                 </div>
@@ -1196,19 +1236,6 @@ const VideoChatPage = () => {
                         sessionData={sessionData}
                         speechLengths={speechLengths}
                     />
-
-                    <button
-                        onClick={requestTopicRecommendations}
-                        className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
-                        style={{
-                            fontSize: '24px',
-                            top: '10px',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                        }}
-                    >
-                        주제 추천
-                    </button>
 
                     <div
                         className="w-full flex flex-col items-center absolute"
@@ -1307,7 +1334,7 @@ const VideoChatPage = () => {
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
-            {/* {showWelcomeModal && <WelcomeModal sessionData={sessionData} />} */}
+            {showFaceRevealModal && <FaceRevealModal />}
         </div>
     );
 };
