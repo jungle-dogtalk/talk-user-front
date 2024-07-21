@@ -10,7 +10,7 @@ const QuestionPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const token = useSelector((state) => state.user.token);
-    const [question, setQuestion] = useState('');
+    const userMbti = useSelector((state) => state.user.userInfo?.mbti || '알 수 없음');
     const [answer, setAnswer] = useState('');
 
     useEffect(() => {
@@ -18,18 +18,9 @@ const QuestionPage = () => {
             navigate('/');
         } else {
             dispatch(fetchUserProfile());
-            fetchRandomQuestion();
         }
     }, [dispatch, navigate, token]);
 
-    const fetchRandomQuestion = async () => {
-        try {
-            const response = await apiCall(API_LIST.GET_RANDOM_QUESTION);
-            setQuestion(response.text);
-        } catch (error) {
-            console.error('Failed to fetch question:', error);
-        }
-    };
 
     const handleBack = () => {
         navigate(-1); // 이전 페이지로 이동
@@ -44,7 +35,7 @@ const QuestionPage = () => {
         console.log(`Answer Submitted: ${answer}`);
 
         // 세션 스토리지에 질문과 답변 저장
-        sessionStorage.setItem('question', question);
+        sessionStorage.setItem('question', `당신의 MBTI(${userMbti})를 기반으로 한 줄 설명해주세요.`);
         sessionStorage.setItem('answer', answer);
 
         // 매칭 페이지로 이동
@@ -74,15 +65,10 @@ const QuestionPage = () => {
                     <div className="flex flex-col items-center">
                         <div className="bg-gradient-to-r from-[#e4d7c7] to-[#f7f3e9] p-6 rounded-lg mb-4 w-full text-center shadow-inner">
                             <h3 className="text-lg font-semibold text-[#5c3d2e]">
-                                {question}
+                            당신의 MBTI({userMbti})를 바탕으로 본인을 한 줄로 설명해주세요.
                             </h3>
                         </div>
-                        <button
-                            className="bg-[#a16e47] text-[#f7f3e9] py-2 px-4 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] hover:text-[#a16e47] transition duration-300 ease-in-out mb-4 text-xs sm:text-base font-semibold shadow-md hover:shadow-lg"
-                            onClick={fetchRandomQuestion}
-                        >
-                            다른 질문
-                        </button>
+                        
                     </div>
                     <div>
                         <textarea
