@@ -261,6 +261,7 @@ const VideoChatPage = () => {
                 username,
                 sessionId,
             });
+
             console.log('API 응답:', response);
 
             // 소켓 연결을 끊고 세션을 정리
@@ -905,6 +906,12 @@ const VideoChatPage = () => {
     const resetInactivityTimer = () => {
         clearTimeout(inactivityTimeoutRef.current);
     };
+
+    // TODO: SKIP버튼 피드백 버튼으로 수정 후 해당 피드백 로직 요청하도록 추가하기
+    // const response = await apiCall(API_LIST.GET_FEEDBACK, {
+    //     username,
+    //     sessionId,
+    // });
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">

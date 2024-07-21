@@ -94,7 +94,12 @@ const API_LIST = {
     GET_TOP_INTERESTS: {
         method: GET,
         path: '/api/top-interests/top-interests',
-        desc: '사람들이 가장 관심있어하는 순으로 5개  가져오기',
+        desc: '사람들이 가장 관심있어하는 순으로 5개 가져오기',
+    },
+    GET_FEEDBACK: {
+        method: POST,
+        path: '/api/audio/feedback',
+        desc: '통화 세션이 끝난 후 해당 대화에 대한 피드백 받기',
     },
 };
 

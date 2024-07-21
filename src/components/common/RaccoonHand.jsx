@@ -84,6 +84,7 @@ const RaccoonHand = React.memo((props) => {
     const dispatch = useDispatch();
     const savedModel = loadFromLocalStorage('racoon');
     const victoryModel = modelVictoryMap[savedModel];
+    const [isModelVisible, setIsModelVisible] = useState(true); // 모델 가시성 상태 추가
 
     /* 선택한 라쿤 모델 로딩 */
     useEffect(() => {
@@ -278,6 +279,11 @@ const RaccoonHand = React.memo((props) => {
                             performQuiz();
                         }
                         break;
+
+                    case 'ILoveYou':
+                        console.log('Love gesture detected');
+                        removeMask(); // 가면 벗기기 함수 호출
+                        break;
                     default:
                         // No movement for other gestures
                         break;
@@ -287,6 +293,11 @@ const RaccoonHand = React.memo((props) => {
         requestAnimationFrame(predict);
     };
 
+    // 가면을 벗기기 위한 함수
+    const removeMask = () => {
+        setIsModelVisible(false); // 모델 숨기기
+    };
+
     useEffect(() => {
         setup();
     }, []);
@@ -294,7 +305,7 @@ const RaccoonHand = React.memo((props) => {
     const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
-        setModelPath(models[nextIndex]);
+        setIsModelVisible(true); // 모델 변경 시 다시 보이도록 설정
     }, [modelIndex]);
 
     // TODO: 왕관 모델로 변경
@@ -378,7 +389,7 @@ const RaccoonHand = React.memo((props) => {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                {!isVictoryModelLoading && (
+                {!isVictoryModelLoading && isModelVisible && (
                     <Raccoon
                         modelPath={modelPath}
                         onLoad={() => setIsVictoryModelLoading(false)}
