@@ -41,6 +41,7 @@ const models = [
     '/yellow_raccoon_head.glb',
     '/monkey.glb',
     '/panda.glb',
+    '/cat.glb',
 ];
 
 const victoryModels = [
@@ -49,8 +50,9 @@ const victoryModels = [
     '/raccoon_crown.glb',
     '/warrior_raccoon_crown.glb',
     '/yellow_raccoon_crown.glb',
-    '/monkey.glb',
-    '/panda.glb',
+    '/monkey_crown.glb',
+    '/panda_crown.glb',
+    '/cat_crown.glb',
 ];
 
 const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
@@ -67,7 +69,8 @@ console.log(randomElement);
 console.log(modelVictoryMap, '매핑정보');
 
 function RaccoonHand(props) {
-    const [modelPath, setModelPath] = useState(models[0]);
+    const savedModel = loadFromLocalStorage('racoon');
+    const [modelPath, setModelPath] = useState(savedModel);
     const [modelIndex, setModelIndex] = useState(0);
     const [victoryModelIndex, setVictoryModelIndex] = useState(0);
     const [handColorIndex, setHandColorIndex] = useState(0);
@@ -78,7 +81,6 @@ function RaccoonHand(props) {
     const quizInProgressRef = useRef(false);
     const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
     const dispatch = useDispatch();
-    const savedModel = loadFromLocalStorage('racoon');
     const victoryModel = modelVictoryMap[savedModel];
 
     useEffect(() => {
@@ -290,7 +292,7 @@ function RaccoonHand(props) {
         setIsVictoryModelLoading(true); // 모델 로딩 시작
         const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
         setVictoryModelIndex(nextIndex);
-        setModelPath(victoryModels[nextIndex]);
+        setModelPath(victoryModel);
         setIsVictoryModelLoading(false); // 모델 로딩
     };
 
