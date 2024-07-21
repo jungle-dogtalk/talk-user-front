@@ -54,6 +54,9 @@ const VideoChatPage = () => {
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
 
+
+    const [speechLengths, setSpeechLengths] = useState([]);
+
     const handleQuizInProgress = (data) => {
         console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
         setSession((currentSession) => {
@@ -201,11 +204,13 @@ const VideoChatPage = () => {
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
 
-            data.forEach((user) => {
-                console.log(
-                    `Username: ${user.username}, Percentage: ${user.percentage}%`
-                );
-            });
+
+            const formattedData = data.map(user => ({
+                name: user.username,
+                score: Math.round(user.percentage)
+            }));
+            setSpeechLengths(formattedData);
+
         });
 
         return () => {
@@ -1097,7 +1102,7 @@ const VideoChatPage = () => {
                 </div>
 
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
-                    <MovingDogs sessionData={sessionData} />
+                    <MovingDogs sessionData={sessionData} speechLengths={speechLengths} />
 
                     <button
                         onClick={requestTopicRecommendations}

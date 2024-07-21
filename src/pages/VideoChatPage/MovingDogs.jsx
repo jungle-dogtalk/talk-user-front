@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
 
-const MovingDogs = ({ sessionData }) => {
+const MovingDogs = ({ sessionData, speechLengths }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
@@ -45,26 +45,26 @@ const MovingDogs = ({ sessionData }) => {
         }
     }, [showModal]);
 
-    const [users, setUsers] = useState([
-        { name: 'user1', score: 80, image: 'user1.jpg' },
-        { name: 'user2', score: 65, image: 'user2.jpg' },
-        { name: 'user3', score: 50, image: 'user3.jpg' },
-        { name: 'user4', score: 35, image: 'user4.jpg' },
-    ]);
+    // const [users, setUsers] = useState([
+    //     { name: 'user1', score: 80, image: 'user1.jpg' },
+    //     { name: 'user2', score: 65, image: 'user2.jpg' },
+    //     { name: 'user3', score: 50, image: 'user3.jpg' },
+    //     { name: 'user4', score: 35, image: 'user4.jpg' },
+    // ]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setUsers((prevUsers) => {
-                const newUsers = [...prevUsers];
-                newUsers.forEach((user) => {
-                    user.score = Math.floor(Math.random() * 100);
-                });
-                return newUsers.sort((a, b) => b.score - a.score);
-            });
-        }, 60000); // 1분마다 업데이트
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setUsers((prevUsers) => {
+    //             const newUsers = [...prevUsers];
+    //             newUsers.forEach((user) => {
+    //                 user.score = Math.floor(Math.random() * 100);
+    //             });
+    //             return newUsers.sort((a, b) => b.score - a.score);
+    //         });
+    //     }, 60000); // 1분마다 업데이트
 
-        return () => clearInterval(interval);
-    }, []);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
@@ -154,9 +154,9 @@ const MovingDogs = ({ sessionData }) => {
                     실시간 토크왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-1">
-                    {users.slice(0, 4).map((user, index) => (
+                    {speechLengths.slice(0, 4).map((user, index) => (
                         <div
-                            key={user.name}
+                            key={user.username}
                             className="transition-all duration-500 ease-in-out flex items-center space-x-2 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
@@ -165,17 +165,17 @@ const MovingDogs = ({ sessionData }) => {
                                     <span className="text-2xl font-semibold text-amber-800">
                                         {index + 1}등{' '}
                                         <span className="text-2xl">
-                                            {user.name}
+                                            {user.username}
                                         </span>
                                     </span>
                                     <span className="text-2xl font-medium text-amber-700">
-                                        {user.score}점
+                                        {Math.round(user.percentage)}점
                                     </span>
                                 </div>
                                 <div className="w-full bg-amber-200 rounded-full h-3 overflow-hidden">
                                     <div
                                         className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 h-full rounded-full transition-all duration-500 ease-in-out relative"
-                                        style={{ width: `${user.score}%` }}
+                                        style={{ width: `${user.percentage}%` }}
                                     >
                                         <div className="absolute top-0 left-0 w-full h-full bg-white opacity-30 animate-pulse"></div>
                                     </div>
