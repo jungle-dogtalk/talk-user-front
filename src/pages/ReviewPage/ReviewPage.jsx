@@ -25,6 +25,10 @@ const ReviewPage = () => {
     const [callUserInfo, setCallUserInfo] = useState([]); // 통화 유저 정보 저장
     const [topTalker, setTopTalker] = useState(null); // 오늘의 수다왕
 
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+    const [feedback, setFeedback] = useState('');
+    const [isFeedbackFetched, setIsFeedbackFetched] = useState(false);
+
     useEffect(() => {
         const fromVideoChat = sessionStorage.getItem('fromVideoChat');
         if (!fromVideoChat) {
@@ -116,6 +120,10 @@ const ReviewPage = () => {
                 })),
             });
             alert('리뷰가 제출되었습니다.');
+
+            // sessionStorage에서 feedback을 삭제
+            sessionStorage.removeItem('feedback');
+
             window.location.href = '/main';
         } catch (error) {
             console.error('Error submitting reviews:', error);
@@ -140,6 +148,15 @@ const ReviewPage = () => {
     };
 
     const username = userInfo?.username || '사용자';
+
+    const fetchFeedback = async () => {
+        const savedFeedback = sessionStorage.getItem('feedback');
+        if (savedFeedback) {
+            setFeedback(savedFeedback);
+            setIsFeedbackFetched(true);
+        }
+        setIsFeedbackModalOpen(true);
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center">
@@ -260,10 +277,10 @@ const ReviewPage = () => {
                 <div className="flex justify-center mt-8 sm:mt-12 space-x-4">
                     <button
                         className="bg-gray-300 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-full"
-                        onClick={() => (window.location.href = '/main')}
+                        onClick={fetchFeedback}
                         style={{ fontSize: '22px' }}
                     >
-                        SKIP
+                        AI 피드백
                     </button>
                     <button
                         className="bg-green-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full"
@@ -345,6 +362,33 @@ const ReviewPage = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {isFeedbackModalOpen && (
+                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                        <h2 className="text-2xl font-bold mb-4">AI 피드백</h2>
+                        <div className="space-y-4">
+                            {feedback ? (
+                                feedback.split('\n').map((line, index) => (
+                                    <p key={index} className="text-gray-800">
+                                        {line}
+                                    </p>
+                                ))
+                            ) : (
+                                <p className="text-gray-800">
+                                    피드백을 불러오는 중...
+                                </p>
+                            )}
+                        </div>
+                        <button
+                            className="mt-6 bg-red-500 text-white px-4 py-2 rounded-full"
+                            onClick={() => setIsFeedbackModalOpen(false)}
+                        >
+                            닫기
+                        </button>
                     </div>
                 </div>
             )}

@@ -63,7 +63,6 @@ const VideoChatPage = () => {
 
     const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
 
-
     const [isRecommending, setIsRecommending] = useState(false);
 
     const handleLogoClick = () => {
@@ -277,6 +276,11 @@ const VideoChatPage = () => {
             });
 
             console.log('API 응답:', response);
+
+            // 피드백 결과를 sessionStorage에 저장
+            if (response.status) {
+                sessionStorage.setItem('feedback', response.data.feedback);
+            }
 
             // 소켓 연결을 끊고 세션을 정리
             if (socket.current) {
@@ -602,12 +606,20 @@ const VideoChatPage = () => {
         setIsMirrored(mirrorState);
     };
 
+    // useEffect 내의 beforeunload 이벤트 리스너 추가
     useEffect(() => {
-        window.addEventListener('beforeunload', leaveSession);
-        return () => {
-            window.removeEventListener('beforeunload', leaveSession);
+        const handleBeforeUnload = (event) => {
+            if (!isLeaving) {
+                leaveSession();
+            }
         };
-    }, [leaveSession]);
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, [leaveSession, isLeaving]);
 
     useEffect(() => {
         // URL에서 sessionId 파라미터를 가져옵니다.
@@ -972,12 +984,6 @@ const VideoChatPage = () => {
     //     );
     // };
 
-    // TODO: SKIP버튼 피드백 버튼으로 수정 후 해당 피드백 로직 요청하도록 추가하기
-    // const response = await apiCall(API_LIST.GET_FEEDBACK, {
-    //     username,
-    //     sessionId,
-    // });
-
     const FaceRevealModal = () => (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
             <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
@@ -1000,14 +1006,16 @@ const VideoChatPage = () => {
                 <div className="flex items-center space-x-4">
                     <img
                         src={logo}
-                        alt="명톡 로고"
+                        alt="멍톡 로고"
                         className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
                         onClick={handleLogoClick}
                     />
                     <img
                         src={raccoonImage}
                         alt="라쿤"
-                        className={`w-14 h-14 sm:w-18 sm:h-18 cursor-pointer transform hover:scale-105 transition-transform duration-300 ${isRecommending ? 'animate-pulse' : ''}`}
+                        className={`w-14 h-14 sm:w-18 sm:h-18 cursor-pointer transform hover:scale-105 transition-transform duration-300 ${
+                            isRecommending ? 'animate-pulse' : ''
+                        }`}
                         onClick={requestTopicRecommendations}
                     />
                 </div>
@@ -1334,6 +1342,7 @@ const VideoChatPage = () => {
                 </div>
             </div>
             {showInitialModal && <InitialQuestionModal />}
+            {/* {showWelcomeModal && <WelcomeModal/>} */}
             {showFaceRevealModal && <FaceRevealModal />}
         </div>
     );

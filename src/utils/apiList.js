@@ -59,7 +59,7 @@ const API_LIST = {
     END_CALL: {
         method: POST,
         path: `/api/audio/end-call`,
-        desc: '통화 종료 및 관심사 도출',
+        desc: '통화 종료 및 관심사 도출 및 대화 피드백 요청',
     },
     GET_TOKEN: {
         method: 'POST',
@@ -95,11 +95,6 @@ const API_LIST = {
         method: GET,
         path: '/api/top-interests/top-interests',
         desc: '사람들이 가장 관심있어하는 순으로 5개 가져오기',
-    },
-    GET_FEEDBACK: {
-        method: POST,
-        path: '/api/audio/feedback',
-        desc: '통화 세션이 끝난 후 해당 대화에 대한 피드백 받기',
     },
 };
 
