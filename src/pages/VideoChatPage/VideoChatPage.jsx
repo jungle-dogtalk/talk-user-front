@@ -828,7 +828,7 @@ const VideoChatPage = () => {
         );
         targetUserIndexRef.current = (currentUserIndex + 1) % 4;
 
-        const answer = sessionData[targetUserIndexRef.current].answer;
+        const answer = sessionData[targetUserIndexRef.current].mbti;
         quizAnswerRef.current = answer;
         console.log('answer는? -> ', quizAnswerRef.current);
 
@@ -842,10 +842,10 @@ const VideoChatPage = () => {
                         <span className="font-semibold text-orange-800">
                             "{sessionData[targetUserIndexRef.current].nickname}"
                         </span>{' '}
-                        님에 대한 질문의 답변을 맞춰보세요
+                        님에 대한 MBTI를 맞춰보세요.
                     </p>
                     <p className="mb-4 font-bold text-xl text-orange-800 bg-orange-200 p-4 rounded-lg shadow-inner">
-                        "{sessionData[targetUserIndexRef.current].question}"
+                        힌트 : "{sessionData[targetUserIndexRef.current].question}"
                     </p>
                     <p className="text-sm text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
