@@ -54,6 +54,10 @@ const VideoChatPage = () => {
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
 
+    const [speechLengths, setSpeechLengths] = useState([]);
+
+    const [speakingUsers, setSpeakingUsers] = useState(new Set());
+
     const handleQuizInProgress = (data) => {
         console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
         setSession((currentSession) => {
@@ -180,6 +184,11 @@ const VideoChatPage = () => {
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
             setRecommendedTopics((prevTopics) => [...prevTopics, data.trim()]);
+
+            // 5초후에 모달 닫기
+            setTimeout(() => {
+                setRecommendedTopics([]);
+            }, 5000);
         });
 
         socket.current.on('endOfStream', () => {
@@ -196,11 +205,7 @@ const VideoChatPage = () => {
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
 
-            data.forEach((user) => {
-                console.log(
-                    `Username: ${user.username}, Percentage: ${user.percentage}%`
-                );
-            });
+            setSpeechLengths(data); // 직접 받은 데이터를 그대로 사용
         });
 
         return () => {
@@ -211,16 +216,6 @@ const VideoChatPage = () => {
             clearInterval(interval);
         };
     }, [location, sessionId]);
-
-    // useEffect(() => {
-    //     if (quizResult === 'success' || quizResult === 'failure') {
-    //         setShowQuizResult(true);
-    //         setTimeout(() => {
-    //             setShowQuizResult(false);
-    //             setQuizResult('');
-    //         }, 5000);
-    //     }
-    // }, [quizResult]);
 
     // TODO: 세션 떠날 때 Redis session방에서 해당 유저 없애도록 요청하기
     // 세션 떠남
@@ -494,6 +489,9 @@ const VideoChatPage = () => {
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
                 resetInactivityTimer(); // Reset inactivity timer on speech detected
+                setSpeakingUsers((prev) =>
+                    new Set(prev).add(event.connection.connectionId)
+                );
             });
 
             // 발화 종료 감지
@@ -502,6 +500,11 @@ const VideoChatPage = () => {
                     'User ' + event.connection.connectionId + ' stop speaking'
                 );
                 startInactivityTimer(); // Start inactivity timer on speech stop detected
+                setSpeakingUsers((prev) => {
+                    const newSet = new Set(prev);
+                    newSet.delete(event.connection.connectionId);
+                    return newSet;
+                });
             });
 
             const allowedSessionIdList = [
@@ -612,10 +615,8 @@ const VideoChatPage = () => {
 
     // 주제 추천 요청 이벤트 발생
     const requestTopicRecommendations = () => {
-        setRecommendedTopics([]); // 기존 추천 주제를 초기화
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
-        // setShowRecommendedTopics(true);
     };
 
     // 음성인식 시작
@@ -944,27 +945,44 @@ const VideoChatPage = () => {
                             isChallengeCompletedTrigger
                         }
                     />
-                    <div className="grid grid-cols-2 gap-8 p-8 relative flex-grow">
+                    <div className="grid grid-cols-2 grid-rows-2 gap-2 p-2 h-full">
                         {publisher && (
-                            <div className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video">
-                                <OpenViduVideo streamManager={publisher} />
-                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
+                            <div
+                                className={`relative w-full h-full border-2 ${
+                                    speakingUsers.has(
+                                        publisher.stream.connection.connectionId
+                                    )
+                                        ? 'border-blue-500 border-4 animate-speakingBorder'
+                                        : 'border-[#d4b894]'
+                                } rounded-xl shadow-2xl overflow-hidden transition-all duration-300`}
+                            >
+                                <OpenViduVideo
+                                    streamManager={publisher}
+                                    className={`w-full h-full object-cover ${
+                                        speakingUsers.has(
+                                            publisher.stream.connection
+                                                .connectionId
+                                        )
+                                            ? 'ring-4 ring-blue-500'
+                                            : ''
+                                    }`}
+                                />
+
+                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {publisher.stream.connection.data}
                                 </div>
 
                                 {quizChallenger ===
                                     publisher.stream.connection.data && (
-                                    <div className="fixed top-0 left-0 w-full flex justify-center items-center z-50">
-                                        <div className="bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-2 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm">
-                                            <div className="flex items-center justify-center space-x-4">
-                                                <p className="text-2xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                🔥 미션 진행 중!
+                                            </p>
+                                            <div className="overflow-hidden w-full">
+                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님
                                                 </p>
-                                                <div className="overflow-hidden w-64">
-                                                    <p className="text-3xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                        {quizChallenger} 님{' '}
-                                                    </p>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -981,8 +999,8 @@ const VideoChatPage = () => {
                                     }
                                 `}</style>
 
-                                <div className="absolute bottom-2 left-2 z-10">
-                                    <div className="flex flex-col space-y-1">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                    <div className="flex justify-center items-center w-full">
                                         {sessionData
                                             .find(
                                                 (user) =>
@@ -993,7 +1011,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -1001,13 +1019,13 @@ const VideoChatPage = () => {
                                     </div>
                                 </div>
 
-                                <img
+                                {/* <img
                                     src={settingsIcon}
                                     alt="설정"
                                     className="absolute top-3 right-3 w-9 h-9 cursor-pointer bg-white rounded-full p-1.5 shadow-md hover:bg-gray-100 transition-colors duration-300"
                                     onClick={toggleSettings}
-                                />
-                                {showSettings && (
+                                /> */}
+                                {/* {showSettings && (
                                     <div className="absolute top-14 right-3 z-50">
                                         <SettingMenu
                                             publisher={publisher}
@@ -1016,32 +1034,51 @@ const VideoChatPage = () => {
                                             }
                                         />
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         )}
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl overflow-hidden transform hover:scale-102 transition-transform duration-300 aspect-video"
+                                className={`relative w-full h-full border-2 ${
+                                    speakingUsers.has(
+                                        subscriber.stream.connection
+                                            .connectionId
+                                    )
+                                        ? 'border-blue-500 border-4 animate-speakingBorder'
+                                        : 'border-[#d4b894]'
+                                } rounded-xl shadow-lg overflow-hidden transition-all duration-300`}
                             >
-                                <OpenViduVideo streamManager={subscriber} />
-                                <div className="absolute top-0 left-0 bg-gradient-to-r from-[#a16e47] to-[#c18a67] text-white p-3 rounded-br-lg">
+                                <OpenViduVideo
+                                    streamManager={subscriber}
+                                    className={`w-full h-full object-cover ${speakingUsers.has(subscriber.stream.connection.connectionId) ? 'ring-4 ring-blue-500' : ''}`}
+                                />
+                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
                                     {subscriber.stream.connection.data}
                                 </div>
 
                                 {quizChallenger ===
                                     subscriber.stream.connection.data && (
-                                    <div className="absolute top-0 left-0 w-full bg-red-500 bg-opacity-75 text-white p-2 text-center">
-                                        {quizChallenger} 유저 퀴즈 미션 수행중!
+                                    <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="flex flex-col items-center justify-center space-y-2">
+                                            <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                🔥 미션 진행 중!
+                                            </p>
+                                            <div className="overflow-hidden w-full">
+                                                <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    {quizChallenger} 님
+                                                </p>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
 
-                                <div className="absolute bottom-2 left-2 z-10">
-                                    <div className="flex flex-col space-y-1">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                    <div className="flex justify-center items-center w-full">
                                         {sessionData
                                             .find(
                                                 (user) =>
-                                                    user.userId ===
+                                                    user.nickname ===
                                                     subscriber.stream.connection
                                                         .data
                                             )
@@ -1049,7 +1086,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xs px-2 py-1 bg-black bg-opacity-60 rounded-full text-white font-medium text-center"
+                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -1058,51 +1095,56 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         ))}
-                        {Array.from({ length: 4 - subscribers.length - 1 }).map(
-                            (_, index) => (
-                                <div
-                                    key={index}
-                                    className="relative border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] aspect-video"
-                                >
-                                    <div className="text-[#8b5e3c] flex flex-col items-center">
-                                        <svg
-                                            className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <circle
-                                                className="opacity-25"
-                                                cx="12"
-                                                cy="12"
-                                                r="10"
-                                                stroke="currentColor"
-                                                strokeWidth="4"
-                                            ></circle>
-                                            <path
-                                                className="opacity-75"
-                                                fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                            ></path>
-                                        </svg>
-                                        <span className="text-lg font-semibold">
-                                            로딩 중...
-                                        </span>
-                                    </div>
+                        {Array.from({
+                            length:
+                                4 - subscribers.length - (publisher ? 1 : 0),
+                        }).map((_, index) => (
+                            <div
+                                key={`empty-${index}`}
+                                className="relative w-full h-full border-3 border-[#d4b894] rounded-xl shadow-2xl flex items-center justify-center bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]"
+                            >
+                                <div className="text-[#8b5e3c] flex flex-col items-center">
+                                    <svg
+                                        className="animate-spin h-12 w-12 text-[#8b5e3c] mb-3"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <circle
+                                            className="opacity-25"
+                                            cx="12"
+                                            cy="12"
+                                            r="10"
+                                            stroke="currentColor"
+                                            strokeWidth="4"
+                                        ></circle>
+                                        <path
+                                            className="opacity-75"
+                                            fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                        ></path>
+                                    </svg>
+                                    <span className="text-lg font-semibold">
+                                        로딩 중...!
+                                    </span>
                                 </div>
-                            )
-                        )}
+                            </div>
+                        ))}
                     </div>
                 </div>
+
                 <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
-                    <MovingDogs sessionData={sessionData} />
+                    <MovingDogs
+                        sessionData={sessionData}
+                        speechLengths={speechLengths}
+                    />
 
                     <button
                         onClick={requestTopicRecommendations}
                         className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
                         style={{
                             fontSize: '24px',
-                            top: '350px',
+                            top: '10px',
                             left: '50%',
                             transform: 'translateX(-50%)',
                         }}
@@ -1114,87 +1156,32 @@ const VideoChatPage = () => {
                         className="w-full flex flex-col items-center absolute"
                         style={{ top: '400px', left: '4px' }}
                     >
-                        {/* {recommendedTopics.length === 0 && (
-                            <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                <h3
-                                    className="text-2xl font-semibold mb-3 text-center border-b-2 border-[#7cb772] pb-2"
-                                    style={{ fontSize: '24px' }}
-                                >
-                                    추천 주제
-                                </h3>
-                                <ul className="list-disc list-inside">
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 1
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 2
-                                    </li>
-                                    <li
-                                        className="text-xl text-gray-700 mb-2"
-                                        style={{ fontSize: '22px' }}
-                                    >
-                                        테스트 주제 3
-                                    </li>
-                                </ul>
-                            </div>
-                        )} */}
-
                         {recommendedTopics.length > 0 &&
                             !quizChallenger &&
                             !quizResult && (
-                                <div className="bg-white bg-opacity-95 w-full p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                    <h3 className="text-2xl font-bold mb-3 text-[#4a6741] border-b-2 border-[#7cb772] pb-2">
-                                        추천 주제
-                                    </h3>
-                                    <ul className="list-disc list-inside text-[#2c4021] space-y-2">
-                                        {recommendedTopics.map(
-                                            (topic, index) => (
-                                                <li
-                                                    key={index}
-                                                    className="text-lg"
-                                                >
-                                                    {topic}
-                                                </li>
-                                            )
-                                        )}
-                                    </ul>
-                                </div>
-                            )}
-
-                        {quizChallenger && (
-                            <div className="absolute inset-0 flex items-center justify-center z-50">
-                                <div className="bg-white bg-opacity-95 w-3/4 p-5 rounded-xl shadow-lg transform hover:scale-102 transition-transform duration-300">
-                                    <h1 className="text-[#4a6741] text-2xl font-bold mb-3 text-center border-b-2 border-[#7cb772] pb-2">
-                                        {quizChallenger} 유저 퀴즈 미션 수행중!
-                                    </h1>
-                                    <div className="bg-[#f0f8ff] p-4 rounded-lg shadow-inner">
-                                        <h2 className="text-[#2c4021] text-xl mb-2 font-semibold text-center">
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].nickname
-                                            }{' '}
-                                            님의 질문
-                                        </h2>
-                                        <p className="text-[#4a6741] text-lg text-center italic">
-                                            "
-                                            {
-                                                sessionData[
-                                                    targetUserIndexRef.current
-                                                ].question
-                                            }
-                                            "
-                                        </p>
+                                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+                                    <div className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-40 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-200 backdrop-filter backdrop-blur-sm">
+                                        <div className="flex-1 text-left space-y-2">
+                                            <h1 className="text-4xl font-extrabold text-orange-700 animate-pulse">
+                                                🎯 추천 주제
+                                            </h1>
+                                            <p className="text-xl text-orange-600">
+                                                오늘의 대화 주제입니다!
+                                            </p>
+                                        </div>
+                                        <div className="flex-2 font-bold text-2xl text-orange-700 bg-orange-100 bg-opacity-60 p-4 rounded-xl shadow-inner mx-4 transform rotate-1 w-1/2 flex items-center justify-center">
+                                            <p className="animate-bounce text-center">
+                                                "{recommendedTopics[0]}"
+                                            </p>
+                                        </div>
+                                        <div className="flex-1/2 text-right space-y-2">
+                                            <p className="text-base text-orange-500 animate-pulse">
+                                                5초 후 자동으로 닫힘
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
                         {showQuizSuccess && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -1227,7 +1214,6 @@ const VideoChatPage = () => {
                                 </div>
                             </div>
                         )}
-
                         {showQuizFailure && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                                 <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
@@ -1262,19 +1248,6 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
-            {showRecommendedTopics && (
-                <RecommendedTopicsModal
-                    topics={recommendedTopics}
-                    onClose={() => setShowRecommendedTopics(false)}
-                />
-            )}
-            {showQuizResult && (
-                <QuizResultModal
-                    success={quizResult === 'success'}
-                    answer={quizAnswerRef.current}
-                    onClose={() => setShowQuizResult(false)}
-                />
-            )}
             {showInitialModal && <InitialQuestionModal />}
         </div>
     );

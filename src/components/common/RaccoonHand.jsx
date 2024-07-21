@@ -41,6 +41,7 @@ const models = [
     '/yellow_raccoon_head.glb',
     '/monkey.glb',
     '/panda.glb',
+    '/cat.glb',
 ];
 
 const victoryModels = [
@@ -49,24 +50,30 @@ const victoryModels = [
     '/raccoon_crown.glb',
     '/warrior_raccoon_crown.glb',
     '/yellow_raccoon_crown.glb',
-    '/monkey.glb',
-    '/panda.glb',
+    '/monkey_crown.glb',
+    '/panda_crown.glb',
+    '/cat_crown.glb',
 ];
 
 const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
-const randomElement = combinedModels[Math.floor(Math.random() * combinedModels.length)];
-const modelVictoryMap = models.reduce((acc, model, index) => ({ ...acc, [model]: victoryModels[index] }), {});
+const randomElement =
+    combinedModels[Math.floor(Math.random() * combinedModels.length)];
+const modelVictoryMap = models.reduce(
+    (acc, model, index) => ({ ...acc, [model]: victoryModels[index] }),
+    {}
+);
 
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 console.log(randomElement);
 console.log(modelVictoryMap, '매핑정보');
 
-
 const RaccoonHand = React.memo((props) => {
     const [modelPath, setModelPath] = useState(randomElement[0]);
     const [modelIndex, setModelIndex] = useState(0);
-    const [victoryModelIndex, setVictoryModelIndex] = useState(randomElement[1]);
+    const [victoryModelIndex, setVictoryModelIndex] = useState(
+        randomElement[1]
+    );
     const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
@@ -77,10 +84,10 @@ const RaccoonHand = React.memo((props) => {
     const dispatch = useDispatch();
     const savedModel = loadFromLocalStorage('racoon');
     const victoryModel = modelVictoryMap[savedModel];
+    const [isModelVisible, setIsModelVisible] = useState(true); // 모델 가시성 상태 추가
 
     /* 선택한 라쿤 모델 로딩 */
     useEffect(() => {
-        
         if (savedModel) {
             dispatch(setSelectedModel(savedModel));
             setModelPath(savedModel);
@@ -272,6 +279,11 @@ const RaccoonHand = React.memo((props) => {
                             performQuiz();
                         }
                         break;
+
+                    case 'ILoveYou':
+                        console.log('Love gesture detected');
+                        removeMask(); // 가면 벗기기 함수 호출
+                        break;
                     default:
                         // No movement for other gestures
                         break;
@@ -281,6 +293,11 @@ const RaccoonHand = React.memo((props) => {
         requestAnimationFrame(predict);
     };
 
+    // 가면을 벗기기 위한 함수
+    const removeMask = () => {
+        setIsModelVisible(false); // 모델 숨기기
+    };
+
     useEffect(() => {
         setup();
     }, []);
@@ -288,7 +305,7 @@ const RaccoonHand = React.memo((props) => {
     const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
-        setModelPath(models[nextIndex]);
+        setIsModelVisible(true); // 모델 변경 시 다시 보이도록 설정
     }, [modelIndex]);
 
     // TODO: 왕관 모델로 변경
@@ -372,7 +389,7 @@ const RaccoonHand = React.memo((props) => {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                {!isVictoryModelLoading && (
+                {!isVictoryModelLoading && isModelVisible && (
                     <Raccoon
                         modelPath={modelPath}
                         onLoad={() => setIsVictoryModelLoading(false)}
@@ -600,7 +617,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                    blendshape.categoryName
+                        blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =

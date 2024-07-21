@@ -21,6 +21,7 @@ const SignUpPage = () => {
     const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 함수 가져오기
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
+    const [mbti, setMbti] = useState('');
 
     const { token, error } = useSelector((state) => state.user);
 
@@ -54,6 +55,7 @@ const SignUpPage = () => {
         formData.append('nickname', nickname);
         interests.forEach((interest) => formData.append('interests', interest));
         formData.append('profileImage', selectedFile);
+        formData.append('mbti', mbti);
 
         // interests2를 빈 값으로 추가
         formData.append('interests2', JSON.stringify([]));
@@ -284,6 +286,24 @@ const SignUpPage = () => {
                             className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
                         />
                     </div>
+
+                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
+                        <label
+                            htmlFor="mbti"
+                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
+                        >
+                            MBTI
+                        </label>
+                        <input
+                            type="text"
+                            id="mbti"
+                            value={mbti}
+                            onChange={(e) => setMbti(e.target.value)}
+                            placeholder="MBTI를 입력하세요"
+                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
+                        />
+                    </div>
+
                     <hr className="w-full my-6 sm:my-8 border-gray-400" />
                     <div className="text-center mt-6 sm:mt-8 w-full max-w-4xl mx-auto">
                         <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
