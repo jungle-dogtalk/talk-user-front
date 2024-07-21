@@ -4,6 +4,8 @@ const GET = 'GET';
 const DELETE = 'DELETE';
 const PATCH = 'PATCH';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 // 백엔드 서버 API 목록
 const API_LIST = {
     TEST_MULTIPLE_DATA: {
@@ -90,11 +92,6 @@ const API_LIST = {
         method: GET,
         path: '/api/questions/random',
         desc: 'Get a random question',
-    },
-    GET_TOP_INTERESTS: {
-        method: GET,
-        path: '/api/top-interests/top-interests',
-        desc: '사람들이 가장 관심있어하는 순으로 5개 가져오기',
     },
 };
 

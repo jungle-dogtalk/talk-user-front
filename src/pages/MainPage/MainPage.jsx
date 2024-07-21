@@ -39,7 +39,9 @@ const MainPage = () => {
             try {
                 console.log('Fetching top interests from API');
                 const response = await axios.get(
-                    API_LIST.GET_TOP_INTERESTS.path
+                    `${
+                        import.meta.env.VITE_API_URL
+                    }/api/top-interests/top-interests`
                 );
                 console.log('Top interests response:', response.data);
                 setTopInterests(response.data.topInterests || []);
