@@ -1104,7 +1104,7 @@ const VideoChatPage = () => {
                         className="bg-white bg-opacity-95 text-[#4a6741] text-xl font-bold px-5 py-2 rounded-full shadow-lg transform hover:scale-102 transition-transform duration-300 border-b-2 border-[#7cb772] absolute"
                         style={{
                             fontSize: '24px',
-                            top: '450px',
+                            top: '10px',
                             left: '50%',
                             transform: 'translateX(-50%)',
                         }}
