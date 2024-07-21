@@ -53,9 +53,12 @@ const getTokenForTest = async (sessionId, userInfo) => {
 
     const createToken = (sessionId) => {
         return new Promise((resolve, reject) => {
-            var data = {
+            const connectionProperties = {
                 role: "PUBLISHER",
-                data: userInfo.nickname,
+                data: JSON.stringify({
+                    nickname: userInfo.nickname,
+                    userId: userInfo.username,
+                }),
                 kurentoOptions: {
                     allowedFilters: ["GStreamerFilter", "FaceOverlayFilter"]
                 }
@@ -66,7 +69,7 @@ const getTokenForTest = async (sessionId, userInfo) => {
                     '/openvidu/api/sessions/' +
                     sessionId +
                     '/connection',
-                    data,
+                    connectionProperties,
                     {
                         headers: {
                             Authorization:
