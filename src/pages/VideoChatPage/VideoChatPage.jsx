@@ -945,7 +945,7 @@ const VideoChatPage = () => {
                                     speakingUsers.has(
                                         publisher.stream.connection.connectionId
                                     )
-                                        ? 'border-blue-500 border-4'
+                                        ? 'border-blue-500 border-4 animate-speakingBorder'
                                         : 'border-[#d4b894]'
                                 } rounded-xl shadow-2xl overflow-hidden transition-all duration-300`}
                             >
@@ -1038,7 +1038,7 @@ const VideoChatPage = () => {
                                         subscriber.stream.connection
                                             .connectionId
                                     )
-                                        ? 'border-blue-500 border-4'
+                                        ? 'border-blue-500 border-4 animate-speakingBorder'
                                         : 'border-[#d4b894]'
                                 } rounded-xl shadow-lg overflow-hidden transition-all duration-300`}
                             >

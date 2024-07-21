@@ -16,6 +16,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
     // 모달 상태와 선택된 사용자 상태 추가
     const [selectedUser, setSelectedUser] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [clickedIndex, setClickedIndex] = useState(null);
 
     // 강아지 집과 사용자 데이터를 매핑합니다.
     const dogHouseMapping = dogHouses.map((house, index) => ({
@@ -25,6 +26,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
 
     // 강아지 집 클릭 핸들러 추가
     const handleDogHouseClick = (index) => {
+        setClickedIndex(index);
         setSelectedUser(sessionData[index]);
         setShowModal(true);
     };
@@ -32,6 +34,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
     const closeModal = () => {
         setShowModal(false);
         setSelectedUser(null);
+        setClickedIndex(null);
     };
 
     // 모달이 열렸을 때 5초 후에 자동으로 닫히도록 설정
@@ -44,27 +47,6 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
             return () => clearTimeout(timer); // 컴포넌트 언마운트 시 타이머 정리
         }
     }, [showModal]);
-
-    // const [users, setUsers] = useState([
-    //     { name: 'user1', score: 80, image: 'user1.jpg' },
-    //     { name: 'user2', score: 65, image: 'user2.jpg' },
-    //     { name: 'user3', score: 50, image: 'user3.jpg' },
-    //     { name: 'user4', score: 35, image: 'user4.jpg' },
-    // ]);
-
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         setUsers((prevUsers) => {
-    //             const newUsers = [...prevUsers];
-    //             newUsers.forEach((user) => {
-    //                 user.score = Math.floor(Math.random() * 100);
-    //             });
-    //             return newUsers.sort((a, b) => b.score - a.score);
-    //         });
-    //     }, 60000); // 1분마다 업데이트
-
-    //     return () => clearInterval(interval);
-    // }, []);
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
@@ -79,8 +61,14 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                     }}
                 >
                     <div
-                        className="relative w-32 h-32"
+                        className={`relative w-32 h-32 transition-transform duration-300 cursor-pointer`}
                         onClick={() => handleDogHouseClick(index)}
+                        onMouseEnter={(e) =>
+                            e.currentTarget.classList.add('scale-110')
+                        }
+                        onMouseLeave={(e) =>
+                            e.currentTarget.classList.remove('scale-110')
+                        }
                     >
                         <div className="absolute top-[-48px] left-0 w-full text-center text-3xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
                             {safeSessionData[index]?.nickname ||
@@ -89,7 +77,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                         <img
                             src={dogHouseImage}
                             alt={`Dog house ${index + 1}`}
-                            className="w-full h-full object-cover rounded-lg "
+                            className="w-full h-full object-cover rounded-lg transition-transform duration-300"
                         />
                     </div>
                     <div

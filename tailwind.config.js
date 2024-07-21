@@ -14,10 +14,15 @@ export default {
               opacity: '1',
               transform: 'translateY(0)'
             },
-          }
+          },
+          'speakingBorder': {
+            '0%, 100%': { borderColor: 'blue', boxShadow: '0 0 10px blue' },
+            '50%': { borderColor: 'lightblue', boxShadow: '0 0 20px lightblue' },
+          },
         },
         animation: {
-          'fade-in-down': 'fade-in-down 0.5s ease-out'
+          'fade-in-down': 'fade-in-down 0.5s ease-out',
+          'speakingBorder': 'speakingBorder 1s infinite',
         }
       },
     },
@@ -25,4 +30,4 @@ export default {
       extend: {},
     },
     plugins: [],
-  };
+};
