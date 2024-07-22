@@ -136,7 +136,7 @@ const ChooseRaccoonPage = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gradient-to-b from-[#FFF8E1] to-[#FFE0B2]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 flex items-center justify-between shadow-xl">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 flex items-center justify-between shadow-xl">
                 <img
                     src={logo}
                     alt="멍톡 로고"
@@ -147,22 +147,19 @@ const ChooseRaccoonPage = () => {
                 {/* 왼쪽 섹션 */}
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
-                        className="text-6xl sm:text-8xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-6xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         실시간 영상
                     </h2>
-                    <div className="relative w-full max-w-[800px] h-[600px] rounded-3xl overflow-hidden shadow-2xl mb-8">
+                    <div className="relative w-full h-0 pb-[56.25%] rounded-3xl overflow-hidden shadow-2xl mb-6">
                         <video
                             ref={webcamRef}
                             autoPlay
                             id="video"
-                            className="w-full h-full object-cover"
-                            width="800"
-                            height="600"
+                            className="absolute top-0 left-0 w-full h-full object-cover"
                         ></video>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                        
                     </div>
                     {/* 마이크 입력 테스트 섹션 */}
                     <div className="flex flex-col items-center justify-center w-full">
@@ -187,15 +184,14 @@ const ChooseRaccoonPage = () => {
                 {/* 오른쪽 섹션 */}
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
-                        className="text-6xl sm:text-8xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-6xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         선택된 마스크
                     </h2>
-                    <div className="relative w-full max-w-[800px] h-[600px] bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
+                    <div className="relative w-full h-0 pb-[56.25%] bg-white rounded-3xl shadow-2xl overflow-hidden mb-6">
                         <ChooseRaccoonHand />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-3xl"></div>
-                        
                     </div>
                     {/* 버튼 섹션 */}
                     <div className="flex justify-center space-x-8 mt-8">
