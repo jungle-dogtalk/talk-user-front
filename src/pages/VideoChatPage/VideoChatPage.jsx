@@ -43,6 +43,7 @@ const VideoChatPage = () => {
     const [isChallengeCompletedTrigger, setIsChallengeCompletedTrigger] =
         useState(0);
 
+    const [quizInProgress, setQuizInProgress] = useState(false);
     const [quizQuestion, setQuizQuestion] = useState('');
     const [quizAnswer, setQuizAnswer] = useState('');
     const quizQuestionRef = useRef('');
@@ -74,8 +75,8 @@ const VideoChatPage = () => {
         setTimeout(() => setShowFaceRevealModal(false), 5000);
     };
 
-    const handleQuizInProgress = (data) => {
-        console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', data);
+    const handleQuizInProgress = (payload) => {
+        console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', payload);
         setSession((currentSession) => {
             if (currentSession) {
                 currentSession.signal({
@@ -95,23 +96,15 @@ const VideoChatPage = () => {
         });
     };
     const finishQuizMission = () => {
-        console.log('세션정보 -> ', session);
-        session
-            .signal({
-                data: JSON.stringify({
-                    userId: userInfo.username,
-                    message: `${userInfo.username} 유저가 미션을 종료합니다.`,
-                    result: false,
-                }),
-                to: [],
-                type: 'quizEnd',
-            })
-            .then(() => {
-                console.log('시그널 성공적으로 전송');
-            })
-            .catch((error) => {
-                console.error('시그널 도중 에러 발생 -> ', error);
-            });
+        session.signal({
+            data: JSON.stringify({
+                userId: userInfo.username,
+                message: `${userInfo.username} 유저가 미션을 종료합니다.`,
+                result: false,
+            }),
+            to: [],
+            type: 'quizEnd',
+        });
     };
 
     useEffect(() => {
@@ -449,6 +442,7 @@ const VideoChatPage = () => {
             // 퀴즈 미션 시작
             session.on('signal:quizStart', (event) => {
                 setIsChallengeCompleted(false);
+                setQuizInProgress(true);
                 const data = JSON.parse(event.data);
                 console.log('quizStart 시그널 전달받음, 내용은? -> ', data);
 
@@ -467,23 +461,16 @@ const VideoChatPage = () => {
             session.on('signal:quizEnd', (event) => {
                 const data = JSON.parse(event.data);
                 console.log('quizEnd 시그널 전달받음, 내용은? -> ', data);
+                setQuizInProgress(false);
 
-                setIsChallengeCompleted(true);
-                setIsChallengeCompletedTrigger((prev) => prev + 1);
-
+                // 정답인 경우
                 if (data.result === true) {
                     setQuizAnswer(data.quizAnswer);
                     setShowQuizSuccess(true);
                 } else {
+                    // 오답인 경우
                     setShowQuizFailure(true);
                 }
-
-                setTimeout(() => {
-                    setQuizChallenger(''); // 퀴즈 도전자 초기화
-                    setQuizResult('');
-                    setShowQuizSuccess(false);
-                    setShowQuizFailure(false);
-                }, 10000);
 
                 if (data.userId === userInfo.username) {
                     if (data.result) {
@@ -496,6 +483,17 @@ const VideoChatPage = () => {
                         setQuizResultTrigger((prev) => prev + 1);
                     }
                 }
+
+                setTimeout(() => {
+                    setIsChallengeCompleted(true);
+                    setIsChallengeCompletedTrigger((prev) => prev + 1);
+
+                    setQuizChallenger(''); // 퀴즈 도전자 초기화
+                    setQuizResult(''); // 퀴즈 결과 초기화
+
+                    setShowQuizSuccess(false);
+                    setShowQuizFailure(false);
+                }, 5000);
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -1102,7 +1100,7 @@ const VideoChatPage = () => {
                                 {quizChallenger ===
                                     JSON.parse(publisher.stream.connection.data)
                                         .userId &&
-                                    !isChallengeCompleted && (
+                                    quizInProgress && (
                                         <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
                                                 <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
@@ -1207,7 +1205,7 @@ const VideoChatPage = () => {
                                         JSON.parse(
                                             subscriber.stream.connection.data
                                         ).userId &&
-                                    !isChallengeCompleted && (
+                                    quizInProgress && (
                                         <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
                                                 <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
@@ -1380,7 +1378,7 @@ const VideoChatPage = () => {
                                     </div>
                                     <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform -rotate-3">
                                         <p className="animate-bounce">
-                                            정답이 틀렸습니다..
+                                            오답입니다..
                                         </p>
                                     </div>
                                     <div className="flex-1 text-right space-y-2">

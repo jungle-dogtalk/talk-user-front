@@ -96,11 +96,13 @@ const RaccoonHand = React.memo((props) => {
 
     useEffect(() => {
         if (props.quizResult === 'success') {
+            quizInProgressRef.current = true;
             isQuizCompletedRef.current = true;
             changeVictoryModel();
         }
 
         if (props.quizResult === 'failure') {
+            quizInProgressRef.current = false;
             handleIceBreaking();
         }
     }, [props.quizResult, props.quizResultTrigger]);
@@ -271,10 +273,15 @@ const RaccoonHand = React.memo((props) => {
                     //     );
                     //     break;
                     case 'Victory':
-                        console.log('브이감지');
+                        console.log(
+                            '브이감지 퀴즈 진행중?-> ',
+                            quizInProgressRef.current
+                        );
+
                         if (isQuizCompletedRef.current) {
                             break;
                         }
+
                         if (!quizInProgressRef.current) {
                             performQuiz();
                         }
