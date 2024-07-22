@@ -48,14 +48,14 @@ const QuestionPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#f7f3e9] to-[#e4d7c7]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 flex items-center justify-between shadow-xl">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 flex items-center justify-between shadow-xl">
                 <img
                     src={logo}
                     alt="멍톡 로고"
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-2xl transform hover:scale-110 transition duration-300"
                 />
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-4 px-12 sm:py-5 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-xl hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-2xl sm:text-4xl font-bold"
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-12 sm:py-4 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-xl hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-2xl sm:text-4xl font-bold"
                     onClick={handleBack}
                 >
                     뒤로가기
@@ -68,22 +68,22 @@ const QuestionPage = () => {
                     </h2>
                     <div className="flex flex-col items-center">
                         <div className="bg-gradient-to-r from-[#e4d7c7] to-[#f7f3e9] p-8 rounded-2xl mb-6 w-full text-center shadow-xl">
-                            <h3 className="text-2xl sm:text-5xl font-semibold text-[#5c3d2e] leading-relaxed">
+                            <h3 className="text-base sm:text-5xl font-semibold text-[#5c3d2e] leading-relaxed">
                                 MBTI({userMbti})를 바탕으로 <br /> 본인을
                                 소개해주세요.
                             </h3>
                         </div>
                     </div>
-                    <div className="space-y-9">
+                    <div className="space-y-8">
                         <textarea
-                            className="w-full p-6 border-3 border-[#a16e47] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#a16e47] focus:ring-opacity-50 resize-none shadow-inner text-2xl sm:text-5xl transition duration-300 ease-in-out placeholder:text-3xl sm:placeholder:text-5xl"
+                            className="w-full p-6 border-3 border-[#a16e47] rounded-xl focus:outline-none focus:ring-4 focus:ring-[#a16e47] focus:ring-opacity-50 resize-none shadow-inner text-2xl sm:text-5xl transition duration-300 ease-in-out placeholder:text-xl sm:placeholder:text-5xl"
                             placeholder="답변을 입력하세요..."
                             rows="10" // 세로 길이 조정
                             value={answer}
                             onChange={handleAnswerChange}
                         ></textarea>
                         <button
-                            className="mt-8 bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-[#f7f3e9] py-4 px-8 rounded-full border-2 border-[#a16e47] hover:from-[#e4d7c7] hover:to-[#d3c0a9] hover:text-[#a16e47] transition duration-300 ease-in-out w-full text-2xl sm:text-6xl font-bold shadow-xl hover:shadow-2xl transform hover:scale-105"
+                            className="mt-8 bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-[#f7f3e9] py-4 px-8 rounded-full border-2 border-[#a16e47] hover:from-[#e4d7c7] hover:to-[#d3c0a9] hover:text-[#a16e47] transition duration-300 ease-in-out w-full text-xl sm:text-6xl font-bold shadow-xl hover:shadow-2xl transform hover:scale-105"
                             onClick={handleAnswerSubmit}
                         >
                             답변 제출
