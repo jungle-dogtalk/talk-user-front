@@ -71,11 +71,17 @@ const ProfilePage = () => {
 
     // 관심사 클릭 핸들러
     const handleInterestClick = (interest) => {
-        setClickedInterests((prevState) =>
-            prevState.includes(interest)
-                ? prevState.filter((i) => i !== interest)
-                : [...prevState, interest]
-        ); // 관심사 선택/해제 토글
+        if (clickedInterests.includes(interest)) {
+            setClickedInterests((prevState) =>
+                prevState.filter((i) => i !== interest)
+            ); // 관심사 해제
+        } else {
+            if (clickedInterests.length < 3) {
+                setClickedInterests((prevState) => [...prevState, interest]); // 관심사 추가
+            } else {
+                alert('최대 3개의 관심사만 선택할 수 있습니다.');
+            }
+        }
     };
 
     // 파일 선택 핸들러

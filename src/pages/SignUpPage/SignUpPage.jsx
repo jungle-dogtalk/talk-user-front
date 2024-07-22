@@ -96,7 +96,11 @@ const SignUpPage = () => {
                 interests.filter((interest) => interest !== interestName)
             );
         } else {
-            setInterests([...interests, interestName]);
+            if (interests.length < 3) {
+                setInterests([...interests, interestName]);
+            } else {
+                alert('최대 3개의 관심사만 선택할 수 있습니다.');
+            }
         }
     };
 
