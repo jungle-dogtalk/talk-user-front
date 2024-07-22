@@ -70,7 +70,6 @@ const VideoChatPage = () => {
 
     const [isRecommending, setIsRecommending] = useState(false);
 
-
     const [isMissionInProgress, setIsMissionInProgress] = useState(false);
 
     const handleLogoClick = () => {
@@ -270,14 +269,14 @@ const VideoChatPage = () => {
             }
         }
 
-        const username = userInfo.username;
+        const nickname = userInfo.nickname;
 
-        console.log('중단하기 요청 전송:', { username, sessionId });
+        console.log('중단하기 요청 전송:', { nickname, sessionId });
 
         try {
             // 기존 leaveSession 로직
             const response = await apiCall(API_LIST.END_CALL, {
-                username,
+                nickname,
                 sessionId,
             });
 
@@ -309,7 +308,7 @@ const VideoChatPage = () => {
         } finally {
             setIsLeaving(false);
         }
-    }, [session, publisher, userInfo.username, location.search, isLeaving]);
+    }, [session, publisher, userInfo.nickname, location.search, isLeaving]);
 
     const startStreaming = (session, OV, mediaStream, pitchValue) => {
         setTimeout(() => {
@@ -394,9 +393,9 @@ const VideoChatPage = () => {
             // 음성 인식 시작
             startSpeechRecognition(
                 publisher.stream.getMediaStream(),
-                userInfo.username
+                userInfo.nickname
             );
-            startInactivityTimer();
+            // startInactivityTimer();
 
             socket.current.emit('joinSession', sessionId);
         }, 1000);
@@ -643,7 +642,7 @@ const VideoChatPage = () => {
     }, [location, joinSession]);
 
     // 텍스트 데이터를 서버로 전송하는 함수
-    const sendTranscription = (username, transcript) => {
+    const sendTranscription = (nickname, transcript) => {
         console.log('transcript: ', transcript);
         const sessionId = new URLSearchParams(location.search).get('sessionId');
         if (!transcript || transcript == '') {
@@ -651,9 +650,9 @@ const VideoChatPage = () => {
             console.log('Transcript is empty or null:', transcript);
             return;
         }
-        console.log('서버로 전송: ', { username, transcript, sessionId });
+        console.log('서버로 전송: ', { nickname, transcript, sessionId });
         apiCall(API_LIST.RECEIVE_TRANSCRIPT, {
-            username,
+            nickname,
             transcript,
             sessionId,
         })
@@ -674,7 +673,7 @@ const VideoChatPage = () => {
     };
 
     // 음성인식 시작
-    const startSpeechRecognition = (stream, username) => {
+    const startSpeechRecognition = (stream, nickname) => {
         // 브라우저 지원 확인
         if (!('webkitSpeechRecognition' in window)) {
             console.error('speech recognition을 지원하지 않는 브라우저');
@@ -697,10 +696,10 @@ const VideoChatPage = () => {
                 if (event.results[i].isFinal) {
                     const transcript = event.results[i][0].transcript;
                     console.log('Mozilla result:', {
-                        username,
+                        nickname,
                         transcript,
                     });
-                    sendTranscription(username, transcript);
+                    sendTranscription(nickname, transcript);
                     setSttResults((prevResults) => [
                         ...prevResults,
                         transcript,
