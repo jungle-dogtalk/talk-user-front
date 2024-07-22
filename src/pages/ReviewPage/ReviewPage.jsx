@@ -159,140 +159,103 @@ const ReviewPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-            <header className="w-full bg-[#a16e47] p-1 flex justify-between items-center">
-                <div className="flex items-center">
-                    <img
-                        src={logo}
-                        alt="명톡 로고"
-                        className="w-16 h-16 sm:w-24 sm:h-24 ml-2"
-                    />
-                </div>
+        <div className="h-screen bg-gray-100 flex flex-col">
+            <header className="w-full bg-[#a16e47] p-3 flex items-center">
+                <img
+                    src={logo}
+                    alt="명톡 로고"
+                    className="w-20 h-20 sm:w-24 sm:h-24 ml-2"
+                />
             </header>
-            <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-4 w-full max-w-md sm:max-w-4xl">
-                <h2
-                    className="text-lg sm:text-2xl font-bold text-center mb-4"
-                    style={{ fontSize: '35px' }}
-                >
-                    통화 시간이 종료되었습니다.
-                </h2>
-                <p
-                    className="text-center mb-4 sm:mb-6"
-                    style={{ fontSize: '25px' }}
-                >
-                    즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
-                </p>
+            <div className="flex-1 overflow-hidden flex flex-col p-6 sm:p-8">
                 {topTalker && (
-                    <div className="text-center mb-4 p-2 border border-yellow-400 bg-yellow-50 rounded-lg relative">
-                        <h2
-                            className="text-xl sm:text-2xl font-bold text-yellow-600"
-                            style={{ fontSize: '28px' }}
-                        >
-                            오늘의 수다왕
-                        </h2>
-                        <img
-                            src={crownIcon}
-                            alt="왕관"
-                            className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mt-1"
-                        />
-                        <h3
-                            className="text-lg sm:text-xl font-semibold mt-1"
-                            style={{ fontSize: '25px' }}
-                        >
-                            '{topTalker.nickname}'님
-                        </h3>
-                        <p className="text-sm sm:text-base text-gray-600 mt-1">
-                            발화량: {topTalker.utterance} %
-                        </p>
-                        <img
-                            src={celebrationEffect}
-                            alt="축하 이펙트"
-                            className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mt-2"
-                        />
+                    <div className="text-center mb-6 p-5 border-2 border-yellow-400 bg-yellow-50 rounded-lg flex items-center justify-center">
+                        <div>
+                            <h2 className="text-3xl sm:text-6xl font-bold text-yellow-600 mb-3">
+                                오늘의 수다왕
+                            </h2>
+                            <h3 className="text-2xl sm:text-5xl font-semibold mb-2">
+                                '{topTalker.nickname}'님
+                            </h3>
+                            <p className="text-xl sm:text-4xl text-gray-600">
+                                발화량: {topTalker.utterance} %
+                            </p>
+                        </div>
+                        <div className="ml-8">
+                            <img
+                                src={crownIcon}
+                                alt="왕관"
+                                className="w-20 h-20 sm:w-24 sm:h-24"
+                            />
+                            <img
+                                src={celebrationEffect}
+                                alt="축하 이펙트"
+                                className="w-20 h-20 sm:w-24 sm:h-24 mt-3"
+                            />
+                        </div>
                     </div>
                 )}
-
-                <div className="space-y-4 sm:space-y-6">
+    
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 flex-1">
                     {sessionData && sessionData.length > 0 ? (
                         sessionData.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-50 p-2 sm:p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
+                                className="bg-white p-6 sm:p-8 rounded-lg shadow-lg flex items-center space-x-6"
                             >
-                                <img
-                                    src={user.profileImage}
-                                    alt="프로필"
-                                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
-                                />
-                                <div className="flex-1">
-                                    <h3
-                                        className="text-base sm:text-xl font-semibold"
-                                        style={{ fontSize: '25px' }}
-                                    >
-                                        {user.nickname}{' '}
-                                        <span className="text-sm text-gray-500">
-                                            발화량 {user.utterance || 0}
-                                        </span>
-                                    </h3>
-                                    <div className="flex space-x-1 mt-2">
+                                <div className="flex flex-col items-center space-y-4">
+                                    <img
+                                        src={user.profileImage}
+                                        alt="프로필"
+                                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full"
+                                    />
+                                    <div className="flex space-x-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`cursor-pointer text-xl sm:text-2xl ${
+                                                className={`cursor-pointer text-4xl sm:text-5xl ${
                                                     ratings[index] >= star
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
                                                 }`}
-                                                onClick={() =>
-                                                    handleRatingChange(
-                                                        index,
-                                                        star
-                                                    )
-                                                }
+                                                onClick={() => handleRatingChange(index, star)}
                                             >
                                                 ★
                                             </span>
                                         ))}
                                     </div>
                                 </div>
-                                <button
-                                    className="bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center space-x-2"
-                                    onClick={() => handleReport(user.nickname)}
-                                >
-                                    <span style={{ fontSize: '20px' }}>
-                                        신고하기
-                                    </span>
-                                    <img
-                                        src={Declaration}
-                                        alt="이모티콘"
-                                        className="w-4 h-4 sm:w-6 sm:h-6"
-                                    />
-                                </button>
+                                <div className="flex-1">
+                                    <h3 className="text-4xl sm:text-8xl font-semibold mb-3">
+                                        {user.nickname}
+                                    </h3>
+                                    <p className="text-3xl sm:text-6xl text-gray-500">
+                                        발화량 {user.utterance || 0}
+                                    </p>
+                                </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-center">Now Loading..</p>
+                        <p className="text-center text-3xl col-span-2">Now Loading..</p>
                     )}
                 </div>
-                <div className="flex justify-center mt-8 sm:mt-12 space-x-4">
+                <div className="flex justify-center mt-8 sm:mt-10 space-x-8">
                     <button
-                        className="bg-gray-300 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-full"
+                        className="bg-gray-300 text-black px-10 py-5 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
                         onClick={fetchFeedback}
-                        style={{ fontSize: '22px' }}
                     >
                         AI 피드백
                     </button>
                     <button
-                        className="bg-green-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full"
+                        className="bg-green-500 text-white px-10 py-5 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
                         onClick={handleSubmitReview}
-                        style={{ fontSize: '22px' }}
                     >
                         완료
                     </button>
                 </div>
             </div>
 
-            {reportingUser && (
+            {/* {reportingUser && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
                         <header className="bg-[#a16e47] text-white p-4 rounded-t-lg flex justify-between items-center">
@@ -364,7 +327,7 @@ const ReviewPage = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            )} */}
 
             {isFeedbackModalOpen && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
@@ -392,6 +355,8 @@ const ReviewPage = () => {
                     </div>
                 </div>
             )}
+
+            
         </div>
     );
 };
