@@ -769,6 +769,14 @@ const VideoChatPage = () => {
         // 디버깅을 위한 로그
         console.log(`text: '${text}', pattern: '${pattern}'`);
 
+        // text와 pattern이 undefined일 경우 빈 문자열로 설정 처리
+        text = text || '';
+        pattern = pattern || '';
+
+        // text와 pattern을 소문자로 변환
+        text = text.toLowerCase();
+        pattern = pattern.toLowerCase();
+
         // text와 pattern의 모든 공백 제거
         text = text.replace(/\s+/g, '');
         pattern = pattern.replace(/\s+/g, '');
