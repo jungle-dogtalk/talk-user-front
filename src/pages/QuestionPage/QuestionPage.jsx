@@ -55,20 +55,20 @@ const QuestionPage = () => {
                     className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-2xl transform hover:scale-110 transition duration-300"
                 />
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-4 px-12 sm:py-6 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-xl hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-2xl sm:text-4xl font-bold"
+                    className="bg-[#f7f3e9] text-[#a16e47] py-4 px-12 sm:py-5 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-xl hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-2xl sm:text-4xl font-bold"
                     onClick={handleBack}
                 >
                     뒤로가기
                 </button>
             </header>
             <main className="flex flex-1 flex-col items-center justify-start w-full p-8 sm:p-12">
-                <div className="w-full max-w-5xl p-10 sm:p-12 rounded-3xl bg-white shadow-2xl space-y-10 mt-12 transform hover:scale-102 transition duration-300">
+                <div className="w-full max-w-5xl p-10 sm:p-8 rounded-3xl bg-white shadow-2xl space-y-6 mt-12 transform hover:scale-102 transition duration-300">
                     <h2 className="text-4xl sm:text-8xl font-bold mb-8 text-center text-[#a16e47] tracking-wider">
                         도입 질문
                     </h2>
                     <div className="flex flex-col items-center">
-                        <div className="bg-gradient-to-r from-[#e4d7c7] to-[#f7f3e9] p-10 rounded-2xl mb-8 w-full text-center shadow-xl">
-                            <h3 className="text-2xl sm:text-6xl font-semibold text-[#5c3d2e] leading-relaxed">
+                        <div className="bg-gradient-to-r from-[#e4d7c7] to-[#f7f3e9] p-8 rounded-2xl mb-6 w-full text-center shadow-xl">
+                            <h3 className="text-2xl sm:text-5xl font-semibold text-[#5c3d2e] leading-relaxed">
                                 MBTI({userMbti})를 바탕으로 <br /> 본인을
                                 소개해주세요.
                             </h3>
