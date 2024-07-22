@@ -20,6 +20,8 @@ const ProfilePage = () => {
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
     const [clickedInterests, setClickedInterests] = useState([]); // 클릭된 관심사 상태
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
+    const [mbti, setMbti] = useState(userInfo?.mbti || '');
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 정의
 
     // 사용자 프로필 이미지를 설정하는 useEffect
     useEffect(() => {
@@ -29,7 +31,15 @@ const ProfilePage = () => {
         if (userInfo && userInfo.interests) {
             setClickedInterests(userInfo.interests);
         }
+        if (userInfo && userInfo.mbti) {
+            setMbti(userInfo.mbti);
+        }
     }, [userInfo]);
+
+    // MBTI 입력 핸들러 추가
+    const handleMbtiChange = (e) => {
+        setMbti(e.target.value);
+    };
 
     // 계정 삭제 핸들러
     const handleDeleteAccount = async () => {
@@ -54,6 +64,10 @@ const ProfilePage = () => {
             alert('계정 삭제 중 오류가 발생했습니다.');
         }
     };
+
+    // 모달 열기/닫기 핸들러
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     // 관심사 클릭 핸들러
     const handleInterestClick = (interest) => {
@@ -84,6 +98,7 @@ const ProfilePage = () => {
             formData.append('profileImage', selectedFile); // 선택된 파일이 있으면 FormData에 추가
         }
         formData.append('interests', JSON.stringify(clickedInterests)); // 관심사 목록을 JSON 문자열로 변환하여 추가
+        formData.append('mbti', mbti);
 
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
@@ -118,56 +133,80 @@ const ProfilePage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFF0D6] items-center">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 sm:p-1 flex items-center justify-between shadow-sm">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 sm:p-3 flex items-center justify-between shadow-md">
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-12 h-12 sm:w-16 sm:h-16"
+                    className="w-16 h-16 sm:w-20 sm:h-20" // 로고 크기 증가
                 />
                 <button
-                    className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#e4d7c7] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
-                    onClick={handleDeleteAccount}
+                    className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
+                    onClick={openModal}
                 >
                     탈퇴하기
                 </button>
             </header>
-            <div className="flex flex-col items-center py-4 sm:py-8 flex-1 w-full px-4 sm:px-0">
-                <div className="relative mb-4 sm:mb-8">
-                    <img
-                        src={profileImage}
-                        alt="프로필 사진"
-                        className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-[#a16e47] shadow-md object-cover"
-                    />
-                    <label
-                        htmlFor="file-input"
-                        className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer shadow-sm hover:shadow-md transition duration-300"
-                    >
+            <div className="flex flex-col items-center py-6 sm:py-10 flex-1 w-full max-w-7xl px-4 sm:px-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center w-full mb-12 space-x-0 sm:space-x-24">
+                    <div className="relative mb-8 sm:mb-0">
                         <img
-                            src={editIcon}
-                            alt="수정 아이콘"
-                            className="w-4 h-4 sm:w-6 sm:h-6"
+                            src={profileImage}
+                            alt="프로필 사진"
+                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full border-4 border-[#a16e47] shadow-lg object-cover"
                         />
-                    </label>
-                    <input
-                        type="file"
-                        id="file-input"
-                        className="hidden"
-                        onChange={handleFileChange}
-                    />
+                        <label
+                            htmlFor="file-input"
+                            className="absolute bottom-2 right-2 bg-white p-3 rounded-full cursor-pointer shadow-md hover:shadow-lg transition duration-300"
+                        >
+                            <img
+                                src={editIcon}
+                                alt="수정 아이콘"
+                                className="w-8 h-8 sm:w-10 sm:h-10"
+                            />
+                        </label>
+                        <input
+                            type="file"
+                            id="file-input"
+                            className="hidden"
+                            onChange={handleFileChange}
+                        />
+                    </div>
+                    <div className="flex flex-col items-center sm:items-start">
+                        <h2 className="text-5xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                            이름: {userInfo?.name}
+                        </h2>
+                        <h3 className="text-5xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                            닉네임: {userInfo?.username}
+                        </h3>
+                        <div className="flex items-center mb-6">
+                            <h3 className="text-5xl sm:text-6xl font-bold mr-4 text-[#a16e47]">
+                                MBTI:
+                            </h3>
+                            <input
+                                type="text"
+                                id="mbti"
+                                value={mbti}
+                                onChange={handleMbtiChange}
+                                className="appearance-none border-none rounded-xl py-3 px-4 text-[#a16e47] leading-tight focus:outline-none text-3xl sm:text-6xl font-bold placeholder:text-3xl placeholder:text-[#a16e47] bg-transparent"
+                                maxLength="4"
+                                placeholder="입력하세요"
+                                style={{
+                                    width: '180px',
+                                }}
+                            />
+                        </div>
+                    </div>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-[#a16e47]">
-                    이름: {userInfo?.name}
-                </h2>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#a16e47]">
-                    닉네임: {userInfo?.username}
-                </h3>
-                <div className="w-full max-w-3xl">
-                    <div className="flex flex-col items-center mb-4">
-                        <div className="w-4/6 mx-auto mb-2">
-                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
+
+                <div className="w-full">
+                    <div className="flex flex-col items-center mb-8">
+                        <div className="w-full sm:w-5/6 mx-auto mb-4">
+                            <span className="block text-left mb-2 text-2xl sm:text-4xl font-semibold text-[#a16e47]">
                                 발화지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                            <div className="w-full h-8 sm:h-12 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                                {' '}
+                                {/* 프로그레스 바 높이 증가 */}
                                 <div
                                     className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{
@@ -175,34 +214,36 @@ const ProfilePage = () => {
                                     }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
+                            <span className="block text-right text-xl sm:text-3xl mt-2 font-bold text-[#a16e47]">
                                 {displayUtteranceScore}%
                             </span>
                         </div>
-                        <div className="w-4/6 mx-auto mb-2">
-                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
+                        <div className="w-full sm:w-5/6 mx-auto mb-4">
+                            <span className="block text-left mb-2 text-2xl sm:text-4xl font-semibold text-[#a16e47]">
                                 매너지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                            <div className="w-full h-8 sm:h-12 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                                {' '}
+                                {/* 프로그레스 바 높이 증가 */}
                                 <div
                                     className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
+                            <span className="block text-right text-xl sm:text-3xl mt-2 font-bold text-[#a16e47]">
                                 {displayMannerScore}%
                             </span>
                         </div>
                     </div>
-                    <hr className="w-full my-3 sm:my-4 border-[#a16e47] opacity-30" />
-                    <div className="text-center mt-3 sm:mt-4">
-                        <h2
-                            className="text-xl sm:text-2xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4 text-[#a16e47]"
-                            style={{ fontSize: '30px' }}
-                        >
+
+                    <hr className="w-full my-6 sm:my-8 border-[#a16e47] opacity-30" />
+                    <div className="text-center mt-6 sm:mt-8">
+                        <h2 className="text-3xl sm:text-5xl font-bold mb-6 sm:mb-8 text-[#a16e47]">
                             - 내가 고른 관심사 -
                         </h2>
-                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-7">
+                            {' '}
+                            {/* 그리드 열 수 변경 */}
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -225,46 +266,42 @@ const ProfilePage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-1 sm:p-2 w-full sm:w-28 rounded-xl border cursor-pointer flex items-center justify-center ${
+                                    className={`p-3 sm:p-4 w-full rounded-xl border-2 cursor-pointer flex items-center justify-center ${
                                         clickedInterests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
-                                    }`}
+                                    }`} // 패딩 및 테두리 두께 증가
                                     onClick={() =>
                                         handleInterestClick(interest.name)
                                     }
                                 >
-                                    <span className="text-xl sm:text-2xl mr-1">
+                                    <span className="text-3xl sm:text-5xl mr-2">
+                                        {' '}
+                                        {/* 아이콘 크기 증가 */}
                                         {interest.icon}
                                     </span>
-                                    <span
-                                        className="text-xs sm:text-sm leading-tight"
-                                        style={{ fontSize: '14px' }}
-                                    >
+                                    <span className="text-base sm:text-4xl font-medium">
+                                        {' '}
+                                        {/* 폰트 크기 및 두께 증가 */}
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <hr className="w-full my-3 sm:my-4 border-[#a16e47] opacity-30" />
-                        <h2
-                            className="text-lg sm:text-xl font-bold mt-6 sm:mt-8 mb-3 sm:mb-4 text-[#a16e47]"
-                            style={{ fontSize: '30px' }}
-                        >
+                        <hr className="w-full my-6 sm:my-8 border-[#a16e47] opacity-30" />
+                        <h2 className="text-3xl sm:text-5xl font-bold mb-6 sm:mb-8 text-[#a16e47]">
                             - AI가 예측하는 관심사 -
                         </h2>
                         <div className="flex justify-center">
-                            <div className="inline-grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 justify-center">
+                            <div className="flex flex-nowrap justify-center gap-10 sm:gap-12 overflow-x-auto">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div
                                             key={index}
-                                            className="p-1 sm:p-2 w-24 sm:w-28 rounded-xl border flex items-center justify-center bg-white m-1 sm:m-2"
+                                            className="flex p-4 sm:p-6 rounded-xl border-2 items-center justify-center bg-white"
+                                            style={{ width: '200px' }}
                                         >
-                                            <span
-                                                className="block text-center text-xs sm:text-sm"
-                                                style={{ fontSize: '18px' }}
-                                            >
+                                            <span className="text-2xl sm:text-4xl font-medium">
                                                 {interest}
                                             </span>
                                         </div>
@@ -273,17 +310,17 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
+                    <div className="flex justify-center mt-8 sm:mt-10 space-x-4 sm:space-x-6">
                         <button
                             type="button"
-                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#e4d7c7] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="bg-[#a16e47] text-white py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-sm hover:bg-[#8a5d3b] hover:shadow-md transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
+                            className="bg-[#a16e47] text-white py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#8a5d3b] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
@@ -291,6 +328,35 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gradient-to-br from-[#FFF0D6] to-[#FFFAE8] p-8 sm:p-10 rounded-2xl shadow-2xl max-w-3xl w-full text-center transform transition-transform duration-500 scale-105 hover:scale-110">
+                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 sm:mb-8 text-[#a16e47]">
+                            정말로 탈퇴하시겠습니까?
+                        </h2>
+                        <p className="mb-6 sm:mb-8 text-2xl sm:text-3xl text-[#a16e47]">
+                            <span className="font-semibold text-[#a16e47]">
+                                탈퇴를 하시면 모든 정보가 삭제됩니다.
+                            </span>
+                        </p>
+                        <div className="flex justify-center space-x-8 sm:space-x-12 mt-8 sm:mt-10">
+                            <button
+                                className="bg-[#a16e47] text-white py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#8a5d3b] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                onClick={handleDeleteAccount}
+                            >
+                                예
+                            </button>
+                            <button
+                                className="bg-[#f7f3e9] text-[#a16e47] py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                onClick={closeModal}
+                            >
+                                아니요
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -115,7 +115,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                         </button>
                         <h1 className="text-7xl font-extrabold text-blue-800 mb-6 animate-pulse">
                             <span className="relative">
-                                힌트
+                                MBTI 힌트
                                 <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
@@ -124,7 +124,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                                 "
                             </span>
                             <span className="relative z-10">
-                                {selectedUser.question}
+                                {selectedUser.answer}
                             </span>
                             <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
                                 "
