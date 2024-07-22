@@ -38,6 +38,7 @@ let transformationMatrix = null;
 let handLandmarks = [];
 let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
+let gl; // WebGL context를 위한 변수 추가
 
 const models = [
     '/blue_raccoon.glb',
@@ -198,7 +199,12 @@ const RaccoonHand = React.memo((props) => {
             })
             .then((stream) => {
                 video.srcObject = stream;
-                video.addEventListener('loadeddata', predict);
+                video.addEventListener('loadeddata', () => {
+                    // WebGL context 초기화
+                    const canvas = document.createElement('canvas');
+                    gl = canvas.getContext('webgl');
+                    predict(); // predict 함수 호출
+                });
             });
     }, []);
 
@@ -208,7 +214,17 @@ const RaccoonHand = React.memo((props) => {
         props.onQuizEvent({ quizInProgress: true });
     }, [props]);
 
-    const predict = useCallback(() => {
+    // 비동기 readPixels 호출
+    const asyncReadPixels = async (x, y, width, height, format, type) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const pixels = new Uint8Array(width * height * 4);
+                gl.readPixels(x, y, width, height, format, type, pixels);
+                resolve(pixels);
+            }, 0);
+        });
+    };
+    const predict = useCallback(async () => {
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
             lastVideoTime = video.currentTime;
@@ -271,10 +287,22 @@ const RaccoonHand = React.memo((props) => {
                         break;
                 }
             }
+
+            // 비동기로 readPixels 호출
+            const buffer = await asyncReadPixels(
+                0,
+                0,
+                video.width,
+                video.height,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE
+            );
+            // buffer 사용
+
+            setTimeout(() => {
+                requestAnimationFrame(predict);
+            }, 100); // 100ms 간격으로 실행
         }
-        setTimeout(() => {
-            requestAnimationFrame(predict);
-        }, 100); // 100ms 간격으로 실행
     }, [performQuiz]);
 
     const removeMask = useCallback(() => {
