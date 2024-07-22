@@ -143,7 +143,7 @@ const ChooseRaccoonPage = () => {
                     className="w-20 h-20 sm:w-24 sm:h-24"
                 />
             </header>
-            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-10 p-8">
+            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-10 p-8 overflow-auto">
                 {/* 왼쪽 섹션 */}
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
@@ -161,10 +161,11 @@ const ChooseRaccoonPage = () => {
                         ></video>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                     </div>
+
                     {/* 마이크 입력 테스트 섹션 */}
                     <div className="flex flex-col items-center justify-center w-full">
                         <h2
-                            className="text-5xl sm:text-6xl font-bold mb-6 text-[#8B4513] tracking-wide"
+                            className="text-4xl sm:text-6xl font-bold mb-6 text-[#8B4513] tracking-wide"
                             style={{
                                 textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
                             }}
@@ -181,10 +182,11 @@ const ChooseRaccoonPage = () => {
                         </div>
                     </div>
                 </div>
+                
                 {/* 오른쪽 섹션 */}
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
-                        className="text-6xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-4xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         선택된 마스크
@@ -196,13 +198,13 @@ const ChooseRaccoonPage = () => {
                     {/* 버튼 섹션 */}
                     <div className="flex justify-center space-x-8 mt-8">
                         <button
-                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-4xl sm:text-5xl font-bold"
+                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-5xl font-bold"
                             onClick={() => window.history.back()}
                         >
                             뒤로가기
                         </button>
                         <button
-                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-4xl sm:text-5xl font-bold"
+                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-5xl font-bold"
                             onClick={handleSelect}
                         >
                             선택
@@ -212,6 +214,8 @@ const ChooseRaccoonPage = () => {
             </div>
         </div>
     );
+    
+    
 };
 
 export default ChooseRaccoonPage;
