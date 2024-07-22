@@ -21,6 +21,7 @@ const ProfilePage = () => {
     const [clickedInterests, setClickedInterests] = useState([]); // 클릭된 관심사 상태
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
     const [mbti, setMbti] = useState(userInfo?.mbti || '');
+    const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태 정의
 
     // 사용자 프로필 이미지를 설정하는 useEffect
     useEffect(() => {
@@ -63,6 +64,10 @@ const ProfilePage = () => {
             alert('계정 삭제 중 오류가 발생했습니다.');
         }
     };
+
+    // 모달 열기/닫기 핸들러
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     // 관심사 클릭 핸들러
     const handleInterestClick = (interest) => {
@@ -136,7 +141,7 @@ const ProfilePage = () => {
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
-                    onClick={handleDeleteAccount}
+                    onClick={openModal}
                 >
                     탈퇴하기
                 </button>
@@ -275,7 +280,7 @@ const ProfilePage = () => {
                                         {/* 아이콘 크기 증가 */}
                                         {interest.icon}
                                     </span>
-                                    <span className="text-base sm:text-3xl font-medium">
+                                    <span className="text-base sm:text-4xl font-medium">
                                         {' '}
                                         {/* 폰트 크기 및 두께 증가 */}
                                         {interest.name}
@@ -288,18 +293,15 @@ const ProfilePage = () => {
                             - AI가 예측하는 관심사 -
                         </h2>
                         <div className="flex justify-center">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 sm:gap-7 justify-center">
-                                {' '}
-                                {/* 그리드 열 수 변경 */}
+                            <div className="flex flex-nowrap justify-center gap-10 sm:gap-12 overflow-x-auto">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div
                                             key={index}
-                                            className="p-3 sm:p-4 w-full rounded-xl border-2 flex items-center justify-center bg-white" // 패딩 및 테두리 두께 증가
+                                            className="flex p-4 sm:p-6 rounded-xl border-2 items-center justify-center bg-white"
+                                            style={{ width: '200px' }}
                                         >
-                                            <span className="text-lg sm:text-2xl font-medium">
-                                                {' '}
-                                                {/* 폰트 크기 및 두께 증가 */}
+                                            <span className="text-2xl sm:text-4xl font-medium">
                                                 {interest}
                                             </span>
                                         </div>
@@ -326,6 +328,35 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </div>
+
+            {isModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gradient-to-br from-[#FFF0D6] to-[#FFFAE8] p-8 sm:p-10 rounded-2xl shadow-2xl max-w-3xl w-full text-center transform transition-transform duration-500 scale-105 hover:scale-110">
+                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 sm:mb-8 text-[#a16e47]">
+                            정말로 탈퇴하시겠습니까?
+                        </h2>
+                        <p className="mb-6 sm:mb-8 text-2xl sm:text-3xl text-[#a16e47]">
+                            <span className="font-semibold text-[#a16e47]">
+                                탈퇴를 하시면 모든 정보가 삭제됩니다.
+                            </span>
+                        </p>
+                        <div className="flex justify-center space-x-8 sm:space-x-12 mt-8 sm:mt-10">
+                            <button
+                                className="bg-[#a16e47] text-white py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#8a5d3b] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                onClick={handleDeleteAccount}
+                            >
+                                예
+                            </button>
+                            <button
+                                className="bg-[#f7f3e9] text-[#a16e47] py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                onClick={closeModal}
+                            >
+                                아니요
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
