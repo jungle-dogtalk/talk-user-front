@@ -45,11 +45,9 @@ const MatchingPage = () => {
 
         // queueLengthUpdate 이벤트 수신
         socket.on('queueLengthUpdate', (newQueueLength) => {
-            console.log(queueLength);
+            console.log('큐길이 -> ', queueLength);
             setQueueLength(newQueueLength);
         });
-
-        getSessionList();
 
         return () => {
             socket.disconnect();
@@ -59,15 +57,6 @@ const MatchingPage = () => {
     const handleCancelClick = () => {
         navigate(-1);
     };
-
-    // 백엔드 서버 콘솔로그에서 OpenVidu 가용 세션 확인하기 위한 API 호출
-    const getSessionList = async () => {
-        await apiCall(API_LIST.GET_SESSION_LIST);
-    };
-
-    useEffect(() => {
-        getSessionList();
-    }, []);
 
     const createBouncingText = (text) => {
         return text
