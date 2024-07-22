@@ -356,24 +356,31 @@ const ReviewPage = () => {
             )} */}
 
             {isFeedbackModalOpen && (
-                <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-                        <h2 className="text-2xl font-bold mb-4">AI 피드백</h2>
-                        <div className="space-y-4">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
+                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 text-black animate-pulse">
+                            🤖 AI 피드백
+                        </h2>
+
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4">
                             {feedback ? (
                                 feedback.split('\n').map((line, index) => (
-                                    <p key={index} className="text-gray-800">
+                                    <p
+                                        key={index}
+                                        className="text-xl sm:text-2xl text-black leading-relaxed tracking-wide"
+                                    >
                                         {line}
                                     </p>
                                 ))
                             ) : (
-                                <p className="text-gray-800">
+                                <p className="text-2xl sm:text-3xl text-gray-600 animate-pulse">
                                     피드백을 불러오는 중...
                                 </p>
                             )}
                         </div>
+
                         <button
-                            className="mt-6 bg-red-500 text-white px-4 py-2 rounded-full"
+                            className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
                             onClick={() => setIsFeedbackModalOpen(false)}
                         >
                             닫기
