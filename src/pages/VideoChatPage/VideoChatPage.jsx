@@ -70,13 +70,19 @@ const VideoChatPage = () => {
 
     const [isRecommending, setIsRecommending] = useState(false);
 
+
+    const [isMissionInProgress, setIsMissionInProgress] = useState(false);
+
     const handleLogoClick = () => {
-        setShowFaceRevealModal(true);
-        setTimeout(() => setShowFaceRevealModal(false), 5000);
+        if (!isMissionInProgress && !showFaceRevealModal) {
+            setShowFaceRevealModal(true);
+            setTimeout(() => setShowFaceRevealModal(false), 5000);
+        }
     };
 
     const handleQuizInProgress = (payload) => {
         console.log('자식컴포넌트로부터 넘겨받은 데이터 -> ', payload);
+        setIsMissionInProgress(true);
         setSession((currentSession) => {
             if (currentSession) {
                 currentSession.signal({
@@ -96,6 +102,7 @@ const VideoChatPage = () => {
         });
     };
     const finishQuizMission = () => {
+        setIsMissionInProgress(false);
         session.signal({
             data: JSON.stringify({
                 userId: userInfo.username,
