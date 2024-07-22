@@ -145,7 +145,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                 <div className="flex-grow flex flex-col justify-between space-y-1">
                     {speechLengths.map((user, index) => (
                         <div
-                            key={user.username}
+                            key={user.nickname}
                             className="transition-all duration-500 ease-in-out flex items-center space-x-2 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
                             style={{ animationDelay: `${index * 100}ms` }}
                         >
@@ -154,7 +154,7 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                                     <span className="text-2xl font-semibold text-amber-800">
                                         {index + 1}등{' '}
                                         <span className="text-2xl">
-                                            {user.username}
+                                            {user.nickname}
                                         </span>
                                     </span>
                                     <span className="text-2xl font-medium text-amber-700">
