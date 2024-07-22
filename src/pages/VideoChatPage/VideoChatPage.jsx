@@ -515,7 +515,7 @@ const VideoChatPage = () => {
                 console.log(
                     'User ' + event.connection.connectionId + ' start speaking'
                 );
-                resetInactivityTimer(); // Reset inactivity timer on speech detected
+                // resetInactivityTimer(); // Reset inactivity timer on speech detected
                 setSpeakingUsers((prev) =>
                     new Set(prev).add(event.connection.connectionId)
                 );
@@ -526,7 +526,7 @@ const VideoChatPage = () => {
                 console.log(
                     'User ' + event.connection.connectionId + ' stop speaking'
                 );
-                startInactivityTimer(); // Start inactivity timer on speech stop detected
+                // startInactivityTimer(); // Start inactivity timer on speech stop detected
                 setSpeakingUsers((prev) => {
                     const newSet = new Set(prev);
                     newSet.delete(event.connection.connectionId);
@@ -916,57 +916,58 @@ const VideoChatPage = () => {
         );
     };
 
-    // TTS 기능 추가
-    const handleTTS = useCallback(
-        (username, message) => {
-            const utterance = new SpeechSynthesisUtterance(
-                `${username}님, ${message}`
-            );
-            utterance.lang = 'ko-KR';
-            utterance.onend = () => {
-                // TTS가 끝나면 스트림을 종료합니다.
-                if (ttsStreamRef.current) {
-                    const tracks = ttsStreamRef.current.getTracks();
-                    tracks.forEach((track) => track.stop());
-                    ttsStreamRef.current = null;
-                }
-            };
-            window.speechSynthesis.speak(utterance);
+    // // TTS 기능 추가
+    // const handleTTS = useCallback(
+    //     (username, message) => {
+    //         const utterance = new SpeechSynthesisUtterance(
+    //             `${username}님, ${message}`
+    //         );
+    //         utterance.lang = 'ko-KR';
+    //         utterance.onend = () => {
+    //             // TTS가 끝나면 스트림을 종료합니다.
+    //             if (ttsStreamRef.current) {
+    //                 const tracks = ttsStreamRef.current.getTracks();
+    //                 tracks.forEach((track) => track.stop());
+    //                 ttsStreamRef.current = null;
+    //             }
+    //         };
+    //         window.speechSynthesis.speak(utterance);
 
-            // Web Audio API를 사용하여 TTS를 MediaStream으로 변환
-            const audioContext = new (window.AudioContext ||
-                window.webkitAudioContext)();
-            const destination = audioContext.createMediaStreamDestination();
-            const source = audioContext.createMediaElementSource(
-                utterance.audioElement
-            );
-            source.connect(destination);
-            source.connect(audioContext.destination);
+    //         // Web Audio API를 사용하여 TTS를 MediaStream으로 변환
+    //         const audioContext = new (window.AudioContext ||
+    //             window.webkitAudioContext)();
+    //         const destination = audioContext.createMediaStreamDestination();
+    //         const source = audioContext.createMediaElementSource(
+    //             utterance.audioElement
+    //         );
+    //         source.connect(destination);
+    //         source.connect(audioContext.destination);
 
-            // TTS 스트림을 OpenVidu로 송출
-            const ttsStream = destination.stream;
-            ttsStreamRef.current = ttsStream;
-            const ttsPublisher = OV.initPublisher(undefined, {
-                audioSource: ttsStream.getAudioTracks()[0],
-                videoSource: null,
-                publishAudio: true,
-                publishVideo: false,
-            });
-            session.publish(ttsPublisher);
-        },
-        [OV, session]
-    );
+    //         // TTS 스트림을 OpenVidu로 송출
+    //         const ttsStream = destination.stream;
+    //         ttsStreamRef.current = ttsStream;
+    //         const ttsPublisher = OV.initPublisher(undefined, {
+    //             audioSource: ttsStream.getAudioTracks()[0],
+    //             videoSource: null,
+    //             publishAudio: true,
+    //             publishVideo: false,
+    //         });
+    //         session.publish(ttsPublisher);
+    //     },
+    //     [OV, session]
+    // );
 
-    const startInactivityTimer = () => {
-        clearTimeout(inactivityTimeoutRef.current);
-        inactivityTimeoutRef.current = setTimeout(() => {
-            handleTTS(userInfo.username, '말하세요');
-        }, 10000); // 10초 후에 "말하세요" TTS 재생
-    };
+    // // TTS 기능 비활성화
+    // const startInactivityTimer = () => {
+    //     clearTimeout(inactivityTimeoutRef.current);
+    //     inactivityTimeoutRef.current = setTimeout(() => {
+    //         handleTTS(userInfo.username, '말하세요');
+    //     }, 10000); // 10초 후에 "말하세요" TTS 재생
+    // };
 
-    const resetInactivityTimer = () => {
-        clearTimeout(inactivityTimeoutRef.current);
-    };
+    // const resetInactivityTimer = () => {
+    //     clearTimeout(inactivityTimeoutRef.current);
+    // };
 
     // // 자기소개 이벤트 모달
     // const WelcomeModal = ({ sessionData }) => {
