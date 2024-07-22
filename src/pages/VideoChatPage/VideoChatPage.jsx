@@ -900,21 +900,21 @@ const VideoChatPage = () => {
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-8 rounded-2xl shadow-2xl max-w-md w-full text-center transform transition-transform scale-105 hover:scale-110">
-                    <h2 className="text-3xl font-extrabold mb-4 text-orange-800">
+                <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-8 sm:p-12 lg:p-16 rounded-2xl shadow-2xl max-w-sm sm:max-w-lg lg:max-w-2xl w-full text-center transform transition-transform scale-105 hover:scale-110">
+                    <h2 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold mb-6 sm:mb-8 lg:mb-10 text-orange-800">
                         답변을 맞출 대상
                     </h2>
-                    <p className="mb-4 text-lg text-orange-700">
+                    <p className="mb-6 sm:mb-8 lg:mb-10 text-2xl sm:text-4xl lg:text-5xl text-orange-700">
                         <span className="font-semibold text-orange-800">
                             "{sessionData[targetUserIndexRef.current].nickname}"
                         </span>{' '}
                         님에 대한 MBTI를 맞춰보세요.
                     </p>
-                    <p className="mb-4 font-bold text-xl text-orange-800 bg-orange-200 p-4 rounded-lg shadow-inner">
+                    <p className="mb-6 sm:mb-8 lg:mb-10 font-bold text-3xl sm:text-5xl lg:text-5xl text-orange-800 bg-orange-200 p-6 sm:p-8 lg:p-10 rounded-lg shadow-inner">
                         MBTI 힌트 : "
                         {sessionData[targetUserIndexRef.current].answer}"
                     </p>
-                    <p className="text-sm text-orange-500">
+                    <p className="text-lg sm:text-2xl lg:text-3xl text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
                     </p>
                 </div>
@@ -1050,13 +1050,13 @@ const VideoChatPage = () => {
                 </div>
 
                 <div className="flex items-center">
-                    <h2 className="text-white text-2xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
+                    <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
                     <button
                         onClick={leaveSession}
-                        className="text-white text-xl bg-gradient-to-r from-red-500 to-red-600 px-7 py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors duration-300 shadow-lg transform hover:scale-105"
+                        className="text-white text-3xl bg-gradient-to-r from-red-500 to-red-600 px-7 py-3 rounded-lg hover:from-red-600 hover:to-red-700 transition-colors duration-300 shadow-lg transform hover:scale-105"
                     >
                         중단하기
                     </button>
@@ -1096,7 +1096,7 @@ const VideoChatPage = () => {
                                     }`}
                                 />
 
-                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-black text-5xl sm:text-6xl md:text-6xl tracking-widest font-extrabold shadow-text">
                                     {
                                         JSON.parse(
                                             publisher.stream.connection.data
@@ -1139,7 +1139,7 @@ const VideoChatPage = () => {
                                     }
                                 `}</style>
 
-                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
                                     <div className="flex justify-center items-center w-full">
                                         {sessionData
                                             .find(
@@ -1151,7 +1151,7 @@ const VideoChatPage = () => {
                                             .map((interest, index) => (
                                                 <span
                                                     key={index}
-                                                    className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
+                                                    className="text-2xl sm:text-3xl md:text-4xl px-6 sm:px-8 py-1 sm:py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                 >
                                                     {interest}
                                                 </span>
@@ -1200,7 +1200,7 @@ const VideoChatPage = () => {
                                             : ''
                                     }`}
                                 />
-                                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 text-black text-4xl tracking-widest font-extrabold">
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-black text-5xl m:text-6xl md:text-6xl tracking-widest font-extrabold shadow-text">
                                     {subscriber.stream.connection.data &&
                                         JSON.parse(
                                             subscriber.stream.connection.data
@@ -1227,7 +1227,7 @@ const VideoChatPage = () => {
                                         </div>
                                     )}
 
-                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-3">
+                                <div className="absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
                                     <div className="flex justify-center items-center w-full">
                                         {subscriber.stream.connection.data &&
                                             sessionData
@@ -1243,7 +1243,7 @@ const VideoChatPage = () => {
                                                 .map((interest, index) => (
                                                     <span
                                                         key={index}
-                                                        className="text-xl px-6 py-2 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
+                                                        className="text-2xl sm:text-3xl md:text-4xl px-6 sm:px-8 py-1 sm:py-1 bg-[#d4b894] text-[#4a3728] font-bold rounded-full mx-3 whitespace-nowrap transform transition-all duration-300 hover:scale-105 hover:bg-[#e7d4b5] tracking-wide"
                                                     >
                                                         {interest}
                                                     </span>
