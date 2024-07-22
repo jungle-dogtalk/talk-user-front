@@ -195,8 +195,27 @@ const ReviewPage = () => {
                         </div>
                     </div>
                 )}
-    
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 flex-1">
+                    {/* 본인 정보 표시 */}
+                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-6">
+                        <div className="flex flex-col items-center space-y-2 sm:space-y-3">
+                            <img
+                                src={userInfo.profileImage || videoPlaceholder}
+                                alt="프로필"
+                                className="w-24 h-24 sm:w-32 sm:h-32 lg:w-36 lg:h-36 rounded-full ml-10" // 왼쪽 마진 추가
+                            />
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-2xl sm:text-4xl lg:text-6xl font-semibold mb-2 ml-16">
+                                나
+                            </h3>
+                            <p className="text-xl sm:text-3xl lg:text-4xl text-gray-500">
+                                발화량: {userInfo.utterance || 0}%
+                            </p>
+                        </div>
+                    </div>
+
                     {sessionData && sessionData.length > 0 ? (
                         sessionData.map((user, index) => (
                             <div
@@ -218,7 +237,12 @@ const ReviewPage = () => {
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
                                                 }`}
-                                                onClick={() => handleRatingChange(index, star)}
+                                                onClick={() =>
+                                                    handleRatingChange(
+                                                        index,
+                                                        star
+                                                    )
+                                                }
                                             >
                                                 ★
                                             </span>
@@ -236,7 +260,9 @@ const ReviewPage = () => {
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-2xl sm:text-3xl col-span-2">Now Loading..</p>
+                        <p className="text-center text-2xl sm:text-3xl col-span-2">
+                            Now Loading..
+                        </p>
                     )}
                 </div>
                 <div className="flex justify-center mt-4 sm:mt-6 space-x-4 sm:space-x-6">
@@ -355,8 +381,6 @@ const ReviewPage = () => {
                     </div>
                 </div>
             )}
-
-            
         </div>
     );
 };
