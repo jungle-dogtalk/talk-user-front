@@ -20,6 +20,7 @@ const ProfilePage = () => {
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
     const [clickedInterests, setClickedInterests] = useState([]); // 클릭된 관심사 상태
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
+    const [mbti, setMbti] = useState(userInfo?.mbti || '');
 
     // 사용자 프로필 이미지를 설정하는 useEffect
     useEffect(() => {
@@ -29,7 +30,15 @@ const ProfilePage = () => {
         if (userInfo && userInfo.interests) {
             setClickedInterests(userInfo.interests);
         }
+        if (userInfo && userInfo.mbti) {
+            setMbti(userInfo.mbti);
+        }
     }, [userInfo]);
+
+    // MBTI 입력 핸들러 추가
+    const handleMbtiChange = (e) => {
+        setMbti(e.target.value);
+    };
 
     // 계정 삭제 핸들러
     const handleDeleteAccount = async () => {
@@ -84,6 +93,7 @@ const ProfilePage = () => {
             formData.append('profileImage', selectedFile); // 선택된 파일이 있으면 FormData에 추가
         }
         formData.append('interests', JSON.stringify(clickedInterests)); // 관심사 목록을 JSON 문자열로 변환하여 추가
+        formData.append('mbti', mbti);
 
         try {
             const token = Cookies.get('token'); // 쿠키에서 토큰을 가져옴
@@ -155,19 +165,36 @@ const ProfilePage = () => {
                         onChange={handleFileChange}
                     />
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-[#a16e47]">
+                <h2 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-[#a16e47]">
                     이름: {userInfo?.name}
                 </h2>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4 text-[#a16e47]">
+                <h3 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-5 text-[#a16e47]">
                     닉네임: {userInfo?.username}
                 </h3>
-                <div className="w-full max-w-3xl">
-                    <div className="flex flex-col items-center mb-4">
-                        <div className="w-4/6 mx-auto mb-2">
-                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
+
+                <div className="flex items-center mb-6">
+                    <h3 className="text-2xl sm:text-3xl font-bold mr-3 text-[#a16e47]">
+                        MBTI:
+                    </h3>
+                    <input
+                        type="text"
+                        id="mbti"
+                        value={mbti}
+                        onChange={handleMbtiChange}
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline text-2xl sm:text-3xl font-bold placeholder:text-base"
+                        maxLength="4"
+                        placeholder="입력하세요"
+                        style={{ width: '120px', backgroundColor: '#FFF0D6' }}
+                    />
+                </div>
+
+                <div className="w-full max-w-4xl">
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="w-5/6 mx-auto mb-2">
+                            <span className="block text-left mb-2 text-xl sm:text-3xl font-semibold text-[#a16e47]">
                                 발화지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                            <div className="w-full h-7 sm:h-9 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
                                     className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{
@@ -175,25 +202,26 @@ const ProfilePage = () => {
                                     }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
+                            <span className="block text-right text-lg sm:text-xl mt-2 font-bold text-[#a16e47]">
                                 {displayUtteranceScore}%
                             </span>
                         </div>
-                        <div className="w-4/6 mx-auto mb-2">
-                            <span className="block text-left mb-1 text-base sm:text-lg font-semibold text-[#a16e47]">
+                        <div className="w-5/6 mx-auto mb-2">
+                            <span className="block text-left mb-2 text-xl sm:text-3xl font-semibold text-[#a16e47]">
                                 매너지수
                             </span>
-                            <div className="w-full h-5 sm:h-7 bg-gray-200 rounded-full shadow-inner overflow-hidden">
+                            <div className="w-full h-7 sm:h-9 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
                                     className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-sm sm:text-base mt-1 font-bold text-[#a16e47]">
+                            <span className="block text-right text-lg sm:text-xl mt-2 font-bold text-[#a16e47]">
                                 {displayMannerScore}%
                             </span>
                         </div>
                     </div>
+
                     <hr className="w-full my-3 sm:my-4 border-[#a16e47] opacity-30" />
                     <div className="text-center mt-3 sm:mt-4">
                         <h2
@@ -202,7 +230,7 @@ const ProfilePage = () => {
                         >
                             - 내가 고른 관심사 -
                         </h2>
-                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-4">
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-4 sm:gap-6">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -254,7 +282,7 @@ const ProfilePage = () => {
                             - AI가 예측하는 관심사 -
                         </h2>
                         <div className="flex justify-center">
-                            <div className="inline-grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 justify-center">
+                            <div className="inline-grid grid-cols-3 sm:grid-cols-5 gap-4 sm:gap-6 justify-center">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div
@@ -263,7 +291,7 @@ const ProfilePage = () => {
                                         >
                                             <span
                                                 className="block text-center text-xs sm:text-sm"
-                                                style={{ fontSize: '18px' }}
+                                                style={{ fontSize: '20px' }}
                                             >
                                                 {interest}
                                             </span>
