@@ -150,7 +150,7 @@ const ChooseRaccoonPage = () => {
                         className="text-6xl sm:text-8xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
-                        CAM
+                        실시간 영상
                     </h2>
                     <div className="relative w-full max-w-[800px] h-[600px] rounded-3xl overflow-hidden shadow-2xl mb-8">
                         <video
@@ -162,9 +162,7 @@ const ChooseRaccoonPage = () => {
                             height="600"
                         ></video>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                        <div className="absolute bottom-8 left-8 text-[#DAA520] text-7xl font-semibold">
-                            실시간 영상
-                        </div>
+                        
                     </div>
                     {/* 마이크 입력 테스트 섹션 */}
                     <div className="flex flex-col items-center justify-center w-full">
@@ -192,14 +190,12 @@ const ChooseRaccoonPage = () => {
                         className="text-6xl sm:text-8xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
-                        내 마스크
+                        선택된 마스크
                     </h2>
                     <div className="relative w-full max-w-[800px] h-[600px] bg-white rounded-3xl shadow-2xl overflow-hidden mb-8">
                         <ChooseRaccoonHand />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-3xl"></div>
-                        <div className="absolute bottom-8 left-8 text-[#DAA520] text-7xl font-semibold">
-                            선택된 마스크
-                        </div>
+                        
                     </div>
                     {/* 버튼 섹션 */}
                     <div className="flex justify-center space-x-8 mt-8">
