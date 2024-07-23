@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
+import targetDogHouseImage from '../../assets/target_mailbox.png'; // doghouse.gif 이미지로 변경
 
-const MovingDogs = ({ sessionData, speechLengths }) => {
+const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
@@ -70,14 +71,28 @@ const MovingDogs = ({ sessionData, speechLengths }) => {
                             e.currentTarget.classList.remove('scale-110')
                         }
                     >
-                        <div className="absolute top-[-48px] left-0 w-full text-center text-3xl bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white font-semibold rounded-lg py-1 ">
+                        <div
+                            className={`absolute top-[-48px] left-0 w-full text-center text-3xl font-semibold rounded-lg py-1 shadow-lg ${
+                                index === targetUserIndex
+                                    ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black'
+                                    : 'bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white'
+                            } ${
+                                index !== targetUserIndex
+                                    ? 'hover:from-[#b28256] hover:via-[#a26b4a] hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out'
+                                    : ''
+                            }`}
+                        >
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
                         </div>
                         <img
-                            src={dogHouseImage}
+                            src={
+                                index === targetUserIndex
+                                    ? targetDogHouseImage
+                                    : dogHouseImage
+                            }
                             alt={`Dog house ${index + 1}`}
-                            className="w-full h-full object-cover rounded-lg transition-transform duration-300"
+                            className={`w-full h-full object-cover rounded-lg transition-transform duration-300`}
                         />
                     </div>
                     <div
