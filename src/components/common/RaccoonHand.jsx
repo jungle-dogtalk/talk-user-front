@@ -34,22 +34,22 @@ let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 
 const models = [
-    '/blue_raccoon.glb',
-    '/jungle_raccoon_head.glb',
+    // '/blue_raccoon.glb',
+    // '/jungle_raccoon_head.glb',
     '/raccoon_head.glb',
-    '/warrior_raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
+    // '/warrior_raccoon_head.glb',
+    // '/yellow_raccoon_head.glb',
     '/monkey.glb',
     '/panda.glb',
     '/cat.glb',
 ];
 
 const victoryModels = [
-    '/blue_raccoon_crown.glb',
-    '/jungle_raccoon_crown.glb',
+    // '/blue_raccoon_crown.glb',
+    // '/jungle_raccoon_crown.glb',
     '/raccoon_crown.glb',
-    '/warrior_raccoon_crown.glb',
-    '/yellow_raccoon_crown.glb',
+    // '/warrior_raccoon_crown.glb',
+    // '/yellow_raccoon_crown.glb',
     '/monkey_crown.glb',
     '/panda_crown.glb',
     '/cat_crown.glb',
