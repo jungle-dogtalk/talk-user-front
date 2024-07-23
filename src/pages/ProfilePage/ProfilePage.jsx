@@ -182,7 +182,7 @@ const ProfilePage = () => {
                             이름: {userInfo?.name}
                         </h2>
                         <h3 className="text-5xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
-                            닉네임: {userInfo?.username}
+                            닉네임: {userInfo?.nickname}
                         </h3>
                         <div className="flex items-center mb-6">
                             <h3 className="text-5xl sm:text-6xl font-bold mr-4 text-[#a16e47]">
