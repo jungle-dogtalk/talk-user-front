@@ -49,6 +49,11 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         }
     }, [showModal]);
 
+    const maskMBTI = (mbti) => {
+        if (mbti.length !== 4) return mbti;
+        return `${mbti[0]}--${mbti[3]}`;
+    };
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouses.map((house, index) => (
@@ -139,7 +144,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 "
                             </span>
                             <span className="relative z-10">
-                                {selectedUser.answer}
+                                {maskMBTI(selectedUser.mbti)}
                             </span>
                             <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
                                 "
@@ -154,7 +159,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
 
             {/* 실시간 수다왕 차트 추가 */}
             <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
-                <h3 className="text-2xl font-bold text-amber-800 mb-2 text-center">
+                <h3 className="text-5xl font-bold text-amber-800 mb-2 text-center">
                     실시간 토크왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-1">
@@ -166,13 +171,13 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                         >
                             <div className="flex-grow">
                                 <div className="flex justify-between items-center mb-1">
-                                    <span className="text-2xl font-semibold text-amber-800">
+                                    <span className="text-4xl font-semibold text-amber-800">
                                         {index + 1}등{' '}
-                                        <span className="text-2xl">
+                                        <span className="text-4xl">
                                             {user.nickname}
                                         </span>
                                     </span>
-                                    <span className="text-2xl font-medium text-amber-700">
+                                    <span className="text-4xl font-medium text-amber-700">
                                         {Math.round(user.percentage)}점
                                     </span>
                                 </div>

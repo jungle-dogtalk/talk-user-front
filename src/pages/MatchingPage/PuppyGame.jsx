@@ -31,16 +31,21 @@ const models = ['/raccoon_crown.glb'];
 const objectImages = [
     '/cake.gif',
     '/star.gif',
-    'cat.gif',
-    'dog4.gif',
-    'turtle.gif',
+    '/water.gif',
+    '/egg.webp',
+    '/pizza.gif',
+    '/banana.gif',
+    '/hamburger.gif',
 ];
+
+const poisonImages = ['/Poison.png'];
 
 const PuppyGame = () => {
     const [raccoonPosition, setRaccoonPosition] = useState({ x: 400, y: 300 });
     const [obstacles, setObstacles] = useState([]);
     const [modelPath] = useState(models[0]);
     const [heartImage, setHeartImage] = useState(null);
+    const [score, setScore] = useState(0); // 점수 상태 추가
 
     const videoRef = useRef(null);
     const obstaclesRef = useRef([]);
@@ -97,7 +102,7 @@ const PuppyGame = () => {
 
             faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
                 baseOptions: {
-                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+                    modelAssetPath: `/models/face_landmarker.task`,
                     delegate: 'GPU',
                 },
                 outputFaceBlendshapes: true,
@@ -108,7 +113,7 @@ const PuppyGame = () => {
 
             handLandmarker = await HandLandmarker.createFromOptions(vision, {
                 baseOptions: {
-                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
+                    modelAssetPath: `/models/hand_landmarker.task`,
                     delegate: 'GPU',
                 },
                 runningMode: 'VIDEO',
@@ -119,7 +124,7 @@ const PuppyGame = () => {
                 vision,
                 {
                     baseOptions: {
-                        modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
+                        modelAssetPath: `/models/gesture_recognizer.task`,
                         delegate: 'GPU',
                     },
                     runningMode: 'VIDEO',
@@ -229,12 +234,19 @@ const PuppyGame = () => {
     };
 
     const checkCollision = (obstacle, raccoon) => {
-        return (
-            raccoon.x < obstacle.position.x + 50 &&
-            raccoon.x + 50 > obstacle.position.x &&
-            raccoon.y < obstacle.position.y + 50 &&
-            raccoon.y + 50 > obstacle.position.y
-        );
+        const isColliding =
+            raccoon.x < obstacle.position.x + 80 &&
+            raccoon.x + 100 > obstacle.position.x &&
+            raccoon.y < obstacle.position.y + 160 &&
+            raccoon.y - 30 > obstacle.position.y;
+
+        // if (isColliding) {
+        //     console.log('Collision detected:');
+        //     console.log('Raccoon position:', raccoon);
+        //     console.log('Obstacle position:', obstacle.position);
+        // }
+
+        return isColliding;
     };
 
     const updateObstaclePosition = (obstacle) => {
@@ -273,6 +285,7 @@ const PuppyGame = () => {
                     );
                 }, 500);
 
+                setScore((prev) => prev + 5); // 충돌 시 점수 추가
                 return { ...updatedObstacle, showHeart: true };
             }
 
@@ -284,6 +297,13 @@ const PuppyGame = () => {
 
     const gameLoop = () => {
         setObstacles([...obstaclesRef.current]);
+        // console.log(
+        //     'Raccoon position in game loop:',
+        //     raccoonPositionRef.current
+        // );
+        // obstaclesRef.current.forEach((obstacle) => {
+        //     console.log('Obstacle position in game loop:', obstacle.position);
+        // });
         requestAnimationFrame(gameLoop);
     };
 
@@ -313,7 +333,11 @@ const PuppyGame = () => {
                 id="video"
                 style={{ width: 640, height: 480, display: 'none' }}
             ></video>
-            <ObstacleCanvas obstacles={obstacles} heartImage={heartImage} />
+            <ObstacleCanvas
+                obstacles={obstacles}
+                heartImage={heartImage}
+                score={score}
+            />
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -338,7 +362,7 @@ const PuppyGame = () => {
     );
 };
 
-const ObstacleCanvas = ({ obstacles, heartImage }) => (
+const ObstacleCanvas = ({ obstacles, heartImage, score }) => (
     <Stage
         width={800}
         height={500}
@@ -356,18 +380,26 @@ const ObstacleCanvas = ({ obstacles, heartImage }) => (
                 />
             ))}
             <Rect
-                x={290}
-                y={464}
-                width={230}
-                height={30}
+                x={255}
+                y={457}
+                width={330}
+                height={34}
                 fill="rgba(255, 255, 255, 0.5)"
                 cornerRadius={5}
             />
             <Text
-                x={300}
-                y={470}
+                x={270}
+                y={460}
                 text="상: 👍 하: 👎 좌: ✊ 우: 🖐️"
-                fontSize={20}
+                fontSize={30}
+                fontFamily={'MyCustomFont'}
+                fill="black"
+            />
+            <Text // 점수 표시
+                x={10}
+                y={10}
+                text={`Score : ${score}`}
+                fontSize={30}
                 fontFamily={'MyCustomFont'}
                 fill="black"
             />
