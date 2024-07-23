@@ -398,6 +398,12 @@ const RaccoonHand = React.memo((props) => {
                     />
                 )}
             </Canvas>
+            <button
+                onClick={changeModel}
+                style={{ position: 'absolute', top: 10, left: 10 }}
+            >
+                Change Raccoon Face
+            </button>
         </div>
     );
 });
