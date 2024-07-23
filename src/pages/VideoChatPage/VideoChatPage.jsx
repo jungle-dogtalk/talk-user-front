@@ -923,13 +923,13 @@ const VideoChatPage = () => {
                     </h2>
                     <p className="mb-6 sm:mb-8 lg:mb-10 text-2xl sm:text-4xl lg:text-5xl text-orange-700">
                         <span className="font-semibold text-orange-800">
-                            "{sessionData[targetUserIndexRef.current].nickname}"
+                            "{sessionData[newTargetUserIndex].nickname}"
                         </span>{' '}
                         님에 대한 MBTI를 맞춰보세요.
                     </p>
                     <p className="mb-6 sm:mb-8 lg:mb-10 font-bold text-3xl sm:text-5xl lg:text-5xl text-orange-800 bg-orange-200 p-6 sm:p-8 lg:p-10 rounded-lg shadow-inner">
                         MBTI 힌트 : "
-                        {sessionData[targetUserIndexRef.current].answer}"
+                        {sessionData[newTargetUserIndex].answer}"
                     </p>
                     <p className="text-lg sm:text-2xl lg:text-3xl text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
