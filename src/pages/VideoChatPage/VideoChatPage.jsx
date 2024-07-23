@@ -17,7 +17,11 @@ import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤
 import raccoonImage from '../../assets/raccoon.png';
 import start_modalSound from '../../assets/start_modal_sound.mp3';
 import endModalSound from '../../assets/end_modal_sound.mp3';
-import useSound from 'use-sound';
+import start_sound from '../../assets/sounds/start.mp3';
+import face_sound from '../../assets/sounds/face.mp3';
+import correct_sound from '../../assets/sounds/correct.mp3';
+import wrong_sound from '../../assets/sounds/wrong.mp3';
+import topic_sound from '../../assets/sounds/topic.mp3';
 
 const VideoChatPage = () => {
     const FRAME_RATE = 30;
@@ -65,6 +69,7 @@ const VideoChatPage = () => {
     const targetUserIndexRef = useRef(0);
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
+    let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
 
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
@@ -75,15 +80,19 @@ const VideoChatPage = () => {
 
     const [isMissionInProgress, setIsMissionInProgress] = useState(false);
 
-    const [playModalSound] = useSound(start_modalSound);
-    const [playEndModalSound] = useSound(endModalSound);
-
     // targetUserIndex 상태 추가
     const [targetUserIndex, setTargetUserIndex] = useState(null);
 
     const handleLogoClick = () => {
         if (!isMissionInProgress && !showFaceRevealModal) {
+            const audio = new Audio(face_sound);
+            audio.play();
             setShowFaceRevealModal(true);
+            const textToSpeak =
+                '얼굴 공개 타아아임! 드디어 진짜 우리의 모습을 볼 시간이에요!';
+            setTimeout(() => {
+                speakText(textToSpeak);
+            }, 1500);
             setTimeout(() => setShowFaceRevealModal(false), 5000);
         }
     };
@@ -103,6 +112,7 @@ const VideoChatPage = () => {
                     to: [],
                     type: 'quizStart',
                 });
+                speakText(`${userInfo.nickname} 유저가 미션을 시작합니다.`);
             } else {
                 console.error('퀴즈 미션수행 에러');
             }
@@ -125,11 +135,10 @@ const VideoChatPage = () => {
     useEffect(() => {
         if (sessionData && sessionData.length >= 1) {
             setShowInitialModal(true);
-            playModalSound(); // 여기서 효과음을 재생합니다.
             const timer = setTimeout(() => {
                 setShowInitialModal(false);
             }, 5000); // 5초 후 모달 닫기
-    
+
             return () => clearTimeout(timer);
         }
     }, [sessionData]);
@@ -215,6 +224,11 @@ const VideoChatPage = () => {
         socket.current.on('topicRecommendations', (data) => {
             console.log('Received topic recommendations:', data);
             setRecommendedTopics((prevTopics) => [...prevTopics, data.trim()]);
+            const audio = new Audio(topic_sound);
+            audio.play();
+            setTimeout(() => {
+                speakText('해당 주제에 대해 얘기해보는 건 어떠세요?');
+            }, 2000);
 
             // 5초후에 모달 닫기
             setTimeout(() => {
@@ -445,6 +459,9 @@ const VideoChatPage = () => {
     // 세션 참여
     const joinSession = useCallback(
         async (sid) => {
+            const audio = new Audio(start_sound);
+            audio.play();
+            speakText(` m b t i를 맞춰보세요!`);
             const OV = new OpenVidu();
             setOV(OV); // OV 객체 상태로 설정
             const session = OV.initSession();
@@ -496,10 +513,20 @@ const VideoChatPage = () => {
                         // 미션성공
                         setQuizResult('success');
                         setQuizResultTrigger((prev) => prev + 1);
+                        const audio = new Audio(correct_sound);
+                        audio.play();
+                        setTimeout(() => {
+                            speakText('미션 성공!');
+                        }, 3000);
                     } else {
                         // 미션실패
                         setQuizResult('failure');
                         setQuizResultTrigger((prev) => prev + 1);
+                        const audio = new Audio(wrong_sound);
+                        audio.play();
+                        setTimeout(() => {
+                            speakText('미션 실패!');
+                        }, 1000);
                     }
                 }
 
@@ -897,7 +924,6 @@ const VideoChatPage = () => {
 
     const InitialQuestionModal = () => {
         if (!sessionData || sessionData.length < 4) return null;
-
         const currentUserIndex = sessionData.findIndex(
             (user) => user.userId === userInfo.username
         );
@@ -912,9 +938,6 @@ const VideoChatPage = () => {
         quizAnswerRef.current = answer;
         console.log('answer는? -> ', quizAnswerRef.current);
 
-        // 모달이 나타날 때 효과음 재생
-        playModalSound();
-
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-gradient-to-br from-yellow-100 to-orange-100 p-8 sm:p-12 lg:p-16 rounded-2xl shadow-2xl max-w-sm sm:max-w-lg lg:max-w-2xl w-full text-center transform transition-transform scale-105 hover:scale-110">
@@ -928,8 +951,7 @@ const VideoChatPage = () => {
                         님에 대한 MBTI를 맞춰보세요.
                     </p>
                     <p className="mb-6 sm:mb-8 lg:mb-10 font-bold text-3xl sm:text-5xl lg:text-5xl text-orange-800 bg-orange-200 p-6 sm:p-8 lg:p-10 rounded-lg shadow-inner">
-                        MBTI 힌트 : "
-                        {sessionData[newTargetUserIndex].answer}"
+                        MBTI 힌트 : "{sessionData[newTargetUserIndex].answer}"
                     </p>
                     <p className="text-lg sm:text-2xl lg:text-3xl text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
@@ -937,6 +959,44 @@ const VideoChatPage = () => {
                 </div>
             </div>
         );
+    };
+
+    const speakText = (text, delay) => {
+        if (isTTSActive) {
+            return; // TTS가 이미 실행 중인 경우 함수 종료
+        }
+
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; // 언어 설정 (한국어)
+            utterance.rate = 1.2; // 말하기 속도 조절 (기본값: 1)
+            utterance.pitch = 0.6; // 음조 조절 (기본값: 1)
+
+            const voices = window.speechSynthesis.getVoices();
+            const selectedVoice = voices.find((voice) =>
+                voice.name.includes('Google 한국의')
+            );
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            } else {
+                console.warn(
+                    `Voice 'Google 한국의' not found. Using default voice.`
+                );
+            }
+
+            utterance.onstart = () => {
+                isTTSActive = true; // TTS 시작 시 플래그 설정
+            };
+
+            utterance.onend = () => {
+                isTTSActive = false; // TTS 끝날 시 플래그 리셋
+            };
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.error('This browser does not support speech synthesis.');
+        }
     };
 
     // // TTS 기능 추가
@@ -1031,10 +1091,6 @@ const VideoChatPage = () => {
     // };
 
     const FaceRevealModal = () => {
-        useEffect(() => {
-            playEndModalSound();
-        }, []);
-    
         return (
             <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
                 <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
@@ -1339,7 +1395,7 @@ const VideoChatPage = () => {
                                         </div>
                                         <div className="flex-2 font-bold text-2xl text-orange-700 bg-orange-100 bg-opacity-60 p-4 rounded-xl shadow-inner mx-4 transform rotate-1 w-1/2 flex items-center justify-center">
                                             <p className="animate-bounce text-center">
-                                                "{recommendedTopics[0]}"
+                                                "{recommendedTopics}"
                                             </p>
                                         </div>
                                         <div className="flex-1/2 text-right space-y-2">
