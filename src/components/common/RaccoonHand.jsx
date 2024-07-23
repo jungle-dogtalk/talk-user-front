@@ -1,5 +1,11 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
 import {
     Color,
     Euler,
@@ -32,6 +38,7 @@ let transformationMatrix = null;
 let handLandmarks = [];
 let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
+let gl; // WebGL context를 위한 변수 추가
 
 const models = [
     // '/blue_raccoon.glb',
@@ -84,15 +91,24 @@ const RaccoonHand = React.memo((props) => {
     const dispatch = useDispatch();
     const savedModel = loadFromLocalStorage('racoon');
     const victoryModel = modelVictoryMap[savedModel];
-    const [isModelVisible, setIsModelVisible] = useState(true); // 모델 가시성 상태 추가
+    const [isModelVisible, setIsModelVisible] = useState(true);
 
-    /* 선택한 라쿤 모델 로딩 */
+    const memoizedRaccoon = useMemo(
+        () => (
+            <Raccoon
+                modelPath={modelPath}
+                onLoad={() => setIsVictoryModelLoading(false)}
+            />
+        ),
+        [modelPath, setIsVictoryModelLoading]
+    );
+
     useEffect(() => {
         if (savedModel) {
             dispatch(setSelectedModel(savedModel));
             setModelPath(savedModel);
         }
-    }, [dispatch]);
+    }, [dispatch, savedModel]);
 
     useEffect(() => {
         if (props.quizResult === 'success') {
@@ -120,14 +136,27 @@ const RaccoonHand = React.memo((props) => {
             }
         };
 
-        const intervalId = setInterval(updateHandPositions, 16); // 약 60fps
+        const intervalId = setInterval(updateHandPositions, 16);
 
         return () => clearInterval(intervalId);
     }, []);
 
-    const setup = async () => {
+    const setup = useCallback(async () => {
+        // WASM 파일 사전 로딩
+        const preloadWasm = async () => {
+            const wasmResponse = await fetch(
+                'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm/vision_wasm_internal.wasm'
+            );
+            const wasmArrayBuffer = await wasmResponse.arrayBuffer();
+            return wasmArrayBuffer;
+        };
+
+        // WASM 파일 사전 로딩 시작
+        const wasmLoadPromise = preloadWasm();
+
         const vision = await FilesetResolver.forVisionTasks(
-            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+            { wasmLoaderFunction: async () => await wasmLoadPromise }
         );
 
         faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
@@ -170,27 +199,32 @@ const RaccoonHand = React.memo((props) => {
             })
             .then((stream) => {
                 video.srcObject = stream;
-                video.addEventListener('loadeddata', predict);
+                video.addEventListener('loadeddata', () => {
+                    // WebGL context 초기화
+                    const canvas = document.createElement('canvas');
+                    gl = canvas.getContext('webgl');
+                    predict(); // predict 함수 호출
+                });
             });
-    };
+    }, []);
 
-    const minX = -2,
-        maxX = 2,
-        minY = -1.5,
-        maxY = 1.5; // 바운더리 설정
-
-    /* 퀴즈 실행 */
-    const performQuiz = () => {
+    const performQuiz = useCallback(() => {
         console.log('자식컴포넌트 퀴즈 시작');
         quizInProgressRef.current = true;
-        const data = {
-            quizInProgress: true,
-        };
+        props.onQuizEvent({ quizInProgress: true });
+    }, [props]);
 
-        props.onQuizEvent(data);
+    // 비동기 readPixels 호출
+    const asyncReadPixels = async (x, y, width, height, format, type) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const pixels = new Uint8Array(width * height * 4);
+                gl.readPixels(x, y, width, height, format, type, pixels);
+                resolve(pixels);
+            }, 0);
+        });
     };
-
-    const predict = () => {
+    const predict = useCallback(async () => {
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
             lastVideoTime = video.currentTime;
@@ -204,12 +238,9 @@ const RaccoonHand = React.memo((props) => {
 
             // Face result processing
             if (
-                faceResult.facialTransformationMatrixes &&
-                faceResult.facialTransformationMatrixes.length > 0 &&
-                faceResult.faceBlendshapes &&
-                faceResult.faceBlendshapes.length > 0 &&
-                faceResult.faceLandmarks &&
-                faceResult.faceLandmarks.length > 0
+                faceResult.facialTransformationMatrixes?.length > 0 &&
+                faceResult.faceBlendshapes?.length > 0 &&
+                faceResult.faceLandmarks?.length > 0
             ) {
                 const matrix = new Matrix4().fromArray(
                     faceResult.facialTransformationMatrixes[0].data
@@ -219,95 +250,68 @@ const RaccoonHand = React.memo((props) => {
                 faceLandmarks = faceResult.faceLandmarks[0];
                 transformationMatrix = matrix;
 
-                //감정 인식
                 recognizeEmotion(blendshapes);
             }
 
             // Hand result processing
             if (handResult.landmarks) {
                 handLandmarks = handResult.landmarks;
-                setHandPositions(handResult.landmarks); // // 손의 위치 업데이트
-                // console.log(handResult.landmarks);
+                setHandPositions(handResult.landmarks);
             } else {
                 handLandmarks = [];
             }
 
-            //TODO: 제스처 결과 수정 필요
             // Gesture result processing
-            if (
-                gestureResult &&
-                gestureResult.gestures &&
-                gestureResult.gestures.length > 0
-            ) {
+            if (gestureResult?.gestures?.length > 0) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
-                // console.log('Current Gesture:', currentGesture);
-
-                // Update avatar position based on gesture
-                const moveSpeed = 0.1;
 
                 switch (currentGesture) {
-                    // case 'Thumb_Up':
-                    // avatarPosition.y = Math.min(
-                    //     avatarPosition.y + moveSpeed,
-                    //     maxY
-                    // );
-                    // changeVictoryModel();
-                    // break;
-                    // case 'Thumb_Down':
-                    //     avatarPosition.y = Math.max(
-                    //         avatarPosition.y - moveSpeed,
-                    //         minY
-                    //     );
-                    //     break;
-                    // case 'Closed_Fist':
-                    //     handleIceBreaking();
-                    //     break;
-                    // case 'Open_Palm':
-                    //     handleIceBreaking();
-                    //     break;
-                    // case 'Open_Palm':
-                    //     avatarPosition.x = Math.min(
-                    //         avatarPosition.x + moveSpeed,
-                    //         maxX
-                    //     );
-                    //     break;
                     case 'Victory':
                         console.log(
                             '브이감지 퀴즈 진행중?-> ',
                             quizInProgressRef.current
                         );
-
-                        if (isQuizCompletedRef.current) {
-                            break;
-                        }
-
-                        if (!quizInProgressRef.current) {
+                        if (
+                            !isQuizCompletedRef.current &&
+                            !quizInProgressRef.current
+                        ) {
                             performQuiz();
                         }
                         break;
-
                     case 'ILoveYou':
                         console.log('Love gesture detected');
-                        removeMask(); // 가면 벗기기 함수 호출
+                        removeMask();
                         break;
                     default:
-                        // No movement for other gestures
                         break;
                 }
             }
-        }
-        requestAnimationFrame(predict);
-    };
 
-    // 가면을 벗기기 위한 함수
-    const removeMask = () => {
-        setIsModelVisible(false); // 모델 숨기기
-    };
+            // 비동기로 readPixels 호출
+            const buffer = await asyncReadPixels(
+                0,
+                0,
+                video.width,
+                video.height,
+                gl.RGBA,
+                gl.UNSIGNED_BYTE
+            );
+            // buffer 사용
+
+            setTimeout(() => {
+                requestAnimationFrame(predict);
+            }, 100); // 100ms 간격으로 실행
+        }
+    }, [performQuiz]);
+
+    const removeMask = useCallback(() => {
+        setIsModelVisible(false);
+    }, []);
 
     useEffect(() => {
         setup();
-    }, []);
+    }, [setup]);
 
     const changeModel = useCallback(() => {
         const nextIndex = (modelIndex + 1) % models.length;
@@ -315,34 +319,25 @@ const RaccoonHand = React.memo((props) => {
         setIsModelVisible(true); // 모델 변경 시 다시 보이도록 설정
     }, [modelIndex]);
 
-    // TODO: 왕관 모델로 변경
-    const changeVictoryModel = () => {
-        setIsVictoryModelLoading(true); // 모델 로딩 시작
-        // const nextIndex = (victoryModelIndex + 1) % victoryModels.length;
-        // setVictoryModelIndex(nextIndex);
+    const changeVictoryModel = useCallback(() => {
+        setIsVictoryModelLoading(true);
         setModelPath(victoryModel);
-        setIsVictoryModelLoading(false); // 모델 로딩
-    };
+        setIsVictoryModelLoading(false);
+    }, [victoryModel]);
 
-    const changeHandColor = () => {
-        const nextColorIndex = (handColorIndex + 1) % handColors.length;
-        setHandColorIndex(nextColorIndex);
-    };
-
-    const handleIceBreaking = () => {
-        setIceBreakingActive(!iceBreakingActive);
+    const handleIceBreaking = useCallback(() => {
+        setIceBreakingActive((prev) => !prev);
         setTimeout(() => {
             setIceBreakingActive(false);
         }, 10000);
-    };
+    }, []);
 
-    const recognizeEmotion = (blendshapes) => {
+    const recognizeEmotion = useCallback((blendshapes) => {
         const blendshapeMap = blendshapes.reduce((map, obj) => {
             map[obj.categoryName] = obj.score;
             return map;
         }, {});
 
-        // 웃음 (smile)을 인식 'mouthSmileLeft' 'mouthSmileRight'
         const smileValueLeft = blendshapeMap['mouthSmileLeft'] || 0;
         const smileValueRight = blendshapeMap['mouthSmileRight'] || 0;
         const smileValue = (smileValueLeft + smileValueRight) / 2;
@@ -351,11 +346,10 @@ const RaccoonHand = React.memo((props) => {
         //     `Smile Left: ${smileValueLeft}, Smile Right: ${smileValueRight}, Average: ${smileValue}`
         // );
 
-        if (smileValue > 0.5) {
-            console.log('Smiling');
-        }
-    };
-
+        // if (smileValue > 0.5) {
+        //     console.log('Smiling');
+        // }
+    });
     return (
         <div
             className="App"
@@ -396,20 +390,13 @@ const RaccoonHand = React.memo((props) => {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                {!isVictoryModelLoading && isModelVisible && (
-                    <Raccoon
-                        modelPath={modelPath}
-                        onLoad={() => setIsVictoryModelLoading(false)}
-                    />
-                )}
-
+                {!isVictoryModelLoading && isModelVisible && memoizedRaccoon}
                 {iceBreakingActive && (
                     <IceBreakingBackground
                         handPositions={handPositions}
                         onPercentageChange={setClearedPercentage}
                     />
                 )}
-                {/* <Hand handColor={handColors[handColorIndex]} /> */}
             </Canvas>
             <button
                 onClick={changeModel}

@@ -29,6 +29,8 @@ const ReviewPage = () => {
     const [feedback, setFeedback] = useState('');
     const [isFeedbackFetched, setIsFeedbackFetched] = useState(false);
 
+    let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
+
     useEffect(() => {
         const fromVideoChat = sessionStorage.getItem('fromVideoChat');
         if (!fromVideoChat) {
@@ -153,9 +155,49 @@ const ReviewPage = () => {
         const savedFeedback = sessionStorage.getItem('feedback');
         if (savedFeedback) {
             setFeedback(savedFeedback);
+            speakText(savedFeedback);
             setIsFeedbackFetched(true);
         }
         setIsFeedbackModalOpen(true);
+    };
+
+    const speakText = (text, delay) => {
+        if (isTTSActive) {
+            return; // TTS가 이미 실행 중인 경우 함수 종료
+        }
+
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; // 언어 설정 (한국어)
+            utterance.rate = 1.2; // 말하기 속도 조절 (기본값: 1)
+            utterance.pitch = 0.6; // 음조 조절 (기본값: 1)
+
+            const voices = window.speechSynthesis.getVoices();
+            console.log('사용 가능: ', voices);
+            const selectedVoice = voices.find((voice) =>
+                voice.name.includes('Google 한국의')
+            );
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            } else {
+                console.warn(
+                    `Voice 'Google 한국의' not found. Using default voice.`
+                );
+            }
+
+            utterance.onstart = () => {
+                isTTSActive = true; // TTS 시작 시 플래그 설정
+            };
+
+            utterance.onend = () => {
+                isTTSActive = false; // TTS 끝날 시 플래그 리셋
+            };
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.error('This browser does not support speech synthesis.');
+        }
     };
 
     return (
@@ -381,7 +423,10 @@ const ReviewPage = () => {
 
                         <button
                             className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                            onClick={() => setIsFeedbackModalOpen(false)}
+                            onClick={() => {
+                                window.speechSynthesis.cancel(); // TTS 중단
+                                setIsFeedbackModalOpen(false);
+                            }}
                         >
                             닫기
                         </button>
