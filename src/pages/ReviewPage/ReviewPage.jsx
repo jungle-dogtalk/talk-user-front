@@ -423,7 +423,10 @@ const ReviewPage = () => {
 
                         <button
                             className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                            onClick={() => setIsFeedbackModalOpen(false)}
+                            onClick={() => {
+                                window.speechSynthesis.cancel(); // TTS 중단
+                                setIsFeedbackModalOpen(false);
+                            }}
                         >
                             닫기
                         </button>
