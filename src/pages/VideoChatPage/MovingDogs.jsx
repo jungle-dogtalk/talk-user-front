@@ -49,6 +49,11 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         }
     }, [showModal]);
 
+    const maskMBTI = (mbti) => {
+        if (mbti.length !== 4) return mbti;
+        return `${mbti[0]}--${mbti[3]}`;
+    };
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouses.map((house, index) => (
@@ -139,7 +144,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 "
                             </span>
                             <span className="relative z-10">
-                                {selectedUser.answer}
+                                {maskMBTI(selectedUser.mbti)}
                             </span>
                             <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
                                 "

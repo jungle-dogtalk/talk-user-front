@@ -129,7 +129,7 @@ const VideoChatPage = () => {
             const timer = setTimeout(() => {
                 setShowInitialModal(false);
             }, 5000); // 5초 후 모달 닫기
-    
+
             return () => clearTimeout(timer);
         }
     }, [sessionData]);
@@ -895,6 +895,11 @@ const VideoChatPage = () => {
     //     );
     // };
 
+    const maskMBTI = (mbti) => {
+        if (mbti.length !== 4) return mbti;
+        return `${mbti[0]}--${mbti[3]}`;
+    };
+
     const InitialQuestionModal = () => {
         if (!sessionData || sessionData.length < 4) return null;
 
@@ -929,7 +934,7 @@ const VideoChatPage = () => {
                     </p>
                     <p className="mb-6 sm:mb-8 lg:mb-10 font-bold text-3xl sm:text-5xl lg:text-5xl text-orange-800 bg-orange-200 p-6 sm:p-8 lg:p-10 rounded-lg shadow-inner">
                         MBTI 힌트 : "
-                        {sessionData[newTargetUserIndex].answer}"
+                        {maskMBTI(sessionData[newTargetUserIndex].mbti)}"
                     </p>
                     <p className="text-lg sm:text-2xl lg:text-3xl text-orange-500">
                         이 창은 5초 후 자동으로 닫힙니다.
@@ -1034,7 +1039,7 @@ const VideoChatPage = () => {
         useEffect(() => {
             playEndModalSound();
         }, []);
-    
+
         return (
             <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
                 <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
