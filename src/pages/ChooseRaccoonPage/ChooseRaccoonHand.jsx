@@ -1,6 +1,6 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Color, Euler, Matrix4, Vector3 } from 'three';
+import { Color, Euler, Matrix4, Vector3, Box3 } from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedModel } from '../../redux/slices/racoonSlice.js';
@@ -26,9 +26,7 @@ let rotation = null;
 let blendshapes = [];
 let faceLandmarks = [];
 let transformationMatrix = null;
-let handLandmarks = [];
 let avatarPosition = new Vector3(0, 0, 0);
-let currentGesture = '';
 
 const models = ['/raccoon_head.glb', '/monkey.glb', '/panda.glb', '/cat.glb'];
 const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
@@ -62,33 +60,13 @@ function ChooseRaccoonHand() {
 
         faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
             baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+                modelAssetPath: `/models/face_landmarker.task`,
                 delegate: 'GPU',
             },
             outputFaceBlendshapes: true,
             outputFacialTransformationMatrixes: true,
             outputFaceLandmarks: true,
             runningMode: 'VIDEO',
-        });
-
-        handLandmarker = await HandLandmarker.createFromOptions(vision, {
-            baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-                delegate: 'GPU',
-            },
-            runningMode: 'VIDEO',
-            numHands: 2,
-        });
-
-        gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-            baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
-                delegate: 'GPU',
-            },
-            runningMode: 'VIDEO',
-            minHandDetectionConfidence: 0.5,
-            minHandPresenceConfidence: 0.5,
-            minTrackingConfidence: 0.5,
         });
 
         video = document.getElementById('video');
@@ -102,22 +80,12 @@ function ChooseRaccoonHand() {
             });
     };
 
-    const minX = -0.8,
-        maxX = 1,
-        minY = -0.5,
-        maxY = 0.5;
-
     const predict = () => {
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
             lastVideoTime = video.currentTime;
 
             const faceResult = faceLandmarker.detectForVideo(video, nowInMs);
-            const handResult = handLandmarker.detectForVideo(video, nowInMs);
-            const gestureResult = gestureRecognizer.recognizeForVideo(
-                video,
-                nowInMs
-            );
 
             // Face result processing
             if (
@@ -135,55 +103,6 @@ function ChooseRaccoonHand() {
                 blendshapes = faceResult.faceBlendshapes[0].categories;
                 faceLandmarks = faceResult.faceLandmarks[0];
                 transformationMatrix = matrix;
-            }
-
-            // Hand result processing
-            if (handResult.landmarks) {
-                handLandmarks = handResult.landmarks;
-            } else {
-                handLandmarks = [];
-            }
-
-            // Gesture result processing
-            if (
-                gestureResult &&
-                gestureResult.gestures &&
-                gestureResult.gestures.length > 0
-            ) {
-                const gesture = gestureResult.gestures[0][0];
-                currentGesture = gesture.categoryName;
-
-                // Update avatar position based on gesture
-                const moveSpeed = 0.1;
-                switch (currentGesture) {
-                    case 'Thumb_Up':
-                        avatarPosition.y = Math.min(
-                            avatarPosition.y + moveSpeed,
-                            maxY
-                        );
-                        break;
-                    case 'Thumb_Down':
-                        avatarPosition.y = Math.max(
-                            avatarPosition.y - moveSpeed,
-                            minY
-                        );
-                        break;
-                    case 'Closed_Fist':
-                        avatarPosition.x = Math.max(
-                            avatarPosition.x - moveSpeed,
-                            minX
-                        );
-                        break;
-                    case 'Open_Palm':
-                        avatarPosition.x = Math.min(
-                            avatarPosition.x + moveSpeed,
-                            maxX
-                        );
-                        break;
-                    default:
-                        // No movement for other gestures
-                        break;
-                }
             }
         }
         requestAnimationFrame(predict);
@@ -208,13 +127,13 @@ function ChooseRaccoonHand() {
 
     return (
         <div
-            className="App w-full max-w-[480px] mx-auto"
-            style={{ position: 'relative', aspectRatio: '4 / 3' }}
+            className="w-full h-0 pb-[56.25%] relative"
+            style={{ maxWidth: 'none', aspectRatio: '16/9' }}
         >
             <video
                 autoPlay
                 id="video"
-                style={{ width: 640, height: 480 }}
+                style={{ width: '100%', height: '100%' }}
             ></video>
             <Canvas
                 id="avatar_canvas"
@@ -228,11 +147,11 @@ function ChooseRaccoonHand() {
                     backgroundColor: 'transparent',
                 }}
                 camera={{
-                    fov: 16,
+                    fov: 5,
                     position: [0, 0, 10],
                 }}
             >
-                <ambientLight intensity={2} />
+                <ambientLight intensity={2.2} />
                 <pointLight
                     position={[1, 1, 1]}
                     color={new Color(1, 0, 0)}
@@ -244,7 +163,6 @@ function ChooseRaccoonHand() {
                     intensity={0.5}
                 />
                 <MemoizedRaccoon key={currentModel} modelPath={currentModel} />
-                <Hand handColor={handColors[handColorIndex]} />
             </Canvas>
             <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
                 <button
@@ -264,8 +182,8 @@ function Raccoon({ modelPath }) {
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
-    const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
-    const [modelPosition, setModelPosition] = useState(new Vector3(0, 0.5, 0)); // y 좌표 조정
+    const [modelScale, setModelScale] = useState(new Vector3(2, 2, 2));
+    const [modelPosition, setModelPosition] = useState(new Vector3(0, 0, 0)); // y 좌표 조정
 
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
@@ -294,7 +212,14 @@ function Raccoon({ modelPath }) {
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
                     if (ref.current) {
-                        ref.current.position.copy(position).add(avatarPosition);
+                        ref.current.position
+                            .set(
+                                0,
+                                0,
+                                // x,y 좌표를 0으로 고정
+                                position.z
+                            )
+                            .add(avatarPosition);
                     }
                 }
             );
@@ -333,6 +258,10 @@ function Raccoon({ modelPath }) {
                             .add(avatarPosition);
                         ref.current.position.add(modelPosition); // 모델 위치 조정
                         ref.current.scale.copy(modelScale); // 스케일 적용
+
+                        // 고정
+                        ref.current.position.x = 0;
+                        ref.current.position.y = -0.1;
                     }
                 }
             );
@@ -341,59 +270,6 @@ function Raccoon({ modelPath }) {
 
     return (
         <primitive object={scene} scale={modelScale} position={modelPosition} />
-    );
-}
-
-function Hand({ handColor }) {
-    const handRef = useRef();
-
-    const minX = -1.5,
-        maxX = 1.5,
-        minY = -0.6,
-        maxY = 0.6; // 바운더리 설정
-
-    useFrame(() => {
-        if (handLandmarks.length > 0 && handRef.current) {
-            handLandmarks.forEach((hand, index) => {
-                hand.forEach((landmark, i) => {
-                    const joint = handRef.current.children[index * 21 + i];
-                    if (joint) {
-                        const x = (landmark.x - 0.5) * 2 + avatarPosition.x;
-                        const y = -(landmark.y - 0.5) * 2 + avatarPosition.y;
-
-                        joint.position.set(
-                            Math.max(minX, Math.min(maxX, x)),
-                            Math.max(minY, Math.min(maxY, y)),
-                            landmark.z
-                        );
-                        joint.scale.set(0.5, 0.5, 0.5); // 손의 크기 조정
-                    }
-                });
-            });
-        } else if (handRef.current) {
-            // 손 랜드마크가 없을 때 위치 초기화
-            handRef.current.children.forEach((joint) => {
-                joint.position.set(0, 0, -1000000); // 화면 밖의 좌표로 설정하여 보이지 않게 함
-            });
-        }
-    });
-
-    return (
-        <group ref={handRef}>
-            {[0, 1].map((handIndex) =>
-                Array(21)
-                    .fill()
-                    .map((_, i) => (
-                        <Sphere
-                            key={`hand-${handIndex}-${i}`}
-                            args={[0.018, 16, 16]} // 손의 크기
-                        >
-                            {/* <meshBasicMaterial color={handColor} /> */}
-                            <meshBasicMaterial color={'#5b484a'} />
-                        </Sphere>
-                    ))
-            )}
-        </group>
     );
 }
 
