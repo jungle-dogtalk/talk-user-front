@@ -15,6 +15,9 @@ import forestBackground from '../../assets/forest-background.jpg'; // 배경 이
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤 이미지 추가
 import raccoonImage from '../../assets/raccoon.png';
+import start_modalSound from '../../assets/start_modal_sound.mp3';
+import endModalSound from '../../assets/end_modal_sound.mp3';
+import useSound from 'use-sound';
 
 const VideoChatPage = () => {
     const FRAME_RATE = 30;
@@ -72,6 +75,12 @@ const VideoChatPage = () => {
 
     const [isMissionInProgress, setIsMissionInProgress] = useState(false);
 
+    const [playModalSound] = useSound(start_modalSound);
+    const [playEndModalSound] = useSound(endModalSound);
+
+    // targetUserIndex 상태 추가
+    const [targetUserIndex, setTargetUserIndex] = useState(null);
+
     const handleLogoClick = () => {
         if (!isMissionInProgress && !showFaceRevealModal) {
             setShowFaceRevealModal(true);
@@ -114,12 +123,16 @@ const VideoChatPage = () => {
     };
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setShowInitialModal(false);
-        }, 5000); // 5초 후 모달 닫기
-
-        return () => clearTimeout(timer);
-    }, []);
+        if (sessionData && sessionData.length >= 1) {
+            setShowInitialModal(true);
+            playModalSound(); // 여기서 효과음을 재생합니다.
+            const timer = setTimeout(() => {
+                setShowInitialModal(false);
+            }, 5000); // 5초 후 모달 닫기
+    
+            return () => clearTimeout(timer);
+        }
+    }, [sessionData]);
 
     useEffect(() => {
         if (quizChallenger && quizChallenger === userInfo.username) {
@@ -889,14 +902,18 @@ const VideoChatPage = () => {
             (user) => user.userId === userInfo.username
         );
 
-        quizQuestionRef.current =
-            sessionData[targetUserIndexRef.current].nickname +
-            '님의 MBTI는 뭘까요?';
-        targetUserIndexRef.current = (currentUserIndex + 1) % 4;
+        const newTargetUserIndex = (currentUserIndex + 1) % 4;
+        setTargetUserIndex(newTargetUserIndex); // 상태 업데이트
 
-        const answer = sessionData[targetUserIndexRef.current].mbti;
+        quizQuestionRef.current =
+            sessionData[newTargetUserIndex].nickname + '님의 MBTI는 뭘까요?';
+
+        const answer = sessionData[newTargetUserIndex].mbti;
         quizAnswerRef.current = answer;
         console.log('answer는? -> ', quizAnswerRef.current);
+
+        // 모달이 나타날 때 효과음 재생
+        playModalSound();
 
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1013,21 +1030,27 @@ const VideoChatPage = () => {
     //     );
     // };
 
-    const FaceRevealModal = () => (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
-            <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
-                <h2 className="text-5xl font-extrabold mb-6 text-orange-800 animate-pulse">
-                    🎭 얼굴 공개 타임!
-                </h2>
-                <div className="text-4xl font-bold text-orange-800 bg-yellow-100 bg-opacity-80 p-6 rounded-xl shadow-inner inline-block transform -rotate-2 hover:rotate-2 transition-transform duration-300 animate-float">
-                    "드디어 진짜 우리의 모습을 볼 시간이에요!"
+    const FaceRevealModal = () => {
+        useEffect(() => {
+            playEndModalSound();
+        }, []);
+    
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
+                <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
+                    <h2 className="text-5xl font-extrabold mb-6 text-orange-800 animate-pulse">
+                        🎭 얼굴 공개 타임!
+                    </h2>
+                    <div className="text-4xl font-bold text-orange-800 bg-yellow-100 bg-opacity-80 p-6 rounded-xl shadow-inner inline-block transform -rotate-2 hover:rotate-2 transition-transform duration-300 animate-float">
+                        "드디어 진짜 우리의 모습을 볼 시간이에요!"
+                    </div>
+                    <p className="mt-6 text-xl text-orange-700 animate-pulse">
+                        이 창은 5초 후 자동으로 사라집니다...
+                    </p>
                 </div>
-                <p className="mt-6 text-xl text-orange-700 animate-pulse">
-                    이 창은 5초 후 자동으로 사라집니다...
-                </p>
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
@@ -1294,6 +1317,7 @@ const VideoChatPage = () => {
                     <MovingDogs
                         sessionData={sessionData}
                         speechLengths={speechLengths}
+                        targetUserIndex={targetUserIndex} // 새로운 prop 전달
                     />
 
                     <div
