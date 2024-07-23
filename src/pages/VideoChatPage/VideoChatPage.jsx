@@ -1124,12 +1124,17 @@ const VideoChatPage = () => {
                                     }`}
                                 />
 
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-black text-5xl sm:text-6xl md:text-6xl tracking-widest font-extrabold shadow-text">
-                                    {
-                                        JSON.parse(
-                                            publisher.stream.connection.data
-                                        ).nickname
-                                    }
+                                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
+                                    <div className="flex justify-center items-center w-full">
+                                        <span className="text-4xl sm:text-5xl md:text-5xl tracking-widest font-extrabold text-[#f7f3e9] shadow-text px-6 py-1 rounded-full bg-opacity-80 backdrop-blur-sm">
+                                            {
+                                                JSON.parse(
+                                                    publisher.stream.connection
+                                                        .data
+                                                ).nickname
+                                            }
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {quizChallenger ===
@@ -1138,7 +1143,7 @@ const VideoChatPage = () => {
                                     quizInProgress && (
                                         <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
-                                                <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
+                                                <p className="text-3xl font-bold text-white animate-pulse whitespace-nowrap">
                                                     🔥 미션 진행 중!
                                                 </p>
                                                 <div className="overflow-hidden w-full">
@@ -1228,11 +1233,17 @@ const VideoChatPage = () => {
                                             : ''
                                     }`}
                                 />
-                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-black text-5xl m:text-6xl md:text-6xl tracking-widest font-extrabold shadow-text">
-                                    {subscriber.stream.connection.data &&
-                                        JSON.parse(
-                                            subscriber.stream.connection.data
-                                        ).nickname}
+                                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
+                                    <div className="flex justify-center items-center w-full">
+                                        <span className="text-4xl sm:text-5xl md:text-5xl tracking-widest font-extrabold text-[#f7f3e9] shadow-text px-6 py-1 rounded-full bg-opacity-80 backdrop-blur-sm">
+                                            {subscriber.stream.connection
+                                                .data &&
+                                                JSON.parse(
+                                                    subscriber.stream.connection
+                                                        .data
+                                                ).nickname}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {subscriber.stream.connection.data &&
@@ -1243,8 +1254,8 @@ const VideoChatPage = () => {
                                     quizInProgress && (
                                         <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
-                                                <p className="text-3xl font-bold text-shadow animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!
+                                                <p className="text-3xl font-bold text-white animate-pulse whitespace-nowrap">
+                                                    🔥 미션 진행 중!!
                                                 </p>
                                                 <div className="overflow-hidden w-full">
                                                     <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
