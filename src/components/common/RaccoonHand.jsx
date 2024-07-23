@@ -417,18 +417,6 @@ const RaccoonHand = React.memo((props) => {
             >
                 Change Raccoon Face
             </button>
-            {/* <button
-                onClick={changeHandColor}
-                style={{ position: 'absolute', top: 10, right: 30 }}
-            >
-                Change Raccoon Hand Color
-            </button> */}
-            {/* <button
-                onClick={handleIceBreaking}
-                style={{ position: 'absolute', top: 10, right: 30 }}
-            >
-                ICE BREAKING
-            </button> */}
         </div>
     );
 });
