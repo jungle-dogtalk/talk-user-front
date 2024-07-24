@@ -259,7 +259,7 @@ const ReviewPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24"
+                    className="w-16 h-16 sm:w-60 sm:h-24"
                 />
             </header>
             <div className="flex-1 overflow-auto flex flex-col p-4 sm:p-5">

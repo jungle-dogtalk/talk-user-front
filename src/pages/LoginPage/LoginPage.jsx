@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'; // React와 React 훅스 가
 import { useNavigate } from 'react-router-dom'; // 리디렉션을 위해 useNavigate 훅 가져오기
 import { useDispatch, useSelector } from 'react-redux'; // Redux 훅스 가져오기
 import { loginUser } from '../../redux/slices/userSlice'; // 로그인 액션 가져오기
-import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
+import logo from '../../assets/barking-talk2.png'; // 로고 이미지 경로
 
 const LoginPage = () => {
     const [username, setUsername] = useState(''); // 사용자 이름 상태 변수와 설정 함수
@@ -35,7 +35,7 @@ const LoginPage = () => {
                 <img
                     src={logo}
                     alt="명톡 로고"
-                    className="w-40 sm:w-56 lg:w-[24rem] mb-8 sm:mb-16 lg:mb-32"
+                    className="w-40 sm:w-62 lg:w-[24rem] mb-8 sm:mb-16 lg:mb-20"
                 />
                 <form
                     onSubmit={handleLogin}

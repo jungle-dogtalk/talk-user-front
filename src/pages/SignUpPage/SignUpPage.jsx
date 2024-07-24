@@ -148,7 +148,7 @@ const SignUpPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24"
+                    className="w-16 h-16 sm:w-60 sm:h-24"
                 />
             </header>
             <div className="flex flex-col items-center py-8 sm:py-12 flex-1 w-full px-4 sm:px-8 max-w-6xl mx-auto">
