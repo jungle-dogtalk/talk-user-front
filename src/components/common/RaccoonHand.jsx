@@ -148,7 +148,7 @@ const RaccoonHand = React.memo((props) => {
         // WASM 파일 사전 로딩
         const preloadWasm = async () => {
             const wasmResponse = await fetch(
-                'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm/vision_wasm_internal.wasm'
+                `/models/vision_wasm_internal.wasm`
             );
             const wasmArrayBuffer = await wasmResponse.arrayBuffer();
             return wasmArrayBuffer;
@@ -616,7 +616,7 @@ function Raccoon({ modelPath }) {
             const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
 
             // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
-            const scaleFactor = 1.3;
+            const scaleFactor = 1.47;
 
             // 새로운 스케일 설정
             setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
@@ -624,7 +624,7 @@ function Raccoon({ modelPath }) {
             const facePosition = new Vector3(
                 (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
                 -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
-                noseLandmark.z // z 좌표
+                (noseLandmark.z - 0.5) * 2 // z 좌표 정규화
             );
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
@@ -644,46 +644,44 @@ function Raccoon({ modelPath }) {
 }
 
 function Hand({ handColor }) {
-    const handRef = useRef();
-
-    useFrame(() => {
-        if (handLandmarks.length > 0 && handRef.current) {
-            handLandmarks.forEach((hand, index) => {
-                hand.forEach((landmark, i) => {
-                    const joint = handRef.current.children[index * 21 + i];
-                    if (joint) {
-                        joint.position.set(
-                            (landmark.x - 0.5) * 2 + avatarPosition.x,
-                            -(landmark.y - 0.5) * 2 + avatarPosition.y,
-                            landmark.z
-                        );
-                    }
-                });
-            });
-        } else if (handRef.current) {
-            // 손 랜드마크가 없을 때 위치 초기화
-            handRef.current.children.forEach((joint) => {
-                joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
-            });
-        }
-    });
-
-    return (
-        <group ref={handRef}>
-            {[0, 1].map((handIndex) =>
-                Array(21)
-                    .fill()
-                    .map((_, i) => (
-                        <Sphere
-                            key={`hand-${handIndex}-${i}`}
-                            args={[0.05, 16, 16]}
-                        >
-                            <meshBasicMaterial color={handColor} />
-                        </Sphere>
-                    ))
-            )}
-        </group>
-    );
+    // const handRef = useRef();
+    // useFrame(() => {
+    //     if (handLandmarks.length > 0 && handRef.current) {
+    //         handLandmarks.forEach((hand, index) => {
+    //             hand.forEach((landmark, i) => {
+    //                 const joint = handRef.current.children[index * 21 + i];
+    //                 if (joint) {
+    //                     joint.position.set(
+    //                         (landmark.x - 0.5) * 2 + avatarPosition.x,
+    //                         -(landmark.y - 0.5) * 2 + avatarPosition.y,
+    //                         landmark.z
+    //                     );
+    //                 }
+    //             });
+    //         });
+    //     } else if (handRef.current) {
+    //         // 손 랜드마크가 없을 때 위치 초기화
+    //         handRef.current.children.forEach((joint) => {
+    //             joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
+    //         });
+    //     }
+    // });
+    // return (
+    //     <group ref={handRef}>
+    //         {[0, 1].map((handIndex) =>
+    //             Array(21)
+    //                 .fill()
+    //                 .map((_, i) => (
+    //                     <Sphere
+    //                         key={`hand-${handIndex}-${i}`}
+    //                         args={[0.05, 16, 16]}
+    //                     >
+    //                         <meshBasicMaterial color={handColor} />
+    //                     </Sphere>
+    //                 ))
+    //         )}
+    //     </group>
+    // );
 }
 
 export default RaccoonHand;
