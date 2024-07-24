@@ -11,13 +11,21 @@ import PuppyGame from './PuppyGame';
 import './MatchingPage.css';
 
 const MatchingPage = () => {
+    const [socket, setSocket] = useState(null);
+
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.user.userInfo);
     const [queueLength, setQueueLength] = useState(0);
-    const socket = io(import.meta.env.VITE_API_URL);
+
+    useEffect(() => {
+        setSocket(io(import.meta.env.VITE_API_URL));
+    }, []);
 
     // 사용자 데이터를 query 아닌 소켓으로 전송하게 수정했음.
     useEffect(() => {
+        if (!socket) {
+            return;
+        }
         const storedQuestion = sessionStorage.getItem('question');
         const storedAnswer = sessionStorage.getItem('answer');
 
@@ -45,14 +53,14 @@ const MatchingPage = () => {
 
         // queueLengthUpdate 이벤트 수신
         socket.on('queueLengthUpdate', (newQueueLength) => {
-            console.log('큐길이 -> ', queueLength);
+            console.log('업데이트 된 큐길이 -> ', newQueueLength);
             setQueueLength(newQueueLength);
         });
 
         return () => {
             socket.disconnect();
         };
-    }, [userInfo, socket]);
+    }, [socket]);
 
     const handleCancelClick = () => {
         navigate(-1);
@@ -67,7 +75,7 @@ const MatchingPage = () => {
     return (
         <div className="h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] overflow-hidden">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex justify-between items-center shadow-lg">
-            <img
+                <img
                     src={logo}
                     alt="멍톡 로고"
                     className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
