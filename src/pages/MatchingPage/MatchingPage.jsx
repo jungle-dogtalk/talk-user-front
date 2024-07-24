@@ -88,30 +88,31 @@ const MatchingPage = () => {
                 </button>
             </header>
 
-            <div className="flex-1 flex flex-col items-center justify-start p-4 sm:p-8 md:p-10 space-y-4">
-                <h2 className="text-6xl sm:text-7xl md:text-7xl font-extrabold text-[#4a3728] animate-pulse mb-4 sm:mb-6 bg-[#e7d4b5] px-10 py-4 sm:px-14 sm:py-3 rounded-full shadow-lg text-center w-full max-w-5xl">
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-10 space-y-4">
+                <h2 className="text-6xl sm:text-7xl md:text-7xl font-extrabold text-[#4a3728] animate-pulse mb-4 sm:mb-6 bg-[#e7d4b5] px-10 py-4 sm:px-14 sm:py-1 rounded-full shadow-lg text-center w-11/12 max-w-3xl">
                     매칭중..
                 </h2>
 
-                <div className="bg-[#f7f3e9] bg-opacity-90 rounded-3xl shadow-2xl p-8 sm:p-10 md:p-12 w-full max-w-7xl flex flex-col sm:flex-row items-center justify-between space-y-8 sm:space-y-0 sm:space-x-10 flex-grow">
-                    <div className="flex flex-col items-center sm:items-start space-y-12 flex-1">
-                        <div className="bg-[#e7d4b5] p-8 sm:p-10 rounded-xl shadow-md w-full max-w-5xl mx-auto">
-                            <p className="text-4xl sm:text-5xl md:text-5xl text-[#8b5e3c] mb-6 sm:mb-8 text-center">
+                <div className="bg-[#f7f3e9] bg-opacity-90 rounded-3xl shadow-2xl p-8 sm:p-10 md:p-12 w-11/12 max-w-7xl xl:max-w-8xl flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-10">
+                    <div className="flex flex-col items-center space-y-8 flex-1">
+                        <div className="bg-[#e7d4b5] p-6 sm:p-8 rounded-xl shadow-md w-full max-w-3xl mx-auto">
+                            <p className="text-3xl sm:text-4xl md:text-5xl text-[#8b5e3c] mb-4 sm:mb-6 text-center">
                                 나의 관심사
                             </p>
-                            <div className="text-3xl sm:text-4xl md:text-4xl font-semibold text-[#4a3728] text-center space-y-4">
+                            <div className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#4a3728] text-center space-y-3">
                                 {userInfo.interests.map((interest, index) => (
                                     <p key={index}>{interest}</p>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex items-center justify-center h-full">
-                            <p className="text-center text-4xl sm:text-5xl md:text-5xl font-bold text-[#f7f3e9] bg-[#8b5e3c] px-8 py-6 sm:px-12 sm:py-8 rounded-full shadow-lg">
-                                "{queueLength}명" <br /> 대기 중
+                        <div className="flex items-center justify-center">
+                            <p className="text-center text-3xl sm:text-4xl md:text-5xl font-bold text-[#f7f3e9] bg-[#8b5e3c] px-6 py-4 sm:px-8 sm:py-6 rounded-full shadow-lg">
+                                "{queueLength}명" <br></br> 대기 중
                             </p>
                         </div>
                     </div>
-                    <div className="relative w-full sm:w-auto flex-shrink-0">
+
+                    <div className="relative w-full lg:w-auto flex-shrink-0">
                         <div className="absolute -inset-2 bg-gradient-to-r from-[#a16e47] to-[#c18a67] rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
                         <div className="relative bg-white rounded-lg p-2">
                             <PuppyGame className="w-full h-80 sm:w-96 sm:h-96" />
@@ -120,7 +121,7 @@ const MatchingPage = () => {
                 </div>
             </div>
 
-            <div className="absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-[#a16e47] to-transparent opacity-30"></div>
+            <div className="h-16 sm:h-20 bg-gradient-to-t from-[#a16e47] to-transparent opacity-30"></div>
         </div>
     );
 };
