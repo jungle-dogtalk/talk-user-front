@@ -156,11 +156,11 @@ const ChooseRaccoonPage = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gradient-to-b from-[#FFF8E1] to-[#FFE0B2]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 flex items-center justify-between shadow-xl">
-                <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-3 flex items-center justify-between shadow-xl">
+            <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-20 h-20 sm:w-24 sm:h-24"
+                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
                 />
             </header>
             <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-10 p-8 overflow-auto">

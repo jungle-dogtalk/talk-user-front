@@ -139,7 +139,6 @@ const VideoChatPage = () => {
                 setShowInitialModal(false);
             }, 5000); // 5초 후 모달 닫기
 
-
             return () => clearTimeout(timer);
         }
     }, [sessionData]);
@@ -250,8 +249,8 @@ const VideoChatPage = () => {
         // 발화량 순위 데이터 수신
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
-
             setSpeechLengths(data); // 직접 받은 데이터를 그대로 사용
+            sessionStorage.setItem('ranking', JSON.stringify(data));
         });
 
         return () => {
@@ -1117,12 +1116,12 @@ const VideoChatPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-2 flex items-center justify-between shadow-lg">
                 <div className="flex items-center space-x-4">
                     <img
                         src={logo}
                         alt="멍톡 로고"
-                        className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                        className="w-16 h-16 sm:w-24 sm:h-24 rounded-full transform hover:scale-105 transition-transform duration-300"
                         onClick={handleLogoClick}
                     />
                     <img
@@ -1162,29 +1161,22 @@ const VideoChatPage = () => {
                     <div className="grid grid-cols-2 grid-rows-2 gap-2 p-2 h-full">
                         {publisher && (
                             <div
-                                className={`relative w-full h-full border-2 ${
+                                className={`relative w-full h-full border-4 ${
                                     speakingUsers.has(
                                         publisher.stream.connection.connectionId
                                     )
-                                        ? 'border-blue-500 border-4 animate-speakingBorder'
-                                        : 'border-[#d4b894]'
-                                } rounded-xl shadow-2xl overflow-hidden transition-all duration-300`}
+                                        ? 'border-blue-500'
+                                        : 'border-transparent'
+                                } rounded-xl shadow-lg overflow-hidden transition-all duration-300`}
                             >
                                 <OpenViduVideo
                                     streamManager={publisher}
-                                    className={`w-full h-full object-cover ${
-                                        speakingUsers.has(
-                                            publisher.stream.connection
-                                                .connectionId
-                                        )
-                                            ? 'ring-4 ring-blue-500'
-                                            : ''
-                                    }`}
+                                    className="w-full h-full object-cover"
                                 />
 
-                                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
-                                    <div className="flex justify-center items-center w-full">
-                                        <span className="text-4xl sm:text-5xl md:text-5xl tracking-widest font-extrabold text-[#f7f3e9] shadow-text px-6 py-1 rounded-full bg-opacity-80 backdrop-blur-sm">
+                                <div className="absolute top-0 left-0 right-0 z-10 bg-white bg-opacity-30">
+                                    <div className="flex justify-center items-center w-full py-2 sm:py-3">
+                                        <span className="text-4xl sm:text-5xl md:text-6xl tracking-widest font-extrabold text-black px-6">
                                             {
                                                 JSON.parse(
                                                     publisher.stream.connection
@@ -1199,13 +1191,10 @@ const VideoChatPage = () => {
                                     JSON.parse(publisher.stream.connection.data)
                                         .userId &&
                                     quizInProgress && (
-                                        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="absolute top-0 left-0 w-full bg-black text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
-                                                <p className="text-3xl font-bold text-white animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!
-                                                </p>
                                                 <div className="overflow-hidden w-full">
-                                                    <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
+                                                    <p className="text-5xl font-extrabold text-white whitespace-nowrap animate-[slideLeft_10s_linear_infinite] drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] tracking-wide">
                                                         {
                                                             sessionData[
                                                                 targetUserIndexRef
@@ -1215,6 +1204,9 @@ const VideoChatPage = () => {
                                                         님의 MBTI는 뭘까요?
                                                     </p>
                                                 </div>
+                                                <p className="text-3xl font-bold text-yellow-300 animate-pulse whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] tracking-wide">
+                                                    🔥 미션 진행 중!
+                                                </p>
                                             </div>
                                         </div>
                                     )}
@@ -1271,29 +1263,22 @@ const VideoChatPage = () => {
                         {subscribers.map((subscriber, index) => (
                             <div
                                 key={index}
-                                className={`relative w-full h-full border-2 ${
+                                className={`relative w-full h-full border-4 ${
                                     speakingUsers.has(
                                         subscriber.stream.connection
                                             .connectionId
                                     )
-                                        ? 'border-blue-500 border-4 animate-speakingBorder'
-                                        : 'border-[#d4b894]'
+                                        ? 'border-blue-500'
+                                        : 'border-transparent'
                                 } rounded-xl shadow-lg overflow-hidden transition-all duration-300`}
                             >
                                 <OpenViduVideo
                                     streamManager={subscriber}
-                                    className={`w-full h-full object-cover ${
-                                        speakingUsers.has(
-                                            subscriber.stream.connection
-                                                .connectionId
-                                        )
-                                            ? 'ring-4 ring-blue-500'
-                                            : ''
-                                    }`}
+                                    className="w-full h-full object-cover"
                                 />
-                                <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] py-2 sm:py-3">
-                                    <div className="flex justify-center items-center w-full">
-                                        <span className="text-4xl sm:text-5xl md:text-5xl tracking-widest font-extrabold text-[#f7f3e9] shadow-text px-6 py-1 rounded-full bg-opacity-80 backdrop-blur-sm">
+                                <div className="absolute top-0 left-0 right-0 z-10 bg-white bg-opacity-30">
+                                    <div className="flex justify-center items-center w-full py-2 sm:py-3">
+                                        <span className="text-4xl sm:text-5xl md:text-6xl tracking-widest font-extrabold text-black px-6">
                                             {subscriber.stream.connection
                                                 .data &&
                                                 JSON.parse(
@@ -1310,16 +1295,22 @@ const VideoChatPage = () => {
                                             subscriber.stream.connection.data
                                         ).userId &&
                                     quizInProgress && (
-                                        <div className="absolute top-0 left-0 w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] bg-opacity-60 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-[#8b5e3c] backdrop-filter backdrop-blur-sm z-20">
+                                        <div className="absolute top-0 left-0 w-full bg-black text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
-                                                <p className="text-3xl font-bold text-white animate-pulse whitespace-nowrap">
-                                                    🔥 미션 진행 중!!
-                                                </p>
                                                 <div className="overflow-hidden w-full">
-                                                    <p className="text-4xl font-extrabold text-yellow-300 text-shadow-lg whitespace-nowrap animate-[slideLeft_10s_linear_infinite]">
-                                                        {quizQuestion}
+                                                    <p className="text-5xl font-extrabold text-white whitespace-nowrap animate-[slideLeft_10s_linear_infinite] drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] tracking-wide">
+                                                        {
+                                                            sessionData[
+                                                                targetUserIndexRef
+                                                                    .current
+                                                            ].nickname
+                                                        }
+                                                        님의 MBTI는 뭘까요?
                                                     </p>
                                                 </div>
+                                                <p className="text-3xl font-bold text-yellow-300 animate-pulse whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] tracking-wide">
+                                                    🔥 미션 진행 중!
+                                                </p>
                                             </div>
                                         </div>
                                     )}
@@ -1387,7 +1378,7 @@ const VideoChatPage = () => {
                     </div>
                 </div>
 
-                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b from-[#a8e6a8] via-[#7cb772] to-[#5c9f52] shadow-inner relative ">
+                <div className="w-1/4 flex flex-col p-5 bg-gradient-to-b bg-white shadow-inner relative ">
                     <MovingDogs
                         sessionData={sessionData}
                         speechLengths={speechLengths}
@@ -1427,14 +1418,14 @@ const VideoChatPage = () => {
 
                         {showQuizSuccess && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
-                                    <div className="flex-1 text-left space-y-2">
-                                        <h1 className="text-5xl font-extrabold text-orange-800 animate-pulse">
-                                            🎉 미션 성공
+                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-12 rounded-3xl shadow-2xl w-11/12 max-w-7xl h-96 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="flex-1 text-left space-y-6">
+                                        <h1 className="text-8xl font-extrabold text-orange-800 animate-pulse">
+                                            🎉성공
                                         </h1>
-                                        <p className="text-2xl text-orange-700">
+                                        <p className="text-5xl text-orange-700">
                                             축하합니다!{' '}
-                                            <span className="font-semibold text-orange-800 text-3xl">
+                                            <span className="font-semibold text-orange-800 text-6xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
                                                     quizChallenger
@@ -1445,32 +1436,33 @@ const VideoChatPage = () => {
                                             님
                                         </p>
                                     </div>
-                                    <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform rotate-3">
+                                    <div className="flex-1 font-bold text-6xl text-orange-800 bg-orange-200 bg-opacity-60 p-8 rounded-xl shadow-inner mx-8 transform rotate-3">
                                         <p className="animate-bounce">
                                             "{quizAnswer}"
                                         </p>
                                     </div>
-                                    <div className="flex-1 text-right space-y-2">
-                                        <p className="text-2xl text-orange-700">
+                                    <div className="flex-1 text-right space-y-6">
+                                        <p className="text-7xl text-orange-700">
                                             멋진 추리력입니다.
                                         </p>
-                                        <p className="text-lg text-orange-600 animate-pulse">
+                                        <p className="text-3xl text-orange-600 animate-pulse">
                                             5초 후 자동으로 닫힘
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         )}
+
                         {showQuizFailure && (
                             <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-48 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-300 backdrop-filter backdrop-blur-sm">
-                                    <div className="flex-1 text-left space-y-2">
-                                        <h1 className="text-5xl font-extrabold text-orange-800 animate-pulse">
-                                            😢 미션 실패
+                                <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-12 rounded-3xl shadow-2xl w-11/12 max-w-7xl h-96 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="flex-1 text-left space-y-6">
+                                        <h1 className="text-8xl font-extrabold text-orange-800 animate-pulse">
+                                            😢실패
                                         </h1>
-                                        <p className="text-2xl text-orange-700">
+                                        <p className="text-5xl text-orange-700">
                                             아쉽게도{' '}
-                                            <span className="font-semibold text-orange-800 text-3xl">
+                                            <span className="font-semibold text-orange-800 text-6xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
                                                     quizChallenger
@@ -1481,16 +1473,16 @@ const VideoChatPage = () => {
                                             님
                                         </p>
                                     </div>
-                                    <div className="flex-1 font-bold text-3xl text-orange-800 bg-orange-200 bg-opacity-60 p-5 rounded-xl shadow-inner mx-4 transform -rotate-3">
+                                    <div className="flex-1 font-bold text-6xl text-orange-800 bg-orange-200 bg-opacity-60 p-8 rounded-xl shadow-inner mx-8 transform -rotate-3">
                                         <p className="animate-bounce">
                                             오답입니다..
                                         </p>
                                     </div>
-                                    <div className="flex-1 text-right space-y-2">
-                                        <p className="text-2xl text-orange-700">
+                                    <div className="flex-1 text-right space-y-6">
+                                        <p className="text-5xl text-orange-700">
                                             다음에 더 잘하실 거예요!
                                         </p>
-                                        <p className="text-lg text-orange-600 animate-pulse">
+                                        <p className="text-3xl text-orange-600 animate-pulse">
                                             5초 후 자동으로 닫힘
                                         </p>
                                     </div>

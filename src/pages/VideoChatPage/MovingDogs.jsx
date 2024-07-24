@@ -86,12 +86,12 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                         <div
                             className={`absolute top-[-120px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
                                 index === targetUserIndex
-                                    ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black'
-                                    : 'bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white'
+                                    ? 'bg-gradient-to-r text-black'
+                                    : 'bg-gradient-to-r  text-black'
                             } ${
                                 index !== targetUserIndex
                                     ? 'hover:from-[#b28256] hover:via-[#a26b4a] hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out'
-                                    : ''
+                                    : 'hover:from-[#b28256] hover:via-[#a26b4a] hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out'
                             }`}
                         >
                             {safeSessionData[index]?.nickname ? (
@@ -196,7 +196,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                 >
                     <div className="flex-grow">
                         <div className="flex justify-between items-center mb-2">
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-9">
                                 <span className="text-3xl font-bold text-amber-900 bg-amber-300 rounded-full w-12 h-12 flex items-center justify-center">
                                     {index + 1}
                                 </span>
@@ -204,8 +204,8 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                     {user.nickname}
                                 </span>
                             </div>
-                            <span className="text-4xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full">
-                                {Math.round(user.percentage)}점
+                            <span className="text-3xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full">
+                                {Math.round(user.percentage)}
                             </span>
                         </div>
                         <div className="w-full bg-amber-200 rounded-full h-4 overflow-hidden">
