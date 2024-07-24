@@ -54,6 +54,13 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
+    const sampleData = [
+        { nickname: "토크의 신", percentage: 90 },
+        { nickname: "수다쟁이", percentage: 75 },
+        { nickname: "은은한 목소리", percentage: 60 },
+        { nickname: "조용한 관찰자", percentage: 45 },
+    ];
+
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouses.map((house, index) => (
@@ -76,9 +83,8 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                             e.currentTarget.classList.remove('scale-110')
                         }
                     >
-                        
                         <div
-                            className={`absolute top-[-90px] left-0 w-full text-center text-3xl font-semibold rounded-lg py-1 shadow-lg ${
+                            className={`absolute top-[-120px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
                                 index === targetUserIndex
                                     ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black'
                                     : 'bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white'
@@ -88,8 +94,32 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                     : ''
                             }`}
                         >
-                            {safeSessionData[index]?.nickname ||
-                                `User ${index + 1}`}
+                            {safeSessionData[index]?.nickname ? (
+                                <>
+                                    <span className="block text-4xl leading-tight">
+                                        {
+                                            safeSessionData[
+                                                index
+                                            ].nickname.split(' ')[0]
+                                        }
+                                    </span>
+                                    <span className="block text-4xl leading-tight">
+                                        {safeSessionData[index].nickname
+                                            .split(' ')
+                                            .slice(1)
+                                            .join(' ')}
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="block text-4xl leading-tight">
+                                        User
+                                    </span>
+                                    <span className="block text-3xl leading-tight">
+                                        {index + 1}
+                                    </span>
+                                </>
+                            )}
                         </div>
 
                         <img
@@ -99,17 +129,9 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                     : dogHouseImage
                             }
                             alt={`Dog house ${index + 1}`}
-                            className={`w-full h-full object-cover rounded-lg transition-transform duration-300`}
+                            className={`w-full h-full object-cover rounded-lg transition-transform duration-300 mt-2`}
                         />
                     </div>
-                    <div
-                        className="absolute"
-                        style={{
-                            left: '50%',
-                            top: '100%',
-                            transform: 'translate(-50%, 10%)',
-                        }}
-                    ></div>
                 </div>
             ))}
 
@@ -159,41 +181,42 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                 </div>
             )}
 
+            
+
             {/* 실시간 수다왕 차트 추가 */}
             <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
-                <h3 className="text-5xl font-bold text-amber-800 mb-2 text-center">
-                    실시간 토크왕
-                </h3>
-                <div className="flex-grow flex flex-col justify-between space-y-1">
-                    {speechLengths.map((user, index) => (
-                        <div
-                            key={user.nickname}
-                            className="transition-all duration-500 ease-in-out flex items-center space-x-2 bg-amber-300 bg-opacity-20 rounded-xl p-2 animate-fade-in-down"
-                            style={{ animationDelay: `${index * 100}ms` }}
-                        >
-                            <div className="flex-grow">
-                                <div className="flex justify-between items-center mb-1">
-                                    <span className="text-4xl font-semibold text-amber-800">
-                                        {index + 1}등{' '}
-                                        <span className="text-4xl">
-                                            {user.nickname}
-                                        </span>
-                                    </span>
-                                    <span className="text-4xl font-medium text-amber-600">
-                                        {Math.round(user.percentage)}점
-                                    </span>
-                                </div>
-                                <div className="w-full bg-amber-200 rounded-full h-3 overflow-hidden">
-                                    <div
-                                        className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 h-full rounded-full transition-all duration-500 ease-in-out relative"
-                                        style={{ width: `${user.percentage}%` }}
-                                    >
-                                        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-30 animate-pulse"></div>
-                                    </div>
-                                </div>
+        <h3 className="text-4xl font-bold text-amber-800 mb-2 text-center">
+            실시간 수다왕
+        </h3>
+        <div className="flex-grow flex flex-col justify-between space-y-1">
+            {speechLengths.map((user, index) => (
+                <div
+                    key={user.nickname}
+                    className="flex items-center space-x-2 bg-white bg-opacity-50 rounded-xl p-3 shadow-md"
+                >
+                    <div className="flex-grow">
+                        <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center space-x-3">
+                                <span className="text-3xl font-bold text-amber-900 bg-amber-300 rounded-full w-12 h-12 flex items-center justify-center">
+                                    {index + 1}
+                                </span>
+                                <span className="text-4xl font-semibold text-amber-800 truncate max-w-[200px]">
+                                    {user.nickname}
+                                </span>
                             </div>
+                            <span className="text-4xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full">
+                                {Math.round(user.percentage)}점
+                            </span>
                         </div>
-                    ))}
+                        <div className="w-full bg-amber-200 rounded-full h-4 overflow-hidden">
+                            <div
+                                className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full"
+                                style={{ width: `${user.percentage}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            ))}
                 </div>
             </div>
         </div>
