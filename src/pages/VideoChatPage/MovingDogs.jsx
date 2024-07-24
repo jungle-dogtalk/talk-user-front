@@ -54,7 +54,6 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
-
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
             {dogHouses.map((house, index) => (
@@ -68,7 +67,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                     }}
                 >
                     <div
-                        className={`relative w-32 h-32 transition-transform duration-300 cursor-pointer`}
+                        className={`relative w-32 h-32 transition-transform duration-300 cursor-pointer group`}
                         onClick={() => handleDogHouseClick(index)}
                         onMouseEnter={(e) =>
                             e.currentTarget.classList.add('scale-110')
@@ -81,12 +80,8 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                             className={`absolute top-[-120px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
                                 index === targetUserIndex
                                     ? 'bg-gradient-to-r text-black'
-                                    : 'bg-gradient-to-r  text-black'
-                            } ${
-                                index !== targetUserIndex
-                                    ? 'hover:from-[#b28256] hover:via-[#a26b4a] hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out'
-                                    : 'hover:from-[#b28256] hover:via-[#a26b4a] hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out'
-                            }`}
+                                    : 'bg-gradient-to-r text-black'
+                            } group-hover:from-[#b28256] group-hover:via-[#a26b4a] group-hover:to-[#8b5e3c] transition-colors duration-300 ease-in-out`}
                         >
                             {safeSessionData[index]?.nickname ? (
                                 <>
@@ -151,24 +146,24 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 ></path>
                             </svg>
                         </button>
-                        <h1 className="text-7xl font-extrabold text-blue-800 mb-6 animate-pulse">
+                        <h1 className="text-9xl font-extrabold text-blue-800 mb-6 animate-pulse">
                             <span className="relative">
                                 MBTI 힌트
                                 <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
-                        <p className="text-5xl text-blue-700 font-medium relative leading-relaxed mx-8">
+                        <p className="text-9xl text-blue-700 font-medium relative leading-relaxed mx-8">
                             <span className="absolute -left-8 top-0 text-8xl text-[#1e40af] opacity-25">
                                 "
                             </span>
-                            <span className="relative z-10">
+                            <span className="relative z-10 text-9xl">
                                 {maskMBTI(selectedUser.mbti)}
                             </span>
                             <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
                                 "
                             </span>
                         </p>
-                        <p className="text-xl text-blue-600 mt-8 animate-pulse">
+                        <p className="text-6xl text-blue-600 mt-8 animate-pulse">
                             5초 후 자동으로 닫힘
                         </p>
                     </div>
@@ -181,7 +176,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                     실시간 수다왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-1">
-            {speechLengths.map((user, index) => (
+                    {speechLengths.map((user, index) => (
                         <div
                             key={user.nickname}
                             className="flex items-center space-x-2 bg-white bg-opacity-50 rounded-xl p-3 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg"
