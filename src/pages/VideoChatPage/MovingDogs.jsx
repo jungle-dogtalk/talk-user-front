@@ -8,10 +8,10 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
     const dogHouses = [
-        { x: 23, y: 17 }, // 왼쪽 위
-        { x: 78, y: 17 }, // 오른쪽 위
-        { x: 23, y: 44 }, // 왼쪽 아래
-        { x: 78, y: 44 }, // 오른쪽 아래
+        { x: 23, y: 16 }, // 왼쪽 위
+        { x: 78, y: 16 }, // 오른쪽 위
+        { x: 23, y: 42 }, // 왼쪽 아래
+        { x: 78, y: 42 }, // 오른쪽 아래
     ];
 
     // 모달 상태와 선택된 사용자 상태 추가
@@ -77,7 +77,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                         }
                     >
                         <div
-                            className={`absolute top-[-120px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
+                            className={`absolute top-[-80px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
                                 index === targetUserIndex
                                     ? 'bg-gradient-to-r text-black'
                                     : 'bg-gradient-to-r text-black'
@@ -172,7 +172,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
 
             {/* 실시간 수다왕 차트 추가 */}
             <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
-                <h3 className="text-4xl font-bold text-amber-800 mb-2 text-center">
+                <h3 className="text-4xl font-bold text-amber-900 mb-2 text-center">
                     실시간 수다왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-1">
