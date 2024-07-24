@@ -380,16 +380,16 @@ const ObstacleCanvas = ({ obstacles, heartImage, score }) => (
                 />
             ))}
             <Rect
-                x={255}
-                y={457}
-                width={330}
-                height={34}
+                x={160}
+                y={445}
+                width={480}
+                height={50} // 높이를 줄여서 테스트
                 fill="rgba(255, 255, 255, 0.5)"
                 cornerRadius={5}
             />
             <Text
                 x={180}
-                y={430}
+                y={450}
                 text="상: 👍 하: 👎 좌: ✊ 우: 🖐️"
                 fontSize={45}
                 fontFamily={'MyCustomFont'}

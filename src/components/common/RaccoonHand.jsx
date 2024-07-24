@@ -282,8 +282,9 @@ const RaccoonHand = React.memo((props) => {
                             performQuiz();
                         }
                         break;
-                    case 'ILoveYou':
-                        console.log('Love gesture detected');
+                    // case 'ILoveYou':
+                    case 'Thumb_Up':
+                        // console.log('Love gesture detected');
                         removeMask();
                         break;
                     default:
