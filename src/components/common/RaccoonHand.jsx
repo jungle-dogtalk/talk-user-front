@@ -97,7 +97,10 @@ const RaccoonHand = React.memo((props) => {
         () => (
             <Raccoon
                 modelPath={modelPath}
-                onLoad={() => setIsVictoryModelLoading(false)}
+                onLoad={() => {
+                    console.timeEnd('Model Load Time');
+                    setIsVictoryModelLoading(false);
+                }}
             />
         ),
         [modelPath, setIsVictoryModelLoading]
@@ -314,6 +317,7 @@ const RaccoonHand = React.memo((props) => {
     }, [setup]);
 
     const changeModel = useCallback(() => {
+        console.time('Model Load Time');
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
         setIsModelVisible(true); // 모델 변경 시 다시 보이도록 설정
