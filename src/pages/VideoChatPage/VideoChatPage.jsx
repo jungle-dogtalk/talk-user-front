@@ -249,8 +249,8 @@ const VideoChatPage = () => {
         // 발화량 순위 데이터 수신
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
-
             setSpeechLengths(data); // 직접 받은 데이터를 그대로 사용
+            sessionStorage.setItem('ranking', JSON.stringify(data));
         });
 
         return () => {
