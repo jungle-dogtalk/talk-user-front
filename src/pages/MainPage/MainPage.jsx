@@ -66,11 +66,11 @@ const MainPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e4d7c7] text-[#8b5e3c]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between">
-            <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between shadow-lg">
+                <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
+                    className="w-16 h-16 sm:w-24 sm:h-24"
                 />
                 <div className="flex flex-row items-center space-x-2 sm:space-x-4">
                     <button

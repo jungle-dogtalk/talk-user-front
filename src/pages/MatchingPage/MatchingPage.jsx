@@ -74,15 +74,15 @@ const MatchingPage = () => {
 
     return (
         <div className="h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] overflow-hidden">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex justify-between items-center shadow-lg">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
+                    className="w-16 h-16 sm:w-24 sm:h-24"
                 />
                 <button
                     onClick={handleCancelClick}
-                    className="bg-[#f7f3e9] text-[#8b5e3c] py-2 px-4 sm:py-3 sm:px-8 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#d4b894] transition duration-300 ease-in-out transform hover:scale-105 font-bold text-lg sm:text-xl"
+                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 sm:py-3 sm:px-8 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-2xl font-bold"
                 >
                     돌아가기
                 </button>

@@ -144,11 +144,11 @@ const SignUpPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFE0B2] items-center">
-            <header className="w-full bg-gradient-to-r from-[#89644C] to-[#a16e47] p-3 flex items-center justify-between shadow-md">
-            <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between shadow-lg">
+                <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
+                    className="w-16 h-16 sm:w-24 sm:h-24"
                 />
             </header>
             <div className="flex flex-col items-center py-8 sm:py-12 flex-1 w-full px-4 sm:px-8 max-w-6xl mx-auto">

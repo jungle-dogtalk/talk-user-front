@@ -1116,7 +1116,7 @@ const VideoChatPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-1 flex items-center justify-between shadow-lg">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-1 flex items-center justify-between shadow-lg">
                 <div className="flex items-center space-x-4">
                     <img
                         src={logo}
@@ -1135,7 +1135,7 @@ const VideoChatPage = () => {
                 </div>
 
                 <div className="flex items-center">
-                    <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
+                <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>

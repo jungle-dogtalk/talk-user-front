@@ -255,11 +255,11 @@ const ReviewPage = () => {
 
     return (
         <div className="h-screen bg-gray-100 flex flex-col">
-            <header className="w-full bg-[#a16e47] p-1 flex items-center">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center shadow-lg">
                 <img
                     src={logo}
-                    alt="명톡 로고"
-                    className="w-16 h-16 sm:w-20 sm:h-20 ml-2"
+                    alt="멍톡 로고"
+                    className="w-16 h-16 sm:w-24 sm:h-24"
                 />
             </header>
             <div className="flex-1 overflow-auto flex flex-col p-4 sm:p-5">
