@@ -115,7 +115,30 @@ const ReviewPage = () => {
                         }
                     });
                 });
+                // const testArr = [
+                //     {
+                //         nickname: 'User1',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User2',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User3',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User4',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                // ];
                 setUserRankings(rankArr);
+
                 setTopTalker(ranking[0]);
                 setSessionData(mergedData);
                 setCallUserInfo(mergedData);
@@ -241,12 +264,12 @@ const ReviewPage = () => {
             </header>
             <div className="flex-1 overflow-auto flex flex-col p-4 sm:p-5">
                 {topTalker && (
-                    <div className="text-center mb-4 p-3 sm:p-2 border-2 border-yellow-400 bg-yellow-50 rounded-lg flex items-center justify-center">
+                    <div className="text-center mb-4 p-3 sm:p-4 border-2 border-yellow-400 bg-yellow-50 rounded-lg flex items-center justify-center">
                         <div>
-                            <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-yellow-600 mb-2">
+                            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-yellow-600 mb-2">
                                 오늘의 수다왕
                             </h2>
-                            <h3 className="text-xl sm:text-3xl lg:text-4xl font-semibold mb-1">
+                            <h3 className="text-2xl sm:text-4xl lg:text-5xl font-semibold mb-1">
                                 '{topTalker.nickname}'님
                             </h3>
                         </div>
@@ -254,37 +277,35 @@ const ReviewPage = () => {
                             <img
                                 src={crownIcon}
                                 alt="왕관"
-                                className="w-16 h-16 sm:w-20 sm:h-20"
+                                className="w-20 h-20 sm:w-24 sm:h-24"
                             />
-                            <img
+                            {/* <img
                                 src={celebrationEffect}
                                 alt="축하 이펙트"
-                                className="w-16 h-16 sm:w-20 sm:h-20 mt-2"
-                            />
+                                className="w-20 h-20 sm:w-24 sm:h-24 mt-2"
+                            /> */}
                         </div>
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 flex-1">
-                    {/* 본인 정보 표시 */}
-
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 flex-1">
                     {userRankings && userRankings.length > 0 ? (
                         userRankings.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-6"
+                                className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-5"
                             >
                                 <div className="flex flex-col items-center space-y-2 sm:space-y-3">
                                     <img
                                         src={user.profileImage}
                                         alt="프로필"
-                                        className="w-24 h-24 sm:w-32 sm:h-32 lg:w-36 lg:h-36 rounded-full"
+                                        className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full"
                                     />
                                     <div className="flex space-x-1 sm:space-x-2">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`cursor-pointer text-3xl sm:text-4xl ${
+                                                className={`cursor-pointer text-4xl sm:text-5xl ${
                                                     ratings[index] >= star
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
@@ -301,12 +322,12 @@ const ReviewPage = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex-1">
-                                    <h3 className="text-2xl sm:text-4xl lg:text-6xl font-semibold mb-2">
+                                <div className="flex-1 flex items-center space-x-14">
+                                    <h3 className="text-3xl sm:text-5xl lg:text-8xl font-semibold mb-2">
                                         {user.nickname}
                                     </h3>
-                                    <p className="text-xl sm:text-3xl lg:text-4xl text-gray-500">
-                                        {index + 1}등
+                                    <p className="text-2xl sm:text-4xl lg:text-6xl font-bold text-gray-500 drop-shadow-lg">
+                                        ({index + 1}등)
                                     </p>
                                 </div>
                             </div>
@@ -317,15 +338,16 @@ const ReviewPage = () => {
                         </p>
                     )}
                 </div>
+
                 <div className="flex justify-center mt-4 sm:mt-6 space-x-4 sm:space-x-6">
                     <button
-                        className="bg-gray-300 text-black px-6 py-3 sm:px-8 sm:py-4 rounded-full text-xl sm:text-2xl font-bold"
+                        className="bg-gray-300 text-black px-8 py-4 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
                         onClick={fetchFeedback}
                     >
                         AI 피드백
                     </button>
                     <button
-                        className="bg-green-500 text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full text-xl sm:text-2xl font-bold"
+                        className="bg-green-500 text-white px-8 py-4 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
                         onClick={handleSubmitReview}
                     >
                         완료
