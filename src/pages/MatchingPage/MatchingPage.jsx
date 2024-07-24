@@ -66,11 +66,11 @@ const MatchingPage = () => {
 
     return (
         <div className="h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] overflow-hidden">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-1 flex justify-between items-center shadow-lg">
-                <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex justify-between items-center shadow-lg">
+            <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
                 />
                 <button
                     onClick={handleCancelClick}

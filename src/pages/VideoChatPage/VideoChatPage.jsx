@@ -1119,12 +1119,11 @@ const VideoChatPage = () => {
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
                 <div className="flex items-center space-x-4">
-                    <img
-                        src={logo}
-                        alt="멍톡 로고"
-                        className="w-14 h-14 sm:w-18 sm:h-18 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
-                        onClick={handleLogoClick}
-                    />
+                <img
+                    src={logo}
+                    alt="멍톡 로고"
+                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
+                />
                     <img
                         src={raccoonImage}
                         alt="라쿤"

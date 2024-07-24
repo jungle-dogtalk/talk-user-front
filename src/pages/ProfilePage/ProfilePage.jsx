@@ -139,11 +139,11 @@ const ProfilePage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFF0D6] items-center">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-2 sm:p-3 flex items-center justify-between shadow-md">
-                <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-3 sm:p-3 flex items-center justify-between shadow-md">
+            <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-20 sm:h-20" // 로고 크기 증가
+                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"

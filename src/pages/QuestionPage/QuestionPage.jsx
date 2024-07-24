@@ -48,11 +48,11 @@ const QuestionPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#f7f3e9] to-[#e4d7c7]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-1 flex items-center justify-between shadow-xl">
-                <img
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-3 flex items-center justify-between shadow-xl">
+            <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full shadow-2xl transform hover:scale-110 transition duration-300"
+                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-2 px-12 sm:py-4 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-xl hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-2xl sm:text-4xl font-bold"
