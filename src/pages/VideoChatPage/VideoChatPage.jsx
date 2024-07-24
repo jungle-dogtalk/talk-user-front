@@ -139,7 +139,6 @@ const VideoChatPage = () => {
                 setShowInitialModal(false);
             }, 5000); // 5초 후 모달 닫기
 
-
             return () => clearTimeout(timer);
         }
     }, [sessionData]);
@@ -250,8 +249,8 @@ const VideoChatPage = () => {
         // 발화량 순위 데이터 수신
         socket.current.on('speechLengths', (data) => {
             console.log('발화량 순위 데이터 수신:', data);
-
             setSpeechLengths(data); // 직접 받은 데이터를 그대로 사용
+            sessionStorage.setItem('ranking', JSON.stringify(data));
         });
 
         return () => {
@@ -1119,11 +1118,11 @@ const VideoChatPage = () => {
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-3 flex items-center justify-between shadow-lg">
                 <div className="flex items-center space-x-4">
-                <img
-                    src={logo}
-                    alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
-                />
+                    <img
+                        src={logo}
+                        alt="멍톡 로고"
+                        className="w-16 h-16 sm:w-24 sm:h-24" // 로고 크기 증가
+                    />
                     <img
                         src={raccoonImage}
                         alt="라쿤"
