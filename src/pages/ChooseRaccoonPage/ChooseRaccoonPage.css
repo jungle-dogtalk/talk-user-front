@@ -122,3 +122,41 @@ button.action-button {
 button.action-button:hover {
     background-color: var(--button-hover-color);
 }
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.pulse-container {
+    animation: pulse 2s infinite ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 1.5rem;
+    background-color: rgba(139, 69, 19, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #8b4513;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.video-fade-in {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.video-fade-in.loaded {
+    opacity: 1;
+}
