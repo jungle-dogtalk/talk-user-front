@@ -1421,7 +1421,7 @@ const VideoChatPage = () => {
                                             🎉성공
                                         </h1>
                                         <p className="text-5xl text-orange-700">
-                                            축하합니다!{' '}
+                                            축하합니다!{' '}<br></br>
                                             <span className="font-semibold text-orange-800 text-6xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
