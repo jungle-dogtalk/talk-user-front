@@ -388,10 +388,10 @@ const ObstacleCanvas = ({ obstacles, heartImage, score }) => (
                 cornerRadius={5}
             />
             <Text
-                x={270}
-                y={460}
+                x={180}
+                y={430}
                 text="상: 👍 하: 👎 좌: ✊ 우: 🖐️"
-                fontSize={30}
+                fontSize={45}
                 fontFamily={'MyCustomFont'}
                 fill="black"
             />
@@ -399,7 +399,7 @@ const ObstacleCanvas = ({ obstacles, heartImage, score }) => (
                 x={10}
                 y={10}
                 text={`Score : ${score}`}
-                fontSize={30}
+                fontSize={60}
                 fontFamily={'MyCustomFont'}
                 fill="black"
             />

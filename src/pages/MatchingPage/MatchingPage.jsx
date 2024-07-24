@@ -65,51 +65,52 @@ const MatchingPage = () => {
     };
 
     return (
-        <div className="h-screen flex flex-col bg-[#FFFAE8] overflow-hidden">
-            <header className="w-full bg-[#a16e47] p-2 flex justify-between items-center">
-                <img src={logo} alt="로고" className="w-16 h-16" />
+        <div className="h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5] overflow-hidden">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-1 flex justify-between items-center shadow-lg">
+                <img
+                    src={logo}
+                    alt="멍톡 로고"
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                />
+                <button
+                    onClick={handleCancelClick}
+                    className="bg-[#f7f3e9] text-[#8b5e3c] py-2 px-4 sm:py-3 sm:px-8 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#d4b894] transition duration-300 ease-in-out transform hover:scale-105 font-bold text-lg sm:text-xl"
+                >
+                    돌아가기
+                </button>
             </header>
-            <div className="flex flex-col items-center justify-center flex-1 w-full px-4 sm:px-8">
-                <div className="bg-[#FFFAE8] rounded-lg p-8 w-full max-w-5xl flex flex-col items-center">
-                    <div className="text-center mb-8 mt-6">
-                        {' '}
-                        <h2
-                            className="text-3xl sm:text-5xl font-bold bouncing-text"
-                            style={{ fontSize: '70px' }}
-                        >
-                            {createBouncingText('매칭 중 . . .')}
-                        </h2>
-                        <p
-                            className="text-gray-700 mt-4 text-lg sm:text-2xl" // mt-4로 조정
-                            style={{ fontSize: '40px' }}
-                        >
-                            나의 관심사 : {userInfo.interests.join(', ')}
-                        </p>
-                        <p
-                            className="text-gray-700 mt-4 text-lg sm:text-2xl"
-                            style={{ fontSize: '35px' }}
-                        >
-                            {queueLength}명 대기 중
+
+            <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-6">
+                <h2 className="text-6xl sm:text-7xl md:text-7xl font-extrabold text-[#4a3728] animate-pulse mb-8 sm:mb-8 bg-[#e7d4b5] px-10 py-4 sm:px-12 sm:py-4 rounded-full shadow-lg text-center w-full max-w-4xl">
+                    매칭중..
+                </h2>
+
+                <div className="bg-[#f7f3e9] bg-opacity-90 rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 w-full max-w-7xl flex flex-col sm:flex-row items-center justify-between space-y-6 sm:space-y-0 sm:space-x-8">
+                    <div className="flex flex-col items-center sm:items-start space-y-12 flex-1">
+                        <div className="bg-[#e7d4b5] p-6 sm:p-8 rounded-xl shadow-md w-full max-w-5xl mx-auto">
+                            <p className="text-3xl sm:text-4xl md:text-5xl text-[#8b5e3c] mb-4 sm:mb-6 text-center">
+                                나의 관심사
+                            </p>
+                            <div className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#4a3728] text-center space-y-2">
+                                {userInfo.interests.map((interest, index) => (
+                                    <p key={index}>{interest}</p>
+                                ))}
+                            </div>
+                        </div>
+                        <p className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#f7f3e9] animate-bounce bg-[#8b5e3c] px-6 py-3 sm:px-9 sm:py-9 rounded-full shadow-lg">
+                            "{queueLength}명" 대기 중
                         </p>
                     </div>
-                    <PuppyGame className="w-48 h-48 sm:w-64 sm:h-64" />
-                    {/* <p className="mt-4" style={{ fontSize: '25px' }}>
-                        {' '}
-                        상: 👍 하: 👎 좌: 🖐️ 우: ✊
-                    </p> */}
-                    <div className="flex justify-center mt-4">
-                        {' '}
-                        {/* mt-4로 조정 */}
-                        <button
-                            className="bg-[#f7f3e9] text-[#a16e47] py-1 px-3 sm:py-2 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
-                            onClick={handleCancelClick}
-                            style={{ fontSize: '30px' }}
-                        >
-                            돌아가기
-                        </button>
+                    <div className="relative w-full sm:w-auto">
+                        <div className="absolute -inset-2 bg-gradient-to-r from-[#a16e47] to-[#c18a67] rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                        <div className="relative bg-white rounded-lg p-2">
+                            <PuppyGame className="w-full h-64 sm:w-80 sm:h-80" />
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#a16e47] to-transparent opacity-30"></div>
         </div>
     );
 };
