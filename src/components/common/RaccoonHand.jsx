@@ -148,7 +148,7 @@ const RaccoonHand = React.memo((props) => {
         // WASM 파일 사전 로딩
         const preloadWasm = async () => {
             const wasmResponse = await fetch(
-                'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm/vision_wasm_internal.wasm'
+                `/models/vision_wasm_internal.wasm`
             );
             const wasmArrayBuffer = await wasmResponse.arrayBuffer();
             return wasmArrayBuffer;
@@ -567,6 +567,11 @@ function Raccoon({ modelPath }) {
     const tuftsMeshRef = useRef();
     const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
 
+    const [minX, maxX] = [-0.8, 0.8]; // 더 좁은 X축 제한
+    const [minY, maxY] = [-0.6, 0.6]; // 더 좁은 Y축 제한
+    const positionFactor = 3; // 위치 조정 팩터
+    const scaleFactor = 1.08; // 스케일 팩터 조정
+
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
         hairMeshRef.current = nodes.hair_geo;
@@ -574,7 +579,7 @@ function Raccoon({ modelPath }) {
         tuftsMeshRef.current = nodes.tufts_geo;
     }, [nodes]);
 
-    useFrame(() => {
+    useFrame(({ camera }) => {
         if (rotation) {
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
@@ -613,77 +618,77 @@ function Raccoon({ modelPath }) {
         }
 
         if (faceLandmarks.length > 0) {
-            const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
+            const noseLandmark = faceLandmarks[1];
 
-            // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
-            const scaleFactor = 1.3;
-
-            // 새로운 스케일 설정
             setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
 
-            const facePosition = new Vector3(
-                (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
-                -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
-                noseLandmark.z // z 좌표
+            let facePosition = new Vector3(
+                ((noseLandmark.x - 0.5) * 2) / positionFactor,
+                -((noseLandmark.y - 0.5) * 2) / positionFactor,
+                ((noseLandmark.z - 0.5) * 2) / positionFactor
             );
+
+            facePosition.x = Math.max(minX, Math.min(maxX, facePosition.x));
+            facePosition.y = Math.max(minY, Math.min(maxY, facePosition.y));
+
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
                     if (ref.current) {
                         ref.current.position
                             .copy(facePosition)
                             .add(avatarPosition);
-                        // 스케일 적용
                         ref.current.scale.copy(modelScale);
                     }
                 }
             );
         }
+
+        // 카메라 위치 조정 (옵션)
+        camera.position.z = 5;
     });
 
     return <primitive object={scene} scale={modelScale} />;
 }
 
 function Hand({ handColor }) {
-    const handRef = useRef();
-
-    useFrame(() => {
-        if (handLandmarks.length > 0 && handRef.current) {
-            handLandmarks.forEach((hand, index) => {
-                hand.forEach((landmark, i) => {
-                    const joint = handRef.current.children[index * 21 + i];
-                    if (joint) {
-                        joint.position.set(
-                            (landmark.x - 0.5) * 2 + avatarPosition.x,
-                            -(landmark.y - 0.5) * 2 + avatarPosition.y,
-                            landmark.z
-                        );
-                    }
-                });
-            });
-        } else if (handRef.current) {
-            // 손 랜드마크가 없을 때 위치 초기화
-            handRef.current.children.forEach((joint) => {
-                joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
-            });
-        }
-    });
-
-    return (
-        <group ref={handRef}>
-            {[0, 1].map((handIndex) =>
-                Array(21)
-                    .fill()
-                    .map((_, i) => (
-                        <Sphere
-                            key={`hand-${handIndex}-${i}`}
-                            args={[0.05, 16, 16]}
-                        >
-                            <meshBasicMaterial color={handColor} />
-                        </Sphere>
-                    ))
-            )}
-        </group>
-    );
+    // const handRef = useRef();
+    // useFrame(() => {
+    //     if (handLandmarks.length > 0 && handRef.current) {
+    //         handLandmarks.forEach((hand, index) => {
+    //             hand.forEach((landmark, i) => {
+    //                 const joint = handRef.current.children[index * 21 + i];
+    //                 if (joint) {
+    //                     joint.position.set(
+    //                         (landmark.x - 0.5) * 2 + avatarPosition.x,
+    //                         -(landmark.y - 0.5) * 2 + avatarPosition.y,
+    //                         landmark.z
+    //                     );
+    //                 }
+    //             });
+    //         });
+    //     } else if (handRef.current) {
+    //         // 손 랜드마크가 없을 때 위치 초기화
+    //         handRef.current.children.forEach((joint) => {
+    //             joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
+    //         });
+    //     }
+    // });
+    // return (
+    //     <group ref={handRef}>
+    //         {[0, 1].map((handIndex) =>
+    //             Array(21)
+    //                 .fill()
+    //                 .map((_, i) => (
+    //                     <Sphere
+    //                         key={`hand-${handIndex}-${i}`}
+    //                         args={[0.05, 16, 16]}
+    //                     >
+    //                         <meshBasicMaterial color={handColor} />
+    //                     </Sphere>
+    //                 ))
+    //         )}
+    //     </group>
+    // );
 }
 
 export default RaccoonHand;
