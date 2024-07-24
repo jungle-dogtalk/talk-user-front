@@ -17,7 +17,7 @@ import {
 import { useGLTF, Sphere } from '@react-three/drei';
 import {
     FaceLandmarker,
-    HandLandmarker,
+    // HandLandmarker,
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
@@ -27,7 +27,7 @@ import { setSelectedModel } from '../../redux/slices/racoonSlice';
 
 let video;
 let faceLandmarker;
-let handLandmarker;
+// let handLandmarker;
 let gestureRecognizer;
 let lastVideoTime = -1;
 
@@ -35,7 +35,7 @@ let rotation = null;
 let blendshapes = [];
 let faceLandmarks = [];
 let transformationMatrix = null;
-let handLandmarks = [];
+// let handLandmarks = [];ㄴ
 let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
 let gl; // WebGL context를 위한 변수 추가
@@ -70,7 +70,7 @@ const modelVictoryMap = models.reduce(
     {}
 );
 
-const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
+// const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 console.log(randomElement);
 console.log(modelVictoryMap, '매핑정보');
@@ -81,7 +81,6 @@ const RaccoonHand = React.memo((props) => {
     const [victoryModelIndex, setVictoryModelIndex] = useState(
         randomElement[1]
     );
-    const [handColorIndex, setHandColorIndex] = useState(0);
     const [iceBreakingActive, setIceBreakingActive] = useState(false);
     const [handPositions, setHandPositions] = useState([]);
     const [clearedPercentage, setClearedPercentage] = useState(0);
@@ -132,17 +131,17 @@ const RaccoonHand = React.memo((props) => {
         }
     }, [props.isChallengeCompleted, props.isChallengeCompletedTrigger]);
 
-    useEffect(() => {
-        const updateHandPositions = () => {
-            if (handLandmarks.length > 0) {
-                setHandPositions([...handLandmarks]);
-            }
-        };
+    // useEffect(() => {
+    //     const updateHandPositions = () => {
+    //         if (handLandmarks.length > 0) {
+    //             setHandPositions([...handLandmarks]);
+    //         }
+    //     };
 
-        const intervalId = setInterval(updateHandPositions, 16);
+    //     const intervalId = setInterval(updateHandPositions, 16);
 
-        return () => clearInterval(intervalId);
-    }, []);
+    //     return () => clearInterval(intervalId);
+    // }, []);
 
     const setup = useCallback(async () => {
         // WASM 파일 사전 로딩
@@ -173,14 +172,14 @@ const RaccoonHand = React.memo((props) => {
             runningMode: 'VIDEO',
         });
 
-        handLandmarker = await HandLandmarker.createFromOptions(vision, {
-            baseOptions: {
-                modelAssetPath: `/models/hand_landmarker.task`,
-                delegate: 'GPU',
-            },
-            runningMode: 'VIDEO',
-            numHands: 2,
-        });
+        // handLandmarker = await HandLandmarker.createFromOptions(vision, {
+        //     baseOptions: {
+        //         modelAssetPath: `/models/hand_landmarker.task`,
+        //         delegate: 'GPU',
+        //     },
+        //     runningMode: 'VIDEO',
+        //     numHands: 2,
+        // });
 
         //Gesture
         gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -233,7 +232,7 @@ const RaccoonHand = React.memo((props) => {
             lastVideoTime = video.currentTime;
 
             const faceResult = faceLandmarker.detectForVideo(video, nowInMs);
-            const handResult = handLandmarker.detectForVideo(video, nowInMs);
+            // const handResult = handLandmarker.detectForVideo(video, nowInMs);
             const gestureResult = gestureRecognizer.recognizeForVideo(
                 video,
                 nowInMs
@@ -257,12 +256,12 @@ const RaccoonHand = React.memo((props) => {
             }
 
             // Hand result processing
-            if (handResult.landmarks) {
-                handLandmarks = handResult.landmarks;
-                setHandPositions(handResult.landmarks);
-            } else {
-                handLandmarks = [];
-            }
+            // if (handResult.landmarks) {
+            //     handLandmarks = handResult.landmarks;
+            //     setHandPositions(handResult.landmarks);
+            // } else {
+            //     handLandmarks = [];
+            // }
 
             // Gesture result processing
             if (gestureResult?.gestures?.length > 0) {
@@ -305,7 +304,7 @@ const RaccoonHand = React.memo((props) => {
 
             setTimeout(() => {
                 requestAnimationFrame(predict);
-            }, 100); // 100ms 간격으로 실행
+            }, 160); // 160ms 간격으로 실행
         }
     }, [performQuiz]);
 
@@ -651,45 +650,45 @@ function Raccoon({ modelPath }) {
     return <primitive object={scene} scale={modelScale} />;
 }
 
-function Hand({ handColor }) {
-    // const handRef = useRef();
-    // useFrame(() => {
-    //     if (handLandmarks.length > 0 && handRef.current) {
-    //         handLandmarks.forEach((hand, index) => {
-    //             hand.forEach((landmark, i) => {
-    //                 const joint = handRef.current.children[index * 21 + i];
-    //                 if (joint) {
-    //                     joint.position.set(
-    //                         (landmark.x - 0.5) * 2 + avatarPosition.x,
-    //                         -(landmark.y - 0.5) * 2 + avatarPosition.y,
-    //                         landmark.z
-    //                     );
-    //                 }
-    //             });
-    //         });
-    //     } else if (handRef.current) {
-    //         // 손 랜드마크가 없을 때 위치 초기화
-    //         handRef.current.children.forEach((joint) => {
-    //             joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
-    //         });
-    //     }
-    // });
-    // return (
-    //     <group ref={handRef}>
-    //         {[0, 1].map((handIndex) =>
-    //             Array(21)
-    //                 .fill()
-    //                 .map((_, i) => (
-    //                     <Sphere
-    //                         key={`hand-${handIndex}-${i}`}
-    //                         args={[0.05, 16, 16]}
-    //                     >
-    //                         <meshBasicMaterial color={handColor} />
-    //                     </Sphere>
-    //                 ))
-    //         )}
-    //     </group>
-    // );
-}
+// function Hand({ handColor }) {
+// const handRef = useRef();
+// useFrame(() => {
+//     if (handLandmarks.length > 0 && handRef.current) {
+//         handLandmarks.forEach((hand, index) => {
+//             hand.forEach((landmark, i) => {
+//                 const joint = handRef.current.children[index * 21 + i];
+//                 if (joint) {
+//                     joint.position.set(
+//                         (landmark.x - 0.5) * 2 + avatarPosition.x,
+//                         -(landmark.y - 0.5) * 2 + avatarPosition.y,
+//                         landmark.z
+//                     );
+//                 }
+//             });
+//         });
+//     } else if (handRef.current) {
+//         // 손 랜드마크가 없을 때 위치 초기화
+//         handRef.current.children.forEach((joint) => {
+//             joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
+//         });
+//     }
+// });
+// return (
+//     <group ref={handRef}>
+//         {[0, 1].map((handIndex) =>
+//             Array(21)
+//                 .fill()
+//                 .map((_, i) => (
+//                     <Sphere
+//                         key={`hand-${handIndex}-${i}`}
+//                         args={[0.05, 16, 16]}
+//                     >
+//                         <meshBasicMaterial color={handColor} />
+//                     </Sphere>
+//                 ))
+//         )}
+//     </group>
+// );
+// }
 
 export default RaccoonHand;
