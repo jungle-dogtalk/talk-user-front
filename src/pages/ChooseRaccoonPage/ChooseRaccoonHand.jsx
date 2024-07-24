@@ -1,15 +1,10 @@
 import { Canvas, useFrame } from '@react-three/fiber';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Color, Euler, Matrix4, Vector3, Box3 } from 'three';
-import { useGLTF, Sphere } from '@react-three/drei';
+import { Color, Euler, Matrix4, Vector3 } from 'three';
+import { useGLTF } from '@react-three/drei';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedModel } from '../../redux/slices/racoonSlice.js';
-import {
-    FaceLandmarker,
-    HandLandmarker,
-    GestureRecognizer,
-    FilesetResolver,
-} from '@mediapipe/tasks-vision';
+import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import {
     saveToLocalStorage,
     loadFromLocalStorage,
@@ -18,8 +13,6 @@ import { useNavigate } from 'react-router-dom';
 
 let video;
 let faceLandmarker;
-let handLandmarker;
-let gestureRecognizer;
 let lastVideoTime = -1;
 
 let rotation = null;
@@ -29,7 +22,6 @@ let transformationMatrix = null;
 let avatarPosition = new Vector3(0, 0, 0);
 
 const models = ['/raccoon_head.glb', '/monkey.glb', '/panda.glb', '/cat.glb'];
-const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
 
 models.forEach(useGLTF.preload);
 
@@ -120,11 +112,6 @@ function ChooseRaccoonHand() {
         dispatch(setSelectedModel(newModel));
     }, [currentModel, dispatch]);
 
-    const changeHandColor = () => {
-        const nextColorIndex = (handColorIndex + 1) % handColors.length;
-        setHandColorIndex(nextColorIndex);
-    };
-
     return (
         <div
             className="w-full h-0 pb-[56.25%] relative"
@@ -182,7 +169,7 @@ function Raccoon({ modelPath }) {
     const hairMeshRef = useRef();
     const earsMeshRef = useRef();
     const tuftsMeshRef = useRef();
-    const [modelScale, setModelScale] = useState(new Vector3(2, 2, 2));
+    const [modelScale, setModelScale] = useState(new Vector3(0, 0, 0));
     const [modelPosition, setModelPosition] = useState(new Vector3(0, 0, 0)); // y 좌표 조정
 
     useEffect(() => {

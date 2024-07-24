@@ -17,6 +17,7 @@ let blendshapes = [];
 const ChooseRaccoonPage = () => {
     const webcamRef = useRef(null);
     const navigate = useNavigate(); // useNavigate 훅 사용
+    const [videoLoaded, setVideoLoaded] = useState(false); // 비디오 로딩 상태
 
     useEffect(() => {
         // 웹캠 스트림 설정
@@ -24,6 +25,9 @@ const ChooseRaccoonPage = () => {
             .getUserMedia({ video: true })
             .then((stream) => {
                 webcamRef.current.srcObject = stream;
+                webcamRef.current.onloadeddata = () => {
+                    setVideoLoaded(true); // 비디오가 로드되면 상태 변경
+                };
             })
             .catch((error) => {
                 console.error('Error accessing webcam:', error);
@@ -157,8 +161,11 @@ const ChooseRaccoonPage = () => {
                             ref={webcamRef}
                             autoPlay
                             id="video"
-                            className="absolute top-0 left-0 w-full h-full object-cover"
+                            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-500 ${
+                                videoLoaded ? 'opacity-100' : 'opacity-0'
+                            }`}
                         ></video>
+
                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                     </div>
 
@@ -182,7 +189,7 @@ const ChooseRaccoonPage = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 {/* 오른쪽 섹션 */}
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
@@ -214,8 +221,6 @@ const ChooseRaccoonPage = () => {
             </div>
         </div>
     );
-    
-    
 };
 
 export default ChooseRaccoonPage;
