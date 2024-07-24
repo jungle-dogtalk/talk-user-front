@@ -66,7 +66,7 @@ const MainPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e4d7c7] text-[#8b5e3c]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-4 flex items-center justify-between">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-2 flex items-center justify-between">
                 <img
                     src={logo}
                     alt="멍톡 로고"
@@ -93,14 +93,14 @@ const MainPage = () => {
                         <img
                             src={userInfo?.profileImage || profileImage}
                             alt="프로필 사진"
-                            className="w-48 h-48 sm:w-52 sm:h-52 rounded-full mb-6 border-4 border-[#a16e47]"
+                            className="w-48 h-48 sm:w-48 sm:h-48 rounded-full mb-6 border-4 border-[#a16e47]"
                         />
                         <h2 className="text-5xl sm:text-6xl font-bold mb-4 text-center">
                             {userInfo?.name}
                         </h2>
-                        <div className="w-full mb-8 space-y-8">
+                        <div className="w-full mt-16 mb-4 space-y-20">
                             <div>
-                                <span className="text-3xl sm:text-4xl font-bold mb-3 block">
+                                <span className="text-3xl sm:text-5xl font-bold mb-3 block">
                                     발화지수
                                 </span>
                                 <div className="w-full bg-red-200 h-12 sm:h-14 rounded-full overflow-hidden">
@@ -117,7 +117,7 @@ const MainPage = () => {
                                 </div>
                             </div>
                             <div>
-                                <span className="text-3xl sm:text-4xl font-bold mb-3 block">
+                                <span className="text-3xl sm:text-5xl font-bold mb-3 block">
                                     매너지수
                                 </span>
                                 <div className="w-full bg-blue-200 h-12 sm:h-14 rounded-full overflow-hidden">
@@ -136,7 +136,7 @@ const MainPage = () => {
                         </div>
                     </div>
                     <button
-                        className="bg-gradient-to-r from-[#7cb772] to-[#5c9f52] py-5 px-8 rounded-xl transition duration-300 hover:opacity-90 w-full text-center text-4xl sm:text-5xl font-bold text-white mt-4"
+                        className="bg-gradient-to-r from-[#7cb772] to-[#5c9f52] py-5 px-8 rounded-xl transition duration-300 hover:opacity-90 w-full text-center text-4xl sm:text-5xl font-bold text-white mt-4 -my-4 "
                         onClick={() => navigate('/choose-raccoon')}
                     >
                         통화하기
@@ -153,7 +153,7 @@ const MainPage = () => {
                         </span>
                     </h2>
                     {Array.isArray(topInterests) && topInterests.length > 0 ? (
-                        <div className="w-full space-y-4 flex-grow overflow-y-auto">
+                        <div className="w-full space-y-10 flex-grow overflow-y-auto">
                             {topInterests.map((interest, index) => (
                                 <div
                                     key={index}
