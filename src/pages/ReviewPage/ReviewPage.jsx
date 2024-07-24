@@ -155,7 +155,11 @@ const ReviewPage = () => {
         const savedFeedback = sessionStorage.getItem('feedback');
         if (savedFeedback) {
             setFeedback(savedFeedback);
-            speakText(savedFeedback);
+
+            // 첫 문장 추출
+            const firstSentence = savedFeedback.split('. ')[0] + '.';
+            speakText(firstSentence);
+
             setIsFeedbackFetched(true);
         }
         setIsFeedbackModalOpen(true);
