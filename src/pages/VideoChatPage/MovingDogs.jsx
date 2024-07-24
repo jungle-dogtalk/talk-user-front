@@ -146,24 +146,24 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 ></path>
                             </svg>
                         </button>
-                        <h1 className="text-9xl font-extrabold text-blue-800 mb-6 animate-pulse">
+                        <h1 className="text-8xl font-extrabold text-blue-800 mb-6 animate-pulse">
                             <span className="relative">
                                 MBTI 힌트
                                 <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
-                        <p className="text-9xl text-blue-700 font-medium relative leading-relaxed mx-8">
+                        <p className="text-8xl text-blue-700 font-medium relative leading-relaxed mx-8">
                             <span className="absolute -left-8 top-0 text-8xl text-[#1e40af] opacity-25">
                                 "
                             </span>
-                            <span className="relative z-10 text-9xl">
+                            <span className="relative z-10 text-8xl">
                                 {maskMBTI(selectedUser.mbti)}
                             </span>
-                            <span className="absolute -right-8 top-0 text-7xl text-[#1e40af] opacity-25">
+                            <span className="absolute -right-8 top-0 text-6xl text-[#1e40af] opacity-25">
                                 "
                             </span>
                         </p>
-                        <p className="text-6xl text-blue-600 mt-8 animate-pulse">
+                        <p className="text-5xl text-blue-600 mt-8 animate-pulse">
                             5초 후 자동으로 닫힘
                         </p>
                     </div>

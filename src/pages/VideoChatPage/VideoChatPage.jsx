@@ -1395,18 +1395,18 @@ const VideoChatPage = () => {
                                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
                                     <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-9xl h-80 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
                                         <div className="flex-1 text-left space-y-6">
-                                            <h1 className="text-8xl font-extrabold text-orange-800 animate-pulse">
+                                            <h1 className="text-7xl font-extrabold text-orange-800 animate-pulse">
                                                 추천 주제
                                             </h1>
                                         </div>
-                                        <div className="flex-[2] font-bold text-6xl text-orange-800 bg-orange-200 bg-opacity-60 p-8 rounded-xl shadow-inner mx-8">
+                                        <div className="flex-[2] font-bold text-5xl text-orange-800 bg-orange-200 bg-opacity-60 p-8 rounded-xl shadow-inner mx-8">
                                             <p className="animate-bounce">
                                                 "{recommendedTopics}"
                                             </p>
                                         </div>
                                         <div className="flex-[0.5] text-right">
-                                            <p className="text-3xl text-orange-600 animate-pulse">
-                                                5초 후 자동으로 닫힘
+                                            <p className="text-2xl text-orange-600 animate-pulse">
+                                                5초 후 <br></br> 자동으로 닫힘
                                             </p>
                                         </div>
                                     </div>
