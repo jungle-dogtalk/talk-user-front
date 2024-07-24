@@ -13,7 +13,7 @@ const OpenViduVideo = (props) => {
         <video
             autoPlay={true}
             ref={videoRef}
-            className={`w-full h-full ${
+            className={`w-full h-full object-fill ${
                 props.isMirrored ? 'scale-x-[-1]' : ''
             }`}
         />
