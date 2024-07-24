@@ -8,10 +8,10 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
     const dogHouses = [
-        { x: 23, y: 15 }, // 왼쪽 위
-        { x: 78, y: 15 }, // 오른쪽 위
-        { x: 23, y: 42 }, // 왼쪽 아래
-        { x: 78, y: 42 }, // 오른쪽 아래
+        { x: 23, y: 17 }, // 왼쪽 위
+        { x: 78, y: 17 }, // 오른쪽 위
+        { x: 23, y: 44 }, // 왼쪽 아래
+        { x: 78, y: 44 }, // 오른쪽 아래
     ];
 
     // 모달 상태와 선택된 사용자 상태 추가
@@ -76,8 +76,9 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                             e.currentTarget.classList.remove('scale-110')
                         }
                     >
+                        
                         <div
-                            className={`absolute top-[-48px] left-0 w-full text-center text-3xl font-semibold rounded-lg py-1 shadow-lg ${
+                            className={`absolute top-[-90px] left-0 w-full text-center text-3xl font-semibold rounded-lg py-1 shadow-lg ${
                                 index === targetUserIndex
                                     ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black'
                                     : 'bg-gradient-to-r from-[#a16e47] via-[#8b5e3c] to-[#734c31] text-white'
@@ -90,6 +91,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                             {safeSessionData[index]?.nickname ||
                                 `User ${index + 1}`}
                         </div>
+
                         <img
                             src={
                                 index === targetUserIndex
@@ -177,7 +179,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                             {user.nickname}
                                         </span>
                                     </span>
-                                    <span className="text-4xl font-medium text-amber-700">
+                                    <span className="text-4xl font-medium text-amber-600">
                                         {Math.round(user.percentage)}점
                                     </span>
                                 </div>
