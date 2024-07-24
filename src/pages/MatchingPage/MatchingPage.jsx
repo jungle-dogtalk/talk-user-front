@@ -81,10 +81,10 @@ const MatchingPage = () => {
                     className="w-16 h-16 sm:w-24 sm:h-24"
                 />
                 <button
+                    className="bg-[#f7f3e9] text-[#a16e47] py-3 px-6 sm:py-4 sm:px-8 md:py-5 md:px-10 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] transition duration-300 text-base sm:text-lg md:text-xl font-bold whitespace-nowrap"
                     onClick={handleCancelClick}
-                    className="bg-[#f7f3e9] text-[#a16e47] py-2 px-6 sm:py-3 sm:px-8 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-2xl font-bold"
                 >
-                    돌아가기
+                    뒤로가기
                 </button>
             </header>
 
