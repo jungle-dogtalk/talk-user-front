@@ -87,78 +87,84 @@ const MainPage = () => {
                     </button>
                 </div>
             </header>
-            <div className="flex flex-grow flex-wrap justify-center items-center space-x-8 p-4">
-                <div className="w-full sm:w-1/2 lg:w-1/3 p-6 bg-white rounded-lg shadow-lg flex flex-col items-center h-[600px] mb-8 sm:mb-0">
-                    <div className="flex flex-col items-center w-full mb-6 flex-grow justify-center">
+            <div className="flex flex-grow flex-wrap justify-center items-center space-x-0 sm:space-x-10 p-6 sm:p-10 bg-[#f7f3e9]">
+                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center h-[750px] mb-10 sm:mb-0 transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
+                    <div className="flex flex-col items-center w-full mb-8 flex-grow justify-center">
                         <img
                             src={userInfo?.profileImage || profileImage}
                             alt="프로필 사진"
-                            className="w-40 h-40 rounded-full mb-4"
+                            className="w-48 h-48 sm:w-56 sm:h-56 rounded-full mb-6 border-4 border-[#e4d7c7] shadow-lg"
                         />
-                        <h2 className="text-4xl font-bold mb-4">
+                        <h2 className="text-4xl sm:text-6xl font-bold mb-14 text-[#8B4513]">
                             이름: {userInfo?.name}
                         </h2>
-                        <div className="w-full mb-8 px-4 text-center">
-                            <div className="flex items-center justify-center mb-4">
-                                <span className="text-gray-700 font-bold text-2xl mr-2">
+
+                        <div className="w-full mb-10 px-6 text-center">
+                            <div className="flex items-center justify-center mb-6">
+                                <span className="text-[#8B4513] font-bold text-xl sm:text-4xl mr-2 whitespace-nowrap">
                                     발화지수
                                 </span>
-                                <div className="w-2/3 bg-red-200 h-8 rounded-full overflow-hidden">
+                                <div className="w-2/3 bg-red-200 h-10 rounded-full overflow-hidden shadow-inner">
                                     <div
-                                        className="bg-red-600 h-full rounded-full"
+                                        className="bg-red-600 h-full rounded-full transition-all duration-500 ease-out"
                                         style={{
                                             width: `${displayUtteranceScore}%`,
                                         }}
                                     ></div>
                                 </div>
-                                <span className="ml-2 text-gray-700 text-lg">
-                                            {displayUtteranceScore}%
-                                        </span>
-                                    </div>
+                                <span className="ml-4 text-[#8B4513] text-2xl sm:text-4xl font-semibold">
+                                    {displayUtteranceScore}%
+                                </span>
+                            </div>
                             <div className="flex items-center justify-center">
-                                <span className="text-gray-700 font-bold text-2xl mr-2">
+                                <span className="text-[#8B4513] font-bold text-xl sm:text-4xl mr-2 whitespace-nowrap">
                                     매너지수
                                 </span>
-                                <div className="w-2/3 bg-blue-200 h-8 rounded-full overflow-hidden">
+                                <div className="w-2/3 bg-blue-200 h-10 rounded-full overflow-hidden shadow-inner">
                                     <div
-                                        className="bg-blue-600 h-full rounded-full"
+                                        className="bg-blue-600 h-full rounded-full transition-all duration-500 ease-out"
                                         style={{
                                             width: `${displayMannerScore}%`,
                                         }}
                                     ></div>
                                 </div>
-                                <span className="ml-2 text-gray-700 text-lg">
-                                            {displayMannerScore}%
-                                        </span>
-                                    </div>
-                                </div>
+                                <span className="ml-4 text-[#8B4513] text-2xl sm:text-4xl font-semibold">
+                                    {displayMannerScore}%
+                                </span>
                             </div>
-                    <button
-                        className="bg-pink-100 p-5 rounded-xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center text-5xl font-bold"
-                        onClick={() => navigate('/choose-raccoon')}
-                    >
-                        통화하기
-                    </button>
+                        </div>
+                    </div>
+
+                    <div className="w-full px-6 mb-6">
+                        <button
+                            className="bg-pink-100 p-4 sm:p-6 rounded-xl shadow-lg hover:bg-pink-200 hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 w-full text-center text-3xl sm:text-4xl font-bold text-[#8B4513]"
+                            onClick={() => navigate('/choose-raccoon')}
+                        >
+                            통화하기
+                        </button>
+                    </div>
                 </div>
-                <div className="w-full sm:w-1/2 lg:w-1/3 p-6 bg-white rounded-lg shadow-lg flex flex-col items-center justify-between h-[600px]">
-                    <h2 className="text-3xl font-bold mb-3 text-center">
-                        {lastUpdated} 기준
+                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center justify-between h-[750px] transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
+                    <h2 className="text-3xl sm:text-6xl font-bold mb-6 text-center text-[#8B4513]">
+                        실시간 HOT 키워드
                         <br />
-                        사람들이 가장 관심있어 해요!
+                        <span className="text-sm sm:text-3xl text-black">
+                            ({lastUpdated})
+                        </span>
                     </h2>
                     {Array.isArray(topInterests) && topInterests.length > 0 ? (
                         topInterests.map((interest, index) => (
-                                <div
-                                    key={index}
-                                className="flex flex-col items-center justify-start p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-3"
-                                >
-                                <h2 className="text-4xl font-bold mb-4 text-center">
+                            <div
+                                key={index}
+                                className="flex flex-col items-center justify-start p-5 w-full bg-[#f0e6d2] rounded-xl shadow-md mb-5 transition-all duration-300 hover:shadow-lg hover:scale-105"
+                            >
+                                <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#8B4513]">
                                     {index + 1}. {interest}
                                 </h2>
-                        </div>
+                            </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-500">
+                        <p className="text-center text-[#8B4513] text-2xl sm:text-3xl">
                             관심사를 불러오는 중...
                         </p>
                     )}
