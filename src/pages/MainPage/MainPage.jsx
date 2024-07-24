@@ -87,89 +87,78 @@ const MainPage = () => {
                     </button>
                 </div>
             </header>
-            <div className="flex flex-col lg:flex-row justify-between items-stretch flex-grow p-6">
-                <div className="w-full lg:w-3/5 flex flex-col items-center justify-between lg:pr-6">
-                    <div className="flex flex-col items-center w-full">
+            <div className="flex flex-grow flex-wrap justify-center items-center space-x-8 p-4">
+                <div className="w-full sm:w-1/2 lg:w-1/3 p-6 bg-white rounded-lg shadow-lg flex flex-col items-center h-[600px] mb-8 sm:mb-0">
+                    <div className="flex flex-col items-center w-full mb-6 flex-grow justify-center">
                         <img
                             src={userInfo?.profileImage || profileImage}
                             alt="프로필 사진"
-                            className="w-48 h-48 sm:w-48 sm:h-48 rounded-full mb-6 border-4 border-[#a16e47]"
+                            className="w-40 h-40 rounded-full mb-4"
                         />
-                        <h2 className="text-5xl sm:text-6xl font-bold mb-4 text-center">
-                            {userInfo?.name}
+                        <h2 className="text-4xl font-bold mb-4">
+                            이름: {userInfo?.name}
                         </h2>
-                        <div className="w-full mt-16 mb-4 space-y-20">
-                            <div>
-                                <span className="text-3xl sm:text-5xl font-bold mb-3 block">
+                        <div className="w-full mb-8 px-4 text-center">
+                            <div className="flex items-center justify-center mb-4">
+                                <span className="text-gray-700 font-bold text-2xl mr-2">
                                     발화지수
                                 </span>
-                                <div className="w-full bg-red-200 h-12 sm:h-14 rounded-full overflow-hidden">
+                                <div className="w-2/3 bg-red-200 h-8 rounded-full overflow-hidden">
                                     <div
-                                        className="bg-gradient-to-r from-red-500 to-red-600 h-full rounded-full flex items-center justify-end pr-4"
+                                        className="bg-red-600 h-full rounded-full"
                                         style={{
                                             width: `${displayUtteranceScore}%`,
                                         }}
-                                    >
-                                        <span className="text-white font-bold text-2xl sm:text-3xl">
+                                    ></div>
+                                </div>
+                                <span className="ml-2 text-gray-700 text-lg">
                                             {displayUtteranceScore}%
                                         </span>
                                     </div>
-                                </div>
-                            </div>
-                            <div>
-                                <span className="text-3xl sm:text-5xl font-bold mb-3 block">
+                            <div className="flex items-center justify-center">
+                                <span className="text-gray-700 font-bold text-2xl mr-2">
                                     매너지수
                                 </span>
-                                <div className="w-full bg-blue-200 h-12 sm:h-14 rounded-full overflow-hidden">
+                                <div className="w-2/3 bg-blue-200 h-8 rounded-full overflow-hidden">
                                     <div
-                                        className="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full flex items-center justify-end pr-4"
+                                        className="bg-blue-600 h-full rounded-full"
                                         style={{
                                             width: `${displayMannerScore}%`,
                                         }}
-                                    >
-                                        <span className="text-white font-bold text-2xl sm:text-3xl">
+                                    ></div>
+                                </div>
+                                <span className="ml-2 text-gray-700 text-lg">
                                             {displayMannerScore}%
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
                     <button
-                        className="bg-gradient-to-r from-[#7cb772] to-[#5c9f52] py-5 px-8 rounded-xl transition duration-300 hover:opacity-90 w-full text-center text-4xl sm:text-5xl font-bold text-white mt-4 -my-4 "
+                        className="bg-pink-100 p-5 rounded-xl shadow-md hover:bg-pink-200 hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 w-full text-center text-5xl font-bold"
                         onClick={() => navigate('/choose-raccoon')}
                     >
                         통화하기
                     </button>
                 </div>
-                <div className="w-full lg:w-2/5 flex flex-col items-center justify-between lg:pl-6 mt-8 lg:mt-0">
-                    <h2 className="text-4xl sm:text-5xl lg:text-5xl font-bold mb-8 text-center">
-                        {/* {lastUpdated} 기준  */}
+                <div className="w-full sm:w-1/2 lg:w-1/3 p-6 bg-white rounded-lg shadow-lg flex flex-col items-center justify-between h-[600px]">
+                    <h2 className="text-3xl font-bold mb-3 text-center">
+                        {lastUpdated} 기준
                         <br />
-                        실시간 HOT 키워드
-                        <br />
-                        <span className="text-2xl sm:text-3xl lg:text-3xl font-normal">
-                            ({lastUpdated})
-                        </span>
+                        사람들이 가장 관심있어 해요!
                     </h2>
                     {Array.isArray(topInterests) && topInterests.length > 0 ? (
-                        <div className="w-full space-y-10 flex-grow overflow-y-auto">
-                            {topInterests.map((interest, index) => (
+                        topInterests.map((interest, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center justify-center p-3 bg-[#f0e0d0] bg-opacity-50 rounded-lg"
+                                className="flex flex-col items-center justify-start p-3 w-full bg-gray-200 rounded-lg shadow-lg mb-3"
                                 >
-                                    <span className="text-5xl sm:text-6xl font-bold text-[#a16e47] mr-6">
-                                        {index + 1}.
-                                    </span>
-                                    <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-center">
-                                        {interest}
-                                    </h3>
-                                </div>
-                            ))}
+                                <h2 className="text-4xl font-bold mb-4 text-center">
+                                    {index + 1}. {interest}
+                                </h2>
                         </div>
+                        ))
                     ) : (
-                        <p className="text-center text-gray-500 text-3xl sm:text-4xl">
+                        <p className="text-center text-gray-500">
                             관심사를 불러오는 중...
                         </p>
                     )}
