@@ -8,10 +8,10 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
     const dogHouses = [
-        { x: 23, y: 16 }, // 왼쪽 위
-        { x: 78, y: 16 }, // 오른쪽 위
-        { x: 23, y: 42 }, // 왼쪽 아래
-        { x: 78, y: 42 }, // 오른쪽 아래
+        { x: 22, y: 16 }, // 왼쪽 위
+        { x: 79, y: 16 }, // 오른쪽 위
+        { x: 22, y: 42 }, // 왼쪽 아래
+        { x: 79, y: 42 }, // 오른쪽 아래
     ];
 
     // 모달 상태와 선택된 사용자 상태 추가
@@ -67,7 +67,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                     }}
                 >
                     <div
-                        className={`relative w-32 h-32 transition-transform duration-300 cursor-pointer group`}
+                        className={`relative w-28 h-28 transition-transform duration-300 cursor-pointer group`}
                         onClick={() => handleDogHouseClick(index)}
                         onMouseEnter={(e) =>
                             e.currentTarget.classList.add('scale-110')
@@ -77,7 +77,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                         }
                     >
                         <div
-                            className={`absolute top-[-80px] left-1/2 transform -translate-x-1/2 w-48 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
+                            className={`absolute top-[-75px] left-1/2 transform -translate-x-1/2 w-40 text-center font-semibold rounded-lg py-2 px-3 shadow-lg ${
                                 index === targetUserIndex
                                     ? 'bg-gradient-to-r text-black'
                                     : 'bg-gradient-to-r text-black'
@@ -85,14 +85,14 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                         >
                             {safeSessionData[index]?.nickname ? (
                                 <>
-                                    <span className="block text-4xl leading-tight">
+                                    <span className="block text-3xl leading-tight">
                                         {
                                             safeSessionData[
                                                 index
                                             ].nickname.split(' ')[0]
                                         }
                                     </span>
-                                    <span className="block text-4xl leading-tight">
+                                    <span className="block text-3xl leading-tight">
                                         {safeSessionData[index].nickname
                                             .split(' ')
                                             .slice(1)
@@ -101,7 +101,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 </>
                             ) : (
                                 <>
-                                    <span className="block text-4xl leading-tight">
+                                    <span className="block text-3xl leading-tight">
                                         User
                                     </span>
                                     <span className="block text-3xl leading-tight">
@@ -118,7 +118,7 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                     : dogHouseImage
                             }
                             alt={`Dog house ${index + 1}`}
-                            className={`w-full h-full object-cover rounded-lg transition-transform duration-300 mt-2`}
+                            className={`w-3/4 h-3/4 object-contain rounded-lg transition-transform duration-300 mt-2 mx-auto`}
                         />
                     </div>
                 </div>
@@ -171,31 +171,31 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
             )}
 
             {/* 실시간 수다왕 차트 추가 */}
-            <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
-                <h3 className="text-4xl font-bold text-amber-900 mb-2 text-center">
+            <div className="absolute bottom-0 left-0 right-0 top-[50%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 sm:p-6 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-102 flex flex-col">
+                <h3 className="text-4xl sm:text-4xl font-bold text-amber-900 mb-4 text-center">
                     실시간 수다왕
                 </h3>
-                <div className="flex-grow flex flex-col justify-between space-y-1">
+                <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-3">
                     {speechLengths.map((user, index) => (
                         <div
                             key={user.nickname}
-                            className="flex items-center space-x-2 bg-white bg-opacity-50 rounded-xl p-3 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg"
+                            className="flex items-center space-x-3 bg-white bg-opacity-60 rounded-2xl p-3 sm:p-4 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg hover:bg-opacity-70"
                         >
                             <div className="flex-grow">
-                                <div className="flex justify-between items-center mb-2">
-                                    <div className="flex items-center space-x-9">
-                                        <span className="text-3xl font-bold text-amber-900 bg-amber-300 rounded-full w-12 h-12 flex items-center justify-center">
+                                <div className="flex justify-between items-center mb-2 sm:mb-3">
+                                    <div className="flex items-center space-x-3 sm:space-x-4">
+                                        <span className="text-2xl sm:text-xl font-bold text-amber-900 bg-amber-300 rounded-full w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center shadow-inner">
                                             {index + 1}
                                         </span>
-                                        <span className="text-4xl font-semibold text-amber-800 truncate max-w-[200px]">
+                                        <span className="text-2xl sm:text-3xl font-semibold text-amber-800 truncate max-w-[150px] sm:max-w-[200px]">
                                             {user.nickname}
                                         </span>
                                     </div>
-                                    <span className="text-3xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full transition-all duration-500 ease-in-out">
+                                    <span className="text-xl sm:text-xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full transition-all duration-500 ease-in-out shadow-sm">
                                         {Math.round(user.percentage)}
                                     </span>
                                 </div>
-                                <div className="w-full bg-amber-200 rounded-full h-4 overflow-hidden">
+                                <div className="w-full bg-amber-200 rounded-full h-5 sm:h-6 overflow-hidden shadow-inner">
                                     <div
                                         className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 ease-in-out transform origin-left"
                                         style={{
