@@ -29,7 +29,14 @@ const ReviewPage = () => {
     const [feedback, setFeedback] = useState('');
     const [isFeedbackFetched, setIsFeedbackFetched] = useState(false);
 
+    const [userRankings, setUserRankings] = useState([]);
+
     let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
+
+    let ranking = sessionStorage.getItem('ranking');
+    if (ranking) {
+        ranking = JSON.parse(ranking);
+    }
 
     useEffect(() => {
         const fromVideoChat = sessionStorage.getItem('fromVideoChat');
@@ -89,8 +96,27 @@ const ReviewPage = () => {
                         ? prev
                         : current
                 );
-                setTopTalker(topTalker);
 
+                const rankArr = [];
+                ranking.forEach((userRank, index) => {
+                    const users = response.data;
+                    users.forEach((user) => {
+                        if (user.nickname == userRank.nickname) {
+                            const profileData = callUserInfoResponse.data.find(
+                                (item) => {
+                                    return item.nickname === userRank.nickname;
+                                }
+                            );
+                            if (profileData) {
+                                user.profileImage = profileData.profileImage;
+                            }
+
+                            rankArr.push(user);
+                        }
+                    });
+                });
+                setUserRankings(rankArr);
+                setTopTalker(ranking[0]);
                 setSessionData(mergedData);
                 setCallUserInfo(mergedData);
                 setRatings(new Array(mergedData.length).fill(0));
@@ -223,9 +249,6 @@ const ReviewPage = () => {
                             <h3 className="text-xl sm:text-3xl lg:text-4xl font-semibold mb-1">
                                 '{topTalker.nickname}'님
                             </h3>
-                            <p className="text-lg sm:text-2xl lg:text-3xl text-gray-600">
-                                발화량: {topTalker.utterance} %
-                            </p>
                         </div>
                         <div className="ml-4 sm:ml-6">
                             <img
@@ -244,26 +267,9 @@ const ReviewPage = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 flex-1">
                     {/* 본인 정보 표시 */}
-                    <div className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-6">
-                        <div className="flex flex-col items-center space-y-2 sm:space-y-3">
-                            <img
-                                src={userInfo.profileImage || videoPlaceholder}
-                                alt="프로필"
-                                className="w-24 h-24 sm:w-32 sm:h-32 lg:w-36 lg:h-36 rounded-full ml-10" // 왼쪽 마진 추가
-                            />
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-2xl sm:text-4xl lg:text-6xl font-semibold mb-2 ml-16">
-                                나
-                            </h3>
-                            <p className="text-xl sm:text-3xl lg:text-4xl text-gray-500">
-                                발화량: {userInfo.utterance || 0}%
-                            </p>
-                        </div>
-                    </div>
 
-                    {sessionData && sessionData.length > 0 ? (
-                        sessionData.map((user, index) => (
+                    {userRankings && userRankings.length > 0 ? (
+                        userRankings.map((user, index) => (
                             <div
                                 key={index}
                                 className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-6"
@@ -300,7 +306,7 @@ const ReviewPage = () => {
                                         {user.nickname}
                                     </h3>
                                     <p className="text-xl sm:text-3xl lg:text-4xl text-gray-500">
-                                        발화량 {user.utterance || 0}
+                                        {index + 1}등
                                     </p>
                                 </div>
                             </div>

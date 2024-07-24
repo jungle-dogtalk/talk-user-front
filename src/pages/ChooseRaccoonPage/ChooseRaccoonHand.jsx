@@ -30,8 +30,8 @@ const MemoizedRaccoon = React.memo(Raccoon);
 function ChooseRaccoonHand() {
     const dispatch = useDispatch();
     const currentModel = useSelector((state) => state.racoon.selectedModel);
-    const [handColorIndex, setHandColorIndex] = useState(0);
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const savedModel = loadFromLocalStorage('racoon');
@@ -46,30 +46,38 @@ function ChooseRaccoonHand() {
     }, [currentModel]);
 
     const setup = async () => {
-        const vision = await FilesetResolver.forVisionTasks(
-            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-        );
+        setIsLoading(true);
+        try {
+            const vision = await FilesetResolver.forVisionTasks(
+                'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+            );
 
-        faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
-            baseOptions: {
-                modelAssetPath: `/models/face_landmarker.task`,
-                delegate: 'GPU',
-            },
-            outputFaceBlendshapes: true,
-            outputFacialTransformationMatrixes: true,
-            outputFaceLandmarks: true,
-            runningMode: 'VIDEO',
-        });
-
-        video = document.getElementById('video');
-        navigator.mediaDevices
-            .getUserMedia({
-                video: { width: 640, height: 480 },
-            })
-            .then((stream) => {
-                video.srcObject = stream;
-                video.addEventListener('loadeddata', predict);
+            faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+                baseOptions: {
+                    modelAssetPath: `/models/face_landmarker.task`,
+                    delegate: 'GPU',
+                },
+                outputFaceBlendshapes: true,
+                outputFacialTransformationMatrixes: true,
+                outputFaceLandmarks: true,
+                runningMode: 'VIDEO',
             });
+
+            video = document.getElementById('video');
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480 },
+            });
+            video.srcObject = stream;
+            video.addEventListener('loadeddata', predict);
+
+            // 모든 모델 로딩
+            await Promise.all(models.map((model) => useGLTF.preload(model)));
+
+            setIsLoading(false);
+        } catch (error) {
+            console.error('Error in setup:', error);
+            setIsLoading(false);
+        }
     };
 
     const predict = () => {
@@ -117,40 +125,52 @@ function ChooseRaccoonHand() {
             className="w-full h-0 pb-[56.25%] relative"
             style={{ maxWidth: 'none', aspectRatio: '16/9' }}
         >
+            {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-200 bg-opacity-75 rounded-3xl">
+                    <div className="pulse-container text-[#8B4513] text-2xl font-bold">
+                        마스크 로딩 중...
+                    </div>
+                </div>
+            )}
             <video
                 autoPlay
                 id="video"
                 style={{ width: '100%', height: '100%' }}
             ></video>
-            <Canvas
-                id="avatar_canvas"
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    pointerEvents: 'none',
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: 'transparent',
-                }}
-                camera={{
-                    fov: 5,
-                    position: [0, 0, 10],
-                }}
-            >
-                <ambientLight intensity={2.2} />
-                <pointLight
-                    position={[1, 1, 1]}
-                    color={new Color(1, 0, 0)}
-                    intensity={0.5}
-                />
-                <pointLight
-                    position={[-1, 0, 1]}
-                    color={new Color(0, 1, 0)}
-                    intensity={0.5}
-                />
-                <MemoizedRaccoon key={currentModel} modelPath={currentModel} />
-            </Canvas>
+            {!isLoading && (
+                <Canvas
+                    id="avatar_canvas"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        pointerEvents: 'none',
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'transparent',
+                    }}
+                    camera={{
+                        fov: 5,
+                        position: [0, 0, 10],
+                    }}
+                >
+                    <ambientLight intensity={2.2} />
+                    <pointLight
+                        position={[1, 1, 1]}
+                        color={new Color(1, 0, 0)}
+                        intensity={0.5}
+                    />
+                    <pointLight
+                        position={[-1, 0, 1]}
+                        color={new Color(0, 1, 0)}
+                        intensity={0.5}
+                    />
+                    <MemoizedRaccoon
+                        key={currentModel}
+                        modelPath={currentModel}
+                    />
+                </Canvas>
+            )}
             <div className="absolute top-2 left-2 right-2 flex justify-between z-10">
                 <button
                     onClick={changeModel}
