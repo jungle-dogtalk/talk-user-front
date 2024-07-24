@@ -54,12 +54,6 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
-    const sampleData = [
-        { nickname: "토크의 신", percentage: 90 },
-        { nickname: "수다쟁이", percentage: 75 },
-        { nickname: "은은한 목소리", percentage: 60 },
-        { nickname: "조용한 관찰자", percentage: 45 },
-    ];
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
@@ -181,42 +175,45 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                 </div>
             )}
 
-            
-
             {/* 실시간 수다왕 차트 추가 */}
             <div className="absolute bottom-0 left-0 right-0 top-[53%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-105 flex flex-col">
-        <h3 className="text-4xl font-bold text-amber-800 mb-2 text-center">
-            실시간 수다왕
-        </h3>
-        <div className="flex-grow flex flex-col justify-between space-y-1">
+                <h3 className="text-4xl font-bold text-amber-800 mb-2 text-center">
+                    실시간 수다왕
+                </h3>
+                <div className="flex-grow flex flex-col justify-between space-y-1">
             {speechLengths.map((user, index) => (
-                <div
-                    key={user.nickname}
-                    className="flex items-center space-x-2 bg-white bg-opacity-50 rounded-xl p-3 shadow-md"
-                >
-                    <div className="flex-grow">
-                        <div className="flex justify-between items-center mb-2">
-                            <div className="flex items-center space-x-9">
-                                <span className="text-3xl font-bold text-amber-900 bg-amber-300 rounded-full w-12 h-12 flex items-center justify-center">
-                                    {index + 1}
-                                </span>
-                                <span className="text-4xl font-semibold text-amber-800 truncate max-w-[200px]">
-                                    {user.nickname}
-                                </span>
+                        <div
+                            key={user.nickname}
+                            className="flex items-center space-x-2 bg-white bg-opacity-50 rounded-xl p-3 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg"
+                        >
+                            <div className="flex-grow">
+                                <div className="flex justify-between items-center mb-2">
+                                    <div className="flex items-center space-x-9">
+                                        <span className="text-3xl font-bold text-amber-900 bg-amber-300 rounded-full w-12 h-12 flex items-center justify-center">
+                                            {index + 1}
+                                        </span>
+                                        <span className="text-4xl font-semibold text-amber-800 truncate max-w-[200px]">
+                                            {user.nickname}
+                                        </span>
+                                    </div>
+                                    <span className="text-3xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full transition-all duration-500 ease-in-out">
+                                        {Math.round(user.percentage)}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-amber-200 rounded-full h-4 overflow-hidden">
+                                    <div
+                                        className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 ease-in-out transform origin-left"
+                                        style={{
+                                            width: `${user.percentage}%`,
+                                            transform: `scaleX(${
+                                                user.percentage / 100
+                                            })`,
+                                        }}
+                                    ></div>
+                                </div>
                             </div>
-                            <span className="text-3xl font-medium text-amber-700 bg-amber-200 px-3 py-1 rounded-full">
-                                {Math.round(user.percentage)}
-                            </span>
                         </div>
-                        <div className="w-full bg-amber-200 rounded-full h-4 overflow-hidden">
-                            <div
-                                className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full"
-                                style={{ width: `${user.percentage}%` }}
-                            ></div>
-                        </div>
-                    </div>
-                </div>
-            ))}
+                    ))}
                 </div>
             </div>
         </div>

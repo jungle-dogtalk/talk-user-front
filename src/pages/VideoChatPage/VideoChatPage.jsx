@@ -1191,7 +1191,7 @@ const VideoChatPage = () => {
                                     JSON.parse(publisher.stream.connection.data)
                                         .userId &&
                                     quizInProgress && (
-                                        <div className="absolute top-0 left-0 w-full bg-black text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
+                                        <div className="absolute top-0 left-0 w-full bg-black/75 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
                                                 <div className="overflow-hidden w-full">
                                                     <p className="text-5xl font-extrabold text-white whitespace-nowrap animate-[slideLeft_10s_linear_infinite] drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] tracking-wide">
@@ -1205,7 +1205,7 @@ const VideoChatPage = () => {
                                                     </p>
                                                 </div>
                                                 <p className="text-3xl font-bold text-yellow-300 animate-pulse whitespace-nowrap drop-shadow-[0_0_10px_rgba(255,255,0,0.7)] tracking-wide">
-                                                    🔥 미션 진행 중!
+                                                    🔥 미션 진행 중!!
                                                 </p>
                                             </div>
                                         </div>
@@ -1295,7 +1295,7 @@ const VideoChatPage = () => {
                                             subscriber.stream.connection.data
                                         ).userId &&
                                     quizInProgress && (
-                                        <div className="absolute top-0 left-0 w-full bg-black text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
+                                        <div className="absolute top-0 left-0 w-full bg-black/75 text-white py-4 px-6 rounded-b-xl shadow-lg border-x-2 border-b-2 border-yellow-400 z-20">
                                             <div className="flex flex-col items-center justify-center space-y-2">
                                                 <div className="overflow-hidden w-full">
                                                     <p className="text-5xl font-extrabold text-white whitespace-nowrap animate-[slideLeft_10s_linear_infinite] drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] tracking-wide">
@@ -1393,22 +1393,19 @@ const VideoChatPage = () => {
                             !quizChallenger &&
                             !quizResult && (
                                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                                    <div className="bg-gradient-to-r from-yellow-100 via-orange-50 to-yellow-100 p-6 rounded-2xl shadow-2xl w-4/5 max-w-4xl h-40 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-2 border-orange-200 backdrop-filter backdrop-blur-sm">
-                                        <div className="flex-1 text-left space-y-2">
-                                            <h1 className="text-4xl font-extrabold text-orange-700 animate-pulse">
-                                                🎯 추천 주제
+                                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-9xl h-80 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                        <div className="flex-1 text-left space-y-6">
+                                            <h1 className="text-8xl font-extrabold text-orange-800 animate-pulse">
+                                                추천 주제
                                             </h1>
-                                            <p className="text-xl text-orange-600">
-                                                오늘의 대화 주제입니다!
-                                            </p>
                                         </div>
-                                        <div className="flex-2 font-bold text-2xl text-orange-700 bg-orange-100 bg-opacity-60 p-4 rounded-xl shadow-inner mx-4 transform rotate-1 w-1/2 flex items-center justify-center">
-                                            <p className="animate-bounce text-center">
+                                        <div className="flex-[2] font-bold text-6xl text-orange-800 bg-orange-200 bg-opacity-60 p-8 rounded-xl shadow-inner mx-8">
+                                            <p className="animate-bounce">
                                                 "{recommendedTopics}"
                                             </p>
                                         </div>
-                                        <div className="flex-1/2 text-right space-y-2">
-                                            <p className="text-base text-orange-500 animate-pulse">
+                                        <div className="flex-[0.5] text-right">
+                                            <p className="text-3xl text-orange-600 animate-pulse">
                                                 5초 후 자동으로 닫힘
                                             </p>
                                         </div>
@@ -1461,8 +1458,8 @@ const VideoChatPage = () => {
                                             😢실패
                                         </h1>
                                         <p className="text-5xl text-orange-700">
-                                            아쉽게도{' '}
-                                            <span className="font-semibold text-orange-800 text-6xl">
+                                            아쉽게도{' '}<br/>
+                                            <span className="font-semibold text-orange-800 text-5xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
                                                     quizChallenger
