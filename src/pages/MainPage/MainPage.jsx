@@ -88,7 +88,7 @@ const MainPage = () => {
                 </div>
             </header>
             <div className="flex flex-grow flex-wrap justify-center items-center space-x-0 sm:space-x-10 p-6 sm:p-10 bg-[#f7f3e9]">
-                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center h-[750px] mb-10 sm:mb-0 transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
+                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center h-[700px] mb-10 sm:mb-0 transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
                     <div className="flex flex-col items-center w-full mb-8 flex-grow justify-center">
                         <img
                             src={userInfo?.profileImage || profileImage}
@@ -144,8 +144,8 @@ const MainPage = () => {
                         </button>
                     </div>
                 </div>
-                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center justify-between h-[750px] transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
-                    <h2 className="text-3xl sm:text-6xl font-bold mb-6 text-center text-[#8B4513]">
+                <div className="w-full sm:w-1/2 lg:w-2/5 p-8 bg-[#fcfaf5] rounded-xl shadow-xl flex flex-col items-center justify-between h-[700px] transition-all duration-300 hover:shadow-2xl border-2 border-[#e4d7c7]">
+                    <h2 className="text-3xl sm:text-6xl font-bold mb-4 text-center text-[#8B4513]">
                         실시간 HOT 키워드
                         <br />
                         <span className="text-sm sm:text-3xl text-black">
