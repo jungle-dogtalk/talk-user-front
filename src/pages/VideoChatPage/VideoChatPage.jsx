@@ -244,7 +244,7 @@ const VideoChatPage = () => {
         const interval = setInterval(() => {
             console.log('발화량 계산 요청 보내기');
             socket.current.emit('requestSpeechLengths', { sessionId });
-        }, 60000); // 1분 (60000 밀리초) 단위로 실행
+        }, 30000); // 1분 (60000 밀리초) 단위로 실행
 
         // 발화량 순위 데이터 수신
         socket.current.on('speechLengths', (data) => {
@@ -1099,14 +1099,14 @@ const VideoChatPage = () => {
     const FaceRevealModal = () => {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 animate-fadeIn">
-                <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-8 rounded-3xl shadow-2xl max-w-3xl w-full text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
-                    <h2 className="text-5xl font-extrabold mb-6 text-orange-800 animate-pulse">
+                <div className="bg-gradient-to-br from-yellow-200 via-orange-300 to-red-400 p-12 rounded-3xl shadow-2xl max-w-5xl w-11/12 text-center transform transition-all duration-700 scale-105 hover:scale-110 animate-slideIn">
+                    <h2 className="text-7xl font-extrabold mb-8 text-orange-800 animate-pulse">
                         🎭 얼굴 공개 타임!
                     </h2>
-                    <div className="text-4xl font-bold text-orange-800 bg-yellow-100 bg-opacity-80 p-6 rounded-xl shadow-inner inline-block transform -rotate-2 hover:rotate-2 transition-transform duration-300 animate-float">
+                    <div className="text-5xl font-bold text-orange-800 bg-yellow-100 bg-opacity-80 p-8 rounded-xl shadow-inner inline-block transform -rotate-2 hover:rotate-2 transition-transform duration-300 animate-float">
                         "드디어 진짜 우리의 모습을 볼 시간이에요!"
                     </div>
-                    <p className="mt-6 text-xl text-orange-700 animate-pulse">
+                    <p className="mt-8 text-3xl text-orange-700 animate-pulse">
                         이 창은 5초 후 자동으로 사라집니다...
                     </p>
                 </div>
@@ -1116,7 +1116,7 @@ const VideoChatPage = () => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-2 flex items-center justify-between shadow-lg">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#c18a67] p-1 flex items-center justify-between shadow-lg">
                 <div className="flex items-center space-x-4">
                     <img
                         src={logo}
@@ -1458,7 +1458,7 @@ const VideoChatPage = () => {
                                             😢실패
                                         </h1>
                                         <p className="text-5xl text-orange-700">
-                                            아쉽게도{' '}<br/>
+                                            아쉽게도 <br />
                                             <span className="font-semibold text-orange-800 text-5xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
