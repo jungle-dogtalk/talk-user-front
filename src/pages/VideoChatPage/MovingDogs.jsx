@@ -3,7 +3,7 @@ import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
 import targetDogHouseImage from '../../assets/target_mailbox.png'; // doghouse.gif 이미지로 변경
 
-const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
+const MovingDogs = ({ sessionData, targetUserIndex }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
@@ -54,12 +54,12 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
-    // const speechLengths = [
-    //     { nickname: "토크마스터", percentage: 85 },
-    //     { nickname: "수다쟁이", percentage: 72 },
-    //     { nickname: "말많은이", percentage: 63 },
-    //     { nickname: "조용한이", percentage: 45 }
-    //   ];
+    const speechLengths = [
+        { nickname: '토크마스터', percentage: 85 },
+        { nickname: '수다쟁이', percentage: 72 },
+        { nickname: '말많은이', percentage: 63 },
+        { nickname: '조용한이', percentage: 45 },
+    ];
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
@@ -204,12 +204,14 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 </div>
                                 <div className="w-full bg-amber-200 rounded-full h-5 sm:h-4 overflow-hidden shadow-inner">
                                     <div
-                                        className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 ease-in-out transform origin-left"
+                                        className="bg-gradient-to-r from-amber-500 to-amber-400 h-full rounded-full transition-all duration-500 ease-in-out"
                                         style={{
-                                            width: `${user.percentage}%`,
-                                            transform: `scaleX(${
-                                                user.percentage / 100
-                                            })`,
+                                            width: `${Math.max(
+                                                user.percentage,
+                                                1
+                                            )}%`,
+                                            transition:
+                                                'width 0.5s ease-in-out',
                                         }}
                                     ></div>
                                 </div>
