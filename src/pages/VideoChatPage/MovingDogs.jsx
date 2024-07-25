@@ -3,9 +3,21 @@ import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
 import targetDogHouseImage from '../../assets/target_mailbox.png'; // doghouse.gif 이미지로 변경
 
-const MovingDogs = ({ sessionData, targetUserIndex }) => {
+const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
+
+    // speechLengths가 없거나 비어있을 때 사용할 기본값 설정
+    const defaultSpeechLengths = safeSessionData.map((user) => ({
+        nickname: user.nickname || 'Unknown User',
+        percentage: 0,
+    }));
+
+    // speechLengths가 있으면 사용하고, 없으면 defaultSpeechLengths 사용
+    const displaySpeechLengths =
+        speechLengths && speechLengths.length > 0
+            ? speechLengths
+            : defaultSpeechLengths;
 
     const dogHouses = [
         { x: 22, y: 15 }, // 왼쪽 위
@@ -54,12 +66,12 @@ const MovingDogs = ({ sessionData, targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
-    const speechLengths = [
-        { nickname: '토크마스터', percentage: 85 },
-        { nickname: '수다쟁이', percentage: 72 },
-        { nickname: '말많은이', percentage: 63 },
-        { nickname: '조용한이', percentage: 45 },
-    ];
+    // const speechLengths = [
+    //     { nickname: '토크마스터', percentage: 85 },
+    //     { nickname: '수다쟁이', percentage: 72 },
+    //     { nickname: '말많은이', percentage: 63 },
+    //     { nickname: '조용한이', percentage: 45 },
+    // ];
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
@@ -155,7 +167,7 @@ const MovingDogs = ({ sessionData, targetUserIndex }) => {
                         </button>
                         <h1 className="text-8xl font-extrabold text-blue-800 mb-6 animate-pulse">
                             <span className="relative">
-                                MBTI 힌트
+                                하고싶은 이야기
                                 <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
@@ -183,7 +195,7 @@ const MovingDogs = ({ sessionData, targetUserIndex }) => {
                     실시간 수다왕
                 </h3>
                 <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-1">
-                    {speechLengths.map((user, index) => (
+                    {displaySpeechLengths.map((user, index) => (
                         <div
                             key={user.nickname}
                             className="flex items-center space-x-3 bg-white bg-opacity-60 rounded-2xl p-3 sm:p-3 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg hover:bg-opacity-70"
