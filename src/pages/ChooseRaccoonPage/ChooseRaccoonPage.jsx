@@ -156,7 +156,7 @@ const ChooseRaccoonPage = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gradient-to-b from-[#FFF8E1] to-[#FFE0B2]">
-            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between shadow-lg">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c]  sm:p-3 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
                     alt="멍톡 로고"
@@ -164,17 +164,17 @@ const ChooseRaccoonPage = () => {
                 />
             </header>
 
-            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-4 lg:gap-10 p-4 lg:p-8 overflow-auto">
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
+            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-2 lg:gap-10 p-2 lg:p-8 overflow-auto">
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mb-1 lg:mb-0">
                     <h2
-                        className="text-3xl sm:text-7xl font-bold mb-4 lg:mb-8 text-[#8B4513] tracking-wide"
+                        className="text-2xl sm:text-7xl font-bold mb-2 lg:mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         실시간 영상
                     </h2>
                     <div
                         ref={videoContainerRef}
-                        className="relative w-full h-0 pb-[56.25%] rounded-3xl overflow-hidden shadow-2xl mb-4 lg:mb-6"
+                        className="relative w-full h-0 pb-[56.25%] rounded-3xl overflow-hidden shadow-2xl mb-2 lg:mb-6"
                     >
                         {isLoading && (
                             <div className="pulse-container">로딩 중...</div>
@@ -192,20 +192,20 @@ const ChooseRaccoonPage = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center w-full">
                         <h2
-                            className="text-3xl sm:text-6xl font-bold mb-3 lg:mb-6 text-[#8B4513] tracking-wide"
+                            className="text-xl sm:text-6xl font-bold mb-2 lg:mb-6 text-[#8B4513] tracking-wide"
                             style={{
                                 textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
                             }}
                         >
                             마이크 입력 테스트
                         </h2>
-                        <div className="flex flex-nowrap overflow-x-auto sm:overflow-x-visible space-x-2 sm:space-x-4 p-2 sm:p-0">
+                        <div className="flex flex-nowrap overflow-x-auto sm:overflow-x-visible space-x-1 sm:space-x-4 p-1 sm:p-0">
                             {[...Array(10)].map((_, index) => (
                                 <div
                                     key={index}
-                                    className="bar w-4 sm:w-8 h-16 sm:h-32 bg-lightgray rounded-t-lg flex-shrink-0"
+                                    className="bar w-3 sm:w-8 bg-lightgray rounded-t-lg flex-shrink-0"
                                     style={{
-                                        height: 'clamp(25px, 5vw, 80px)',
+                                        height: 'clamp(20px, 4vw, 80px)',
                                         backgroundColor: 'lightgray',
                                     }}
                                 />
@@ -213,26 +213,26 @@ const ChooseRaccoonPage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mt-4 lg:mt-0">
+                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mt-1 lg:mt-0">
                     <h2
-                        className="text-3xl sm:text-7xl font-bold mb-4 lg:mb-8 text-[#8B4513] tracking-wide"
+                        className="text-2xl sm:text-7xl font-bold mb-2 lg:mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         선택된 마스크
                     </h2>
-                    <div className="relative w-full h-0 pb-[56.25%] bg-white rounded-3xl shadow-2xl overflow-hidden mb-4 lg:mb-6">
+                    <div className="relative w-full h-0 pb-[56.25%] bg-white rounded-3xl shadow-2xl overflow-hidden mb-2 lg:mb-6">
                         <ChooseRaccoonHand />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-3xl"></div>
                     </div>
-                    <div className="flex flex-row justify-center items-center space-x-4 sm:space-x-8 mt-4 sm:mt-8">
+                    <div className="flex flex-row justify-center items-center space-x-2 sm:space-x-8 mt-2 sm:mt-8">
                         <button
-                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-2 px-4 sm:py-7 sm:px-20 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-6xl font-bold w-auto"
+                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-1 px-2 sm:py-7 sm:px-20 rounded-full border-2 sm:border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-5xl font-bold w-auto"
                             onClick={() => window.history.back()}
                         >
                             뒤로가기
                         </button>
                         <button
-                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-2 px-4 sm:py-7 sm:px-20 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-6xl font-bold w-auto"
+                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-1 px-2 sm:py-7 sm:px-20 rounded-full border-2 sm:border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xs sm:text-5xl font-bold w-auto"
                             onClick={handleSelect}
                         >
                             선택
