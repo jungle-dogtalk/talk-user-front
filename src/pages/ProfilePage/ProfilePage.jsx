@@ -143,7 +143,7 @@ const ProfilePage = () => {
             <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24" // 로고 크기 증가
+                    className="w-28 h-16 sm:w-60 sm:h-24" // 로고 크기 증가
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
@@ -177,15 +177,15 @@ const ProfilePage = () => {
                             onChange={handleFileChange}
                         />
                     </div>
-                    <div className="flex flex-col items-center sm:items-start">
-                        <h2 className="text-5xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                    <div className="flex flex-col items-start sm:items-start">
+                        <h2 className="text-4xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
                             이름: {userInfo?.name}
                         </h2>
-                        <h3 className="text-5xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                        <h3 className="text-4xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
                             닉네임: {userInfo?.nickname}
                         </h3>
                         <div className="flex items-center mb-6">
-                            <h3 className="text-5xl sm:text-6xl font-bold mr-4 text-[#a16e47]">
+                            <h3 className="text-4xl sm:text-6xl font-bold mr-4 text-[#a16e47]">
                                 MBTI:
                             </h3>
                             <input
@@ -193,7 +193,7 @@ const ProfilePage = () => {
                                 id="mbti"
                                 value={mbti}
                                 onChange={handleMbtiChange}
-                                className="appearance-none border-none rounded-xl py-3 px-4 text-[#a16e47] leading-tight focus:outline-none text-3xl sm:text-6xl font-bold placeholder:text-3xl placeholder:text-[#a16e47] bg-transparent"
+                                className="appearance-none border-none rounded-xl py-3 px-4 text-[#a16e47] leading-tight focus:outline-none text-4xl sm:text-6xl font-bold placeholder:text-3xl placeholder:text-[#a16e47] bg-transparent"
                                 maxLength="4"
                                 placeholder="입력하세요"
                                 style={{
@@ -299,7 +299,7 @@ const ProfilePage = () => {
                             - AI가 예측하는 관심사 -
                         </h2>
                         <div className="flex justify-center">
-                            <div className="flex flex-nowrap justify-center gap-10 sm:gap-12 overflow-x-auto">
+                            <div className="flex flex-nowrap justify-center gap-2 sm:gap-12 overflow-x-auto">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div

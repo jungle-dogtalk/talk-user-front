@@ -70,7 +70,7 @@ const MainPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
                 <div className="flex flex-row items-center space-x-2 sm:space-x-4">
                     <button
