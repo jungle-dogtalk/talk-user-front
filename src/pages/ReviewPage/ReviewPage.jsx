@@ -323,10 +323,10 @@ const ReviewPage = () => {
                                     </div>
                                 </div>
                                 <div className="flex-1 flex items-center space-x-14">
-                                    <h3 className="text-3xl sm:text-5xl lg:text-8xl font-semibold mb-2">
+                                    <h3 className="text-3xl sm:text-5xl lg:text-7xl font-semibold mb-2">
                                         {user.nickname}
                                     </h3>
-                                    <p className="text-2xl sm:text-4xl lg:text-6xl font-bold text-gray-500 drop-shadow-lg">
+                                    <p className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-500 drop-shadow-lg">
                                         ({index + 1}등)
                                     </p>
                                 </div>
