@@ -178,11 +178,11 @@ const MovingDogs = ({ sessionData,targetUserIndex }) => {
             )}
 
             {/* 실시간 수다왕 차트 추가 */}
-            <div className="absolute bottom-0 left-0 right-0 top-[46%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 sm:p-4 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-102 flex flex-col">
-                <h3 className="text-4xl sm:text-5xl font-bold text-amber-900 mb-1 text-center">
+            <div className="absolute bottom-0 left-0 right-0 top-[46%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-3 sm:p-2 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-102 flex flex-col">
+                <h3 className="text-4xl sm:text-4xl font-bold text-amber-900 mb-1 text-center">
                     실시간 수다왕
                 </h3>
-                <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-2">
+                <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-1">
                     {speechLengths.map((user, index) => (
                         <div
                             key={user.nickname}
