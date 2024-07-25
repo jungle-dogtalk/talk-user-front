@@ -164,7 +164,7 @@ const MovingDogs = ({ sessionData, targetUserIndex }) => {
                                 "
                             </span>
                             <span className="relative z-10 text-8xl">
-                                {maskMBTI(selectedUser.mbti)}
+                                {maskMBTI(selectedUser.answer)}
                             </span>
                             <span className="absolute -right-8 top-0 text-6xl text-[#1e40af] opacity-25">
                                 "
