@@ -115,29 +115,29 @@ const ReviewPage = () => {
                         }
                     });
                 });
-                const testArr = [
-                    {
-                        nickname: 'User1',
-                        profileImage:
-                            'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
-                    },
-                    {
-                        nickname: 'User2',
-                        profileImage:
-                            'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
-                    },
-                    {
-                        nickname: 'User3',
-                        profileImage:
-                            'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
-                    },
-                    {
-                        nickname: 'User4',
-                        profileImage:
-                            'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
-                    },
-                ];
-                setUserRankings(testArr);
+                // const testArr = [
+                //     {
+                //         nickname: 'User1',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User2',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User3',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User4',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                // ];
+                setUserRankings(rankArr);
 
                 setTopTalker(ranking[0]);
                 setSessionData(mergedData);
