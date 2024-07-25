@@ -499,34 +499,36 @@ const VideoChatPage = () => {
                 console.log('quizEnd 시그널 전달받음, 내용은? -> ', data);
                 setQuizInProgress(false);
 
+                // 타인의 결과에 의한 미션 결과
                 // 정답인 경우
                 if (data.result === true) {
                     setQuizAnswer(data.quizAnswer);
                     setShowQuizSuccess(true);
+                    const audio = new Audio(correct_sound);
+                    audio.play();
+                    setTimeout(() => {
+                        speakText('미션 성공!');
+                    }, 3000);
                 } else {
                     // 오답인 경우
                     setShowQuizFailure(true);
+                    const audio = new Audio(wrong_sound);
+                    audio.play();
+                    setTimeout(() => {
+                        speakText('미션 실패!');
+                    }, 1000);
                 }
 
+                // 본인의 결과에 의한 미션 결과
                 if (data.userId === userInfo.username) {
                     if (data.result) {
                         // 미션성공
                         setQuizResult('success');
                         setQuizResultTrigger((prev) => prev + 1);
-                        const audio = new Audio(correct_sound);
-                        audio.play();
-                        setTimeout(() => {
-                            speakText('미션 성공!');
-                        }, 3000);
                     } else {
                         // 미션실패
                         setQuizResult('failure');
                         setQuizResultTrigger((prev) => prev + 1);
-                        const audio = new Audio(wrong_sound);
-                        audio.play();
-                        setTimeout(() => {
-                            speakText('미션 실패!');
-                        }, 1000);
                     }
                 }
 
@@ -1127,7 +1129,7 @@ const VideoChatPage = () => {
                 </div>
 
                 <div className="flex items-center">
-                <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
+                    <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
                     </h2>
@@ -1413,7 +1415,7 @@ const VideoChatPage = () => {
                                             🎉성공
                                         </h1>
                                         <p className="text-5xl text-orange-700">
-                                            축하합니다!{' '}<br></br>
+                                            축하합니다! <br></br>
                                             <span className="font-semibold text-orange-800 text-6xl">
                                                 {sessionData.map((item) =>
                                                     item.userId ==
