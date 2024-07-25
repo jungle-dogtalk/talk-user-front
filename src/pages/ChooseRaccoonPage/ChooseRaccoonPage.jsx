@@ -163,17 +163,18 @@ const ChooseRaccoonPage = () => {
                     className="w-28 h-16 sm:w-60 sm:h-24"
                 />
             </header>
-            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-10 p-8 overflow-auto">
+
+            <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-4 lg:gap-10 p-4 lg:p-8 overflow-auto">
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
-                        className="text-6xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-3xl sm:text-7xl font-bold mb-4 lg:mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         실시간 영상
                     </h2>
                     <div
                         ref={videoContainerRef}
-                        className="relative w-full h-0 pb-[56.25%] rounded-3xl overflow-hidden shadow-2xl mb-6"
+                        className="relative w-full h-0 pb-[56.25%] rounded-3xl overflow-hidden shadow-2xl mb-4 lg:mb-6"
                     >
                         {isLoading && (
                             <div className="pulse-container">로딩 중...</div>
@@ -191,7 +192,7 @@ const ChooseRaccoonPage = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center w-full">
                         <h2
-                            className="text-3xl sm:text-6xl font-bold mb-6 text-[#8B4513] tracking-wide"
+                            className="text-3xl sm:text-6xl font-bold mb-3 lg:mb-6 text-[#8B4513] tracking-wide"
                             style={{
                                 textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
                             }}
@@ -204,7 +205,7 @@ const ChooseRaccoonPage = () => {
                                     key={index}
                                     className="bar w-4 sm:w-8 h-16 sm:h-32 bg-lightgray rounded-t-lg flex-shrink-0"
                                     style={{
-                                        height: 'clamp(35px, 5vw, 80px)',
+                                        height: 'clamp(25px, 5vw, 80px)',
                                         backgroundColor: 'lightgray',
                                     }}
                                 />
@@ -212,26 +213,26 @@ const ChooseRaccoonPage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
+                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mt-4 lg:mt-0">
                     <h2
-                        className="text-3xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-3xl sm:text-7xl font-bold mb-4 lg:mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         선택된 마스크
                     </h2>
-                    <div className="relative w-full h-0 pb-[56.25%] bg-white rounded-3xl shadow-2xl overflow-hidden mb-6">
+                    <div className="relative w-full h-0 pb-[56.25%] bg-white rounded-3xl shadow-2xl overflow-hidden mb-4 lg:mb-6">
                         <ChooseRaccoonHand />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-3xl"></div>
                     </div>
-                    <div className="flex flex-row justify-center items-center space-x-4 mt-8">
+                    <div className="flex flex-row justify-center items-center space-x-4 sm:space-x-8 mt-4 sm:mt-8">
                         <button
-                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-3 sm:py-7 px-6 sm:px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-5xl font-bold w-auto"
+                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-2 px-4 sm:py-7 sm:px-20 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-6xl font-bold w-auto"
                             onClick={() => window.history.back()}
                         >
                             뒤로가기
                         </button>
                         <button
-                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-3 sm:py-7 px-6 sm:px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-5xl font-bold w-auto"
+                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-2 px-4 sm:py-7 sm:px-20 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-6xl font-bold w-auto"
                             onClick={handleSelect}
                         >
                             선택
