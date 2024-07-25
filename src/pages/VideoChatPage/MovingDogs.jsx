@@ -8,10 +8,10 @@ const MovingDogs = ({ sessionData,targetUserIndex }) => {
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
     const dogHouses = [
-        { x: 22, y: 16 }, // 왼쪽 위
-        { x: 79, y: 16 }, // 오른쪽 위
-        { x: 22, y: 42 }, // 왼쪽 아래
-        { x: 79, y: 42 }, // 오른쪽 아래
+        { x: 22, y: 15 }, // 왼쪽 위
+        { x: 79, y: 15 }, // 오른쪽 위
+        { x: 22, y: 41 }, // 왼쪽 아래
+        { x: 79, y: 41 }, // 오른쪽 아래
     ];
 
     // 모달 상태와 선택된 사용자 상태 추가
@@ -178,23 +178,23 @@ const MovingDogs = ({ sessionData,targetUserIndex }) => {
             )}
 
             {/* 실시간 수다왕 차트 추가 */}
-            <div className="absolute bottom-0 left-0 right-0 top-[47%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 sm:p-4 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-102 flex flex-col">
-                <h3 className="text-4xl sm:text-3xl font-bold text-amber-900 mb-1 text-center">
+            <div className="absolute bottom-0 left-0 right-0 top-[46%] bg-gradient-to-b from-amber-100 to-amber-200 rounded-3xl p-4 sm:p-4 shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-102 flex flex-col">
+                <h3 className="text-4xl sm:text-5xl font-bold text-amber-900 mb-1 text-center">
                     실시간 수다왕
                 </h3>
-                <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-3">
+                <div className="flex-grow flex flex-col justify-between space-y-2 sm:space-y-2">
                     {speechLengths.map((user, index) => (
                         <div
                             key={user.nickname}
-                            className="flex items-center space-x-3 bg-white bg-opacity-60 rounded-2xl p-3 sm:p-4 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg hover:bg-opacity-70"
+                            className="flex items-center space-x-3 bg-white bg-opacity-60 rounded-2xl p-3 sm:p-3 shadow-md transition-all duration-500 ease-in-out hover:shadow-lg hover:bg-opacity-70"
                         >
                             <div className="flex-grow">
-                                <div className="flex justify-between items-center mb-2 sm:mb-1">
+                                <div className="flex justify-between items-center mb-1 sm:mb-1">
                                     <div className="flex items-center space-x-3 sm:space-x-3">
                                         <span className="text-xl sm:text-xl font-bold text-amber-900 bg-amber-300 rounded-full w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center shadow-inner">
                                             {index + 1}
                                         </span>
-                                        <span className="text-2xl sm:text-2xl font-semibold text-amber-800 truncate max-w-[150px] sm:max-w-[200px]">
+                                        <span className="text-2xl sm:text-4xl font-semibold text-amber-800 truncate max-w-[150px] sm:max-w-[200px]">
                                             {user.nickname}
                                         </span>
                                     </div>
