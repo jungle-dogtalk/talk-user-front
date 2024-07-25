@@ -52,7 +52,7 @@ const QuestionPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-3 px-6 sm:py-4 sm:px-8 md:py-5 md:px-10 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] transition duration-300 text-base sm:text-lg md:text-xl font-bold whitespace-nowrap"
@@ -62,8 +62,8 @@ const QuestionPage = () => {
                 </button>
             </header>
 
-            <main className="flex flex-1 flex-col items-center justify-start w-full p-8 sm:p-12">
-                <div className="w-full max-w-5xl p-10 sm:p-8 rounded-3xl bg-white shadow-2xl space-y-6 mt-12 transform hover:scale-102 transition duration-300">
+            <main className="flex flex-1 flex-col items-center justify-start w-full p-4 sm:p-12">
+                <div className="w-full max-w-5xl p-8 sm:p-8 rounded-3xl bg-white shadow-2xl space-y-6 mt-12 transform hover:scale-102 transition duration-300">
                     <h2 className="text-4xl sm:text-8xl font-bold mb-8 text-center text-[#a16e47] tracking-wider">
                         도입 질문
                     </h2>

@@ -160,7 +160,7 @@ const ChooseRaccoonPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
             </header>
             <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-10 p-8 overflow-auto">
@@ -191,20 +191,20 @@ const ChooseRaccoonPage = () => {
                     </div>
                     <div className="flex flex-col items-center justify-center w-full">
                         <h2
-                            className="text-4xl sm:text-6xl font-bold mb-6 text-[#8B4513] tracking-wide"
+                            className="text-3xl sm:text-6xl font-bold mb-6 text-[#8B4513] tracking-wide"
                             style={{
                                 textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
                             }}
                         >
                             마이크 입력 테스트
                         </h2>
-                        <div className="flex space-x-4">
+                        <div className="flex flex-nowrap overflow-x-auto sm:overflow-x-visible space-x-2 sm:space-x-4 p-2 sm:p-0">
                             {[...Array(10)].map((_, index) => (
                                 <div
                                     key={index}
-                                    className="bar w-8 h-32 bg-lightgray rounded-t-lg"
+                                    className="bar w-4 sm:w-8 h-16 sm:h-32 bg-lightgray rounded-t-lg flex-shrink-0"
                                     style={{
-                                        height: '70px',
+                                        height: 'clamp(35px, 5vw, 80px)',
                                         backgroundColor: 'lightgray',
                                     }}
                                 />
@@ -214,7 +214,7 @@ const ChooseRaccoonPage = () => {
                 </div>
                 <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full">
                     <h2
-                        className="text-4xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
+                        className="text-3xl sm:text-7xl font-bold mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}
                     >
                         선택된 마스크
@@ -223,15 +223,15 @@ const ChooseRaccoonPage = () => {
                         <ChooseRaccoonHand />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/15 to-transparent rounded-3xl"></div>
                     </div>
-                    <div className="flex justify-center space-x-8 mt-8">
+                    <div className="flex flex-row justify-center items-center space-x-4 mt-8">
                         <button
-                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-5xl font-bold"
+                            className="bg-gradient-to-r from-[#f7f3e9] to-[#e4d7c7] text-[#8B4513] py-3 sm:py-7 px-6 sm:px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-5xl font-bold w-auto"
                             onClick={() => window.history.back()}
                         >
                             뒤로가기
                         </button>
                         <button
-                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-5 px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-xl sm:text-5xl font-bold"
+                            className="bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] text-white py-3 sm:py-7 px-6 sm:px-16 rounded-full border-3 border-[#a16e47] shadow-xl hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-105 text-sm sm:text-5xl font-bold w-auto"
                             onClick={handleSelect}
                         >
                             선택

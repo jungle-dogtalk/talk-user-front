@@ -78,7 +78,7 @@ const MatchingPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
                 <button
                     className="bg-[#f7f3e9] text-[#a16e47] py-3 px-6 sm:py-4 sm:px-8 md:py-5 md:px-10 rounded-full border-2 border-[#a16e47] hover:bg-[#e4d7c7] transition duration-300 text-base sm:text-lg md:text-xl font-bold whitespace-nowrap"
@@ -89,11 +89,11 @@ const MatchingPage = () => {
             </header>
 
             <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-10 space-y-4">
-                <h2 className="text-6xl sm:text-7xl md:text-7xl font-extrabold text-[#4a3728] animate-pulse mb-4 sm:mb-6 bg-[#e7d4b5] px-10 py-4 sm:px-14 sm:py-1 rounded-full shadow-lg text-center w-11/12 max-w-3xl">
+                <h2 className="text-5xl sm:text-7xl md:text-7xl font-extrabold text-[#4a3728] animate-pulse mb-4 sm:mb-6 bg-[#e7d4b5] px-10 py-4 sm:px-14 sm:py-1 rounded-full shadow-lg text-center w-11/12 max-w-3xl">
                     매칭중..
                 </h2>
 
-                <div className="bg-[#f7f3e9] bg-opacity-90 rounded-3xl shadow-2xl p-8 sm:p-10 md:p-12 w-11/12 max-w-7xl xl:max-w-8xl flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-10">
+                <div className="bg-[#f7f3e9] bg-opacity-90 rounded-3xl shadow-2xl p-4 sm:p-10 md:p-12 w-11/12 max-w-7xl xl:max-w-8xl flex flex-col lg:flex-row items-center justify-between space-y-8 lg:space-y-0 lg:space-x-10">
                     <div className="flex flex-col items-center space-y-8 flex-1">
                         <div className="bg-[#e7d4b5] p-6 sm:p-8 rounded-xl shadow-md w-full max-w-3xl mx-auto">
                             <p className="text-3xl sm:text-4xl md:text-5xl text-[#8b5e3c] mb-4 sm:mb-6 text-center">
