@@ -81,9 +81,9 @@ const RaccoonHand = React.memo((props) => {
     const [victoryModelIndex, setVictoryModelIndex] = useState(
         randomElement[1]
     );
-    const [iceBreakingActive, setIceBreakingActive] = useState(false);
-    const [handPositions, setHandPositions] = useState([]);
-    const [clearedPercentage, setClearedPercentage] = useState(0);
+    // const [iceBreakingActive, setIceBreakingActive] = useState(false);
+    // const [handPositions, setHandPositions] = useState([]);
+    // const [clearedPercentage, setClearedPercentage] = useState(0);
     const isQuizCompletedRef = useRef(false);
     const quizInProgressRef = useRef(false);
     const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
@@ -121,7 +121,8 @@ const RaccoonHand = React.memo((props) => {
 
         if (props.quizResult === 'failure') {
             quizInProgressRef.current = false;
-            handleIceBreaking();
+            // handleIceBreaking();
+            handleFailure();
         }
     }, [props.quizResult, props.quizResultTrigger]);
 
@@ -329,12 +330,17 @@ const RaccoonHand = React.memo((props) => {
         setIsVictoryModelLoading(false);
     }, [victoryModel]);
 
-    const handleIceBreaking = useCallback(() => {
-        setIceBreakingActive((prev) => !prev);
-        setTimeout(() => {
-            setIceBreakingActive(false);
-        }, 10000);
+    const handleFailure = useCallback(() => {
+        setModelPath('/poop.glb');
+        setIsModelVisible(true);
     }, []);
+
+    // const handleIceBreaking = useCallback(() => {
+    //     setIceBreakingActive((prev) => !prev);
+    //     setTimeout(() => {
+    //         setIceBreakingActive(false);
+    //     }, 10000);
+    // }, []);
 
     const recognizeEmotion = useCallback((blendshapes) => {
         const blendshapeMap = blendshapes.reduce((map, obj) => {
@@ -395,169 +401,163 @@ const RaccoonHand = React.memo((props) => {
                     intensity={0.5}
                 />
                 {!isVictoryModelLoading && isModelVisible && memoizedRaccoon}
-                {iceBreakingActive && (
+                {/* {iceBreakingActive && (
                     <IceBreakingBackground
                         handPositions={handPositions}
                         onPercentageChange={setClearedPercentage}
                     />
-                )}
+                )} */}
             </Canvas>
-            <button
-                onClick={changeModel}
-                style={{ position: 'absolute', top: 10, left: 10 }}
-            >
-                Change Raccoon Face
-            </button>
         </div>
     );
 });
 
-function IceBreakingBackground({ handPositions, onPercentageChange }) {
-    const meshRef = useRef();
-    const canvasRef = useRef();
-    const textureRef = useRef();
-    const [canvasTexture, setCanvasTexture] = useState(null);
-    const [clearedPercentage, setClearedPercentage] = useState(0);
-    const originalImageData = useRef(null);
-    const lastClearedPercentage = useRef(0);
+// function IceBreakingBackground({ handPositions, onPercentageChange }) {
+//     const meshRef = useRef();
+//     const canvasRef = useRef();
+//     const textureRef = useRef();
+//     const [canvasTexture, setCanvasTexture] = useState(null);
+//     const [clearedPercentage, setClearedPercentage] = useState(0);
+//     const originalImageData = useRef(null);
+//     const lastClearedPercentage = useRef(0);
 
-    useEffect(() => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 640;
-        canvas.height = 480;
-        const ctx = canvas.getContext('2d');
+//     useEffect(() => {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = 640;
+//         canvas.height = 480;
+//         const ctx = canvas.getContext('2d');
 
-        const textureLoader = new TextureLoader();
+//         const textureLoader = new TextureLoader();
 
-        // 이미지 로드
-        textureLoader.load('/ice.jpg', (texture) => {
-            const img = texture.image;
-            canvas.width = img.width; // 이미지의 원래 너비
-            canvas.height = img.height; // 이미지의 원래 높이
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+//         // 이미지 로드
+//         textureLoader.load('/ice.jpg', (texture) => {
+//             const img = texture.image;
+//             canvas.width = img.width; // 이미지의 원래 너비
+//             canvas.height = img.height; // 이미지의 원래 높이
+//             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-            const newTexture = new CanvasTexture(canvas);
-            setCanvasTexture(newTexture);
-            textureRef.current = texture;
-            originalImageData.current = ctx.getImageData(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
+//             const newTexture = new CanvasTexture(canvas);
+//             setCanvasTexture(newTexture);
+//             textureRef.current = texture;
+//             originalImageData.current = ctx.getImageData(
+//                 0,
+//                 0,
+//                 canvas.width,
+//                 canvas.height
+//             );
 
-            // 이미지 로드 후 텍스처 업데이트
-            if (meshRef.current) {
-                meshRef.current.material.map = newTexture;
-                meshRef.current.material.needsUpdate = true;
-            }
-        });
+//             // 이미지 로드 후 텍스처 업데이트
+//             if (meshRef.current) {
+//                 meshRef.current.material.map = newTexture;
+//                 meshRef.current.material.needsUpdate = true;
+//             }
+//         });
 
-        canvasRef.current = canvas;
+//         canvasRef.current = canvas;
 
-        // 10초 후에 캔버스를 완전히 지우기
-        const timer = setTimeout(() => {
-            const ctx = canvasRef.current.getContext('2d');
-            clearCanvas(ctx);
-            canvasTexture.needsUpdate = true;
-        }, 10000);
+//         // 10초 후에 캔버스를 완전히 지우기
+//         const timer = setTimeout(() => {
+//             const ctx = canvasRef.current.getContext('2d');
+//             clearCanvas(ctx);
+//             canvasTexture.needsUpdate = true;
+//         }, 10000);
 
-        return () => clearTimeout(timer);
-    }, []);
+//         return () => clearTimeout(timer);
+//     }, []);
 
-    const clearCanvas = (ctx) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        setClearedPercentage(100);
-        onPercentageChange(100);
-        setCanvasTexture(new CanvasTexture(ctx.canvas));
-    };
+//     const clearCanvas = (ctx) => {
+//         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+//         setClearedPercentage(100);
+//         onPercentageChange(100);
+//         setCanvasTexture(new CanvasTexture(ctx.canvas));
+//     };
 
-    useFrame(() => {
-        if (
-            canvasRef.current &&
-            canvasTexture &&
-            meshRef.current &&
-            textureRef.current &&
-            originalImageData.current
-        ) {
-            const ctx = canvasRef.current.getContext('2d');
+//     useFrame(() => {
+//         if (
+//             canvasRef.current &&
+//             canvasTexture &&
+//             meshRef.current &&
+//             textureRef.current &&
+//             originalImageData.current
+//         ) {
+//             const ctx = canvasRef.current.getContext('2d');
 
-            // if (currentGesture === 'Closed_Fist' && handPositions.length >= 1) {
-            if (handPositions.length >= 1) {
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'; // 지우는 강도 조절 (여기서 알파 값을 조정)
+//             // if (currentGesture === 'Closed_Fist' && handPositions.length >= 1) {
+//             if (handPositions.length >= 1) {
+//                 ctx.globalCompositeOperation = 'destination-out';
+//                 ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'; // 지우는 강도 조절 (여기서 알파 값을 조정)
 
-                ctx.lineWidth = 3; // 브러쉬 크기 조절
-                ctx.globalAlpha = 1; // 투명도
+//                 ctx.lineWidth = 3; // 브러쉬 크기 조절
+//                 ctx.globalAlpha = 1; // 투명도
 
-                handPositions.forEach((hand) => {
-                    ctx.beginPath();
-                    const firstPoint = hand[12];
-                    const startX = firstPoint.x * canvasRef.current.width;
-                    const startY =
-                        (1 - firstPoint.y) * canvasRef.current.height;
-                    ctx.moveTo(startX, startY);
+//                 handPositions.forEach((hand) => {
+//                     ctx.beginPath();
+//                     const firstPoint = hand[12];
+//                     const startX = firstPoint.x * canvasRef.current.width;
+//                     const startY =
+//                         (1 - firstPoint.y) * canvasRef.current.height;
+//                     ctx.moveTo(startX, startY);
 
-                    hand.forEach((point) => {
-                        const x = point.x * canvasRef.current.width;
-                        const y = (1 - point.y) * canvasRef.current.height;
-                        ctx.lineTo(x, y);
-                    });
+//                     hand.forEach((point) => {
+//                         const x = point.x * canvasRef.current.width;
+//                         const y = (1 - point.y) * canvasRef.current.height;
+//                         ctx.lineTo(x, y);
+//                     });
 
-                    ctx.closePath();
-                    ctx.stroke();
-                });
+//                     ctx.closePath();
+//                     ctx.stroke();
+//                 });
 
-                canvasTexture.needsUpdate = true;
-            }
+//                 canvasTexture.needsUpdate = true;
+//             }
 
-            const newImageData = ctx.getImageData(
-                0,
-                0,
-                canvasRef.current.width,
-                canvasRef.current.height
-            );
+//             const newImageData = ctx.getImageData(
+//                 0,
+//                 0,
+//                 canvasRef.current.width,
+//                 canvasRef.current.height
+//             );
 
-            let clearedPixels = 0;
-            let totalNonTransparentPixels = 0;
+//             let clearedPixels = 0;
+//             let totalNonTransparentPixels = 0;
 
-            for (let i = 0; i < newImageData.data.length; i += 4) {
-                if (originalImageData.current.data[i + 3] !== 0) {
-                    totalNonTransparentPixels++;
-                    if (newImageData.data[i + 3] === 0) {
-                        clearedPixels++;
-                    }
-                }
-            }
+//             for (let i = 0; i < newImageData.data.length; i += 4) {
+//                 if (originalImageData.current.data[i + 3] !== 0) {
+//                     totalNonTransparentPixels++;
+//                     if (newImageData.data[i + 3] === 0) {
+//                         clearedPixels++;
+//                     }
+//                 }
+//             }
 
-            /// TODO) 현재 의도한 백분율로 나오지 않아서 수정 필요
-            // 얼음 배경 픽셀 얼마나 지웠는지 계산 - newClearedPercentage
-            const newClearedPercentage =
-                (clearedPixels / totalNonTransparentPixels) * 100;
-            if (newClearedPercentage > lastClearedPercentage.current) {
-                lastClearedPercentage.current = newClearedPercentage;
-                setClearedPercentage(newClearedPercentage);
-                onPercentageChange(newClearedPercentage);
+//             /// TODO) 현재 의도한 백분율로 나오지 않아서 수정 필요
+//             // 얼음 배경 픽셀 얼마나 지웠는지 계산 - newClearedPercentage
+//             // const newClearedPercentage =
+//             //     (clearedPixels / totalNonTransparentPixels) * 100;
+//             // if (newClearedPercentage > lastClearedPercentage.current) {
+//             //     lastClearedPercentage.current = newClearedPercentage;
+//             //     setClearedPercentage(newClearedPercentage);
+//             //     onPercentageChange(newClearedPercentage);
 
-                // console.log('얼음 얼마나 깼는가:', newClearedPercentage);
+//             //     // console.log('얼음 얼마나 깼는가:', newClearedPercentage);
 
-                meshRef.current.material.map = canvasTexture;
-                meshRef.current.material.needsUpdate = true;
-            }
-        }
-    });
+//             //     meshRef.current.material.map = canvasTexture;
+//             //     meshRef.current.material.needsUpdate = true;
+//             // }
+//         }
+//     });
 
-    return (
-        <mesh ref={meshRef} position={[0, 0, 1]}>
-            <planeGeometry args={[10, 10]} />
-            <meshBasicMaterial
-                map={canvasTexture}
-                transparent={true}
-                opacity={0.8}
-            />
-        </mesh>
-    );
-}
+//     return (
+//         <mesh ref={meshRef} position={[0, 0, 1]}>
+//             <planeGeometry args={[10, 10]} />
+//             <meshBasicMaterial
+//                 map={canvasTexture}
+//                 transparent={true}
+//                 opacity={0.8}
+//             />
+//         </mesh>
+//     );
+// }
 
 function Raccoon({ modelPath }) {
     const { scene, nodes } = useGLTF(modelPath);
