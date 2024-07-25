@@ -282,10 +282,10 @@ const RaccoonHand = React.memo((props) => {
                         }
                         break;
                     // case 'ILoveYou':
-                    case 'Thumb_Up':
-                        // console.log('Love gesture detected');
-                        removeMask();
-                        break;
+                    // case 'Thumb_Up':
+                    //     // console.log('Love gesture detected');
+                    //     removeMask();
+                    // break;
                     default:
                         break;
                 }
@@ -308,9 +308,9 @@ const RaccoonHand = React.memo((props) => {
         }
     }, [performQuiz]);
 
-    const removeMask = useCallback(() => {
-        setIsModelVisible(false);
-    }, []);
+    // const removeMask = useCallback(() => {
+    //     setIsModelVisible(false);
+    // }, []);
 
     useEffect(() => {
         setup();
