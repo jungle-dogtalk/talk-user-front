@@ -3,7 +3,7 @@ import dogWalkGif from '../../assets/dog.png';
 import dogHouseImage from '../../assets/mailbox.png'; // doghouse.gif 이미지로 변경
 import targetDogHouseImage from '../../assets/target_mailbox.png'; // doghouse.gif 이미지로 변경
 
-const MovingDogs = ({ sessionData,targetUserIndex }) => {
+const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
     const safeSessionData = Array.isArray(sessionData) ? sessionData : [];
     const dogCount = Math.max(safeSessionData.length, 4); // 최소 4개의 강아지 보장
 
@@ -54,12 +54,12 @@ const MovingDogs = ({ sessionData,targetUserIndex }) => {
         return `${mbti[0]}--${mbti[3]}`;
     };
 
-    const speechLengths = [
-        { nickname: "토크마스터", percentage: 85 },
-        { nickname: "수다쟁이", percentage: 72 },
-        { nickname: "말많은이", percentage: 63 },
-        { nickname: "조용한이", percentage: 45 }
-      ];
+    // const speechLengths = [
+    //     { nickname: "토크마스터", percentage: 85 },
+    //     { nickname: "수다쟁이", percentage: 72 },
+    //     { nickname: "말많은이", percentage: 63 },
+    //     { nickname: "조용한이", percentage: 45 }
+    //   ];
 
     return (
         <div className="flex-1 relative" style={{ height: '300px' }}>
