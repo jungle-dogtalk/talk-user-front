@@ -140,7 +140,7 @@ const ProfilePage = () => {
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFF0D6] items-center">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8a5d3b] p-3 sm:p-3 flex items-center justify-between shadow-md">
-            <img
+                <img
                     src={logo}
                     alt="멍톡 로고"
                     className="w-28 h-16 sm:w-60 sm:h-24" // 로고 크기 증가
@@ -152,22 +152,22 @@ const ProfilePage = () => {
                     탈퇴하기
                 </button>
             </header>
-            <div className="flex flex-col items-center py-6 sm:py-10 flex-1 w-full max-w-7xl px-4 sm:px-6">
-                <div className="flex flex-col sm:flex-row items-center justify-center w-full mb-12 space-x-0 sm:space-x-24">
-                    <div className="relative mb-8 sm:mb-0">
+            <div className="flex flex-col items-center py-4 sm:py-6 flex-1 w-full max-w-6xl px-4 sm:px-6">
+                <div className="flex flex-col sm:flex-row items-center justify-center w-full mb-8 space-x-0 sm:space-x-16">
+                    <div className="relative mb-6 sm:mb-0">
                         <img
                             src={profileImage}
                             alt="프로필 사진"
-                            className="w-64 h-64 sm:w-80 sm:h-80 rounded-full border-4 border-[#a16e47] shadow-lg object-cover"
+                            className="w-36 h-36 sm:w-60 sm:h-60 rounded-full border-4 border-[#a16e47] shadow-lg object-cover"
                         />
                         <label
                             htmlFor="file-input"
-                            className="absolute bottom-2 right-2 bg-white p-3 rounded-full cursor-pointer shadow-md hover:shadow-lg transition duration-300"
+                            className="absolute bottom-2 right-2 bg-white p-2 rounded-full cursor-pointer shadow-md hover:shadow-lg transition duration-300"
                         >
                             <img
                                 src={editIcon}
                                 alt="수정 아이콘"
-                                className="w-8 h-8 sm:w-10 sm:h-10"
+                                className="w-6 h-6 sm:w-8 sm:h-8"
                             />
                         </label>
                         <input
@@ -178,14 +178,14 @@ const ProfilePage = () => {
                         />
                     </div>
                     <div className="flex flex-col items-start sm:items-start">
-                        <h2 className="text-4xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                        <h2 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-[#a16e47]">
                             이름: {userInfo?.name}
                         </h2>
-                        <h3 className="text-4xl sm:text-6xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
+                        <h3 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-4 text-[#a16e47]">
                             닉네임: {userInfo?.nickname}
                         </h3>
-                        <div className="flex items-center mb-6">
-                            <h3 className="text-4xl sm:text-6xl font-bold mr-4 text-[#a16e47]">
+                        <div className="flex items-center mb-4">
+                            <h3 className="text-2xl sm:text-4xl font-bold mr-2 text-[#a16e47]">
                                 MBTI:
                             </h3>
                             <input
@@ -193,11 +193,11 @@ const ProfilePage = () => {
                                 id="mbti"
                                 value={mbti}
                                 onChange={handleMbtiChange}
-                                className="appearance-none border-none rounded-xl py-3 px-4 text-[#a16e47] leading-tight focus:outline-none text-4xl sm:text-6xl font-bold placeholder:text-3xl placeholder:text-[#a16e47] bg-transparent"
+                                className="appearance-none border-none rounded-xl py-1 px-2 text-[#a16e47] leading-tight focus:outline-none text-2xl sm:text-4xl font-bold placeholder:text-xl placeholder:text-[#a16e47] bg-transparent"
                                 maxLength="4"
                                 placeholder="입력하세요"
                                 style={{
-                                    width: '180px',
+                                    width: '120px',
                                 }}
                             />
                         </div>
@@ -205,14 +205,12 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="w-full">
-                    <div className="flex flex-col items-center mb-8">
-                        <div className="w-full sm:w-5/6 mx-auto mb-4">
-                            <span className="block text-left mb-2 text-2xl sm:text-4xl font-semibold text-[#a16e47]">
+                    <div className="flex flex-col items-center mb-6">
+                        <div className="w-full sm:w-5/6 mx-auto mb-3">
+                            <span className="block text-left mb-1 text-lg sm:text-2xl font-semibold text-[#a16e47]">
                                 발화지수
                             </span>
-                            <div className="w-full h-8 sm:h-12 bg-gray-200 rounded-full shadow-inner overflow-hidden">
-                                {' '}
-                                {/* 프로그레스 바 높이 증가 */}
+                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
                                     className="h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{
@@ -220,36 +218,32 @@ const ProfilePage = () => {
                                     }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-xl sm:text-3xl mt-2 font-bold text-[#a16e47]">
+                            <span className="block text-right text-sm sm:text-xl mt-1 font-bold text-[#a16e47]">
                                 {displayUtteranceScore}%
                             </span>
                         </div>
-                        <div className="w-full sm:w-5/6 mx-auto mb-4">
-                            <span className="block text-left mb-2 text-2xl sm:text-4xl font-semibold text-[#a16e47]">
+                        <div className="w-full sm:w-5/6 mx-auto mb-3">
+                            <span className="block text-left mb-1 text-lg sm:text-2xl font-semibold text-[#a16e47]">
                                 매너지수
                             </span>
-                            <div className="w-full h-8 sm:h-12 bg-gray-200 rounded-full shadow-inner overflow-hidden">
-                                {' '}
-                                {/* 프로그레스 바 높이 증가 */}
+                            <div className="w-full h-6 sm:h-8 bg-gray-200 rounded-full shadow-inner overflow-hidden">
                                 <div
                                     className="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full shadow transition-all duration-500 ease-out"
                                     style={{ width: `${displayMannerScore}%` }}
                                 ></div>
                             </div>
-                            <span className="block text-right text-xl sm:text-3xl mt-2 font-bold text-[#a16e47]">
+                            <span className="block text-right text-sm sm:text-xl mt-1 font-bold text-[#a16e47]">
                                 {displayMannerScore}%
                             </span>
                         </div>
                     </div>
 
-                    <hr className="w-full my-6 sm:my-8 border-[#a16e47] opacity-30" />
-                    <div className="text-center mt-6 sm:mt-8">
-                        <h2 className="text-3xl sm:text-5xl font-bold mb-6 sm:mb-8 text-[#a16e47]">
+                    <hr className="w-full my-4 sm:my-6 border-[#a16e47] opacity-30" />
+                    <div className="text-center mt-4 sm:mt-6">
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
                             - 내가 고른 관심사 -
                         </h2>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-5 sm:gap-7">
-                            {' '}
-                            {/* 그리드 열 수 변경 */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -272,42 +266,42 @@ const ProfilePage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-3 sm:p-4 w-full rounded-xl border-2 cursor-pointer flex items-center justify-center ${
+                                    className={`p-2 sm:p-3 w-full rounded-xl border-2 cursor-pointer flex items-center justify-center ${
                                         clickedInterests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
-                                    }`} // 패딩 및 테두리 두께 증가
+                                    }`}
                                     onClick={() =>
                                         handleInterestClick(interest.name)
                                     }
                                 >
-                                    <span className="text-3xl sm:text-5xl mr-2">
-                                        {' '}
-                                        {/* 아이콘 크기 증가 */}
+                                    <span className="text-xl sm:text-3xl mr-1">
                                         {interest.icon}
                                     </span>
-                                    <span className="text-base sm:text-4xl font-medium">
-                                        {' '}
-                                        {/* 폰트 크기 및 두께 증가 */}
+                                    <span className="text-xs sm:text-sm font-medium">
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
-                        <hr className="w-full my-6 sm:my-8 border-[#a16e47] opacity-30" />
-                        <h2 className="text-3xl sm:text-5xl font-bold mb-6 sm:mb-8 text-[#a16e47]">
+                        <hr className="w-full my-4 sm:my-6 border-[#a16e47] opacity-30" />
+
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-[#a16e47]">
                             - AI가 예측하는 관심사 -
                         </h2>
                         <div className="flex justify-center">
-                            <div className="flex flex-nowrap justify-center gap-2 sm:gap-12 overflow-x-auto">
+                            <div className="flex flex-nowrap justify-center gap-3 sm:gap-5 overflow-x-auto">
                                 {userInfo?.interests2?.map(
                                     (interest, index) => (
                                         <div
                                             key={index}
-                                            className="flex p-4 sm:p-6 rounded-xl border-2 items-center justify-center bg-white"
-                                            style={{ width: '200px' }}
+                                            className="flex p-3 sm:p-4 rounded-xl border-2 items-center justify-center bg-white"
+                                            style={{
+                                                width: '180px',
+                                                height: '80px',
+                                            }}
                                         >
-                                            <span className="text-2xl sm:text-4xl font-medium">
+                                            <span className="text-base sm:text-lg font-medium text-center">
                                                 {interest}
                                             </span>
                                         </div>
@@ -316,17 +310,17 @@ const ProfilePage = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-center mt-8 sm:mt-10 space-x-4 sm:space-x-6">
+                    <div className="flex justify-center mt-6 sm:mt-8 space-x-3 sm:space-x-4">
                         <button
                             type="button"
-                            className="bg-[#f7f3e9] text-[#a16e47] py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
+                            className="bg-[#f7f3e9] text-[#a16e47] py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#e4d7c7] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="bg-[#a16e47] text-white py-4 px-8 sm:py-5 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#8a5d3b] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-xl sm:text-2xl"
+                            className="bg-[#a16e47] text-white py-2 px-4 sm:py-3 sm:px-6 rounded-full border-2 border-[#a16e47] shadow-md hover:bg-[#8a5d3b] hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 font-semibold text-sm sm:text-lg"
                             onClick={handleProfileUpdate}
                         >
                             수정하기
@@ -337,24 +331,24 @@ const ProfilePage = () => {
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-gradient-to-br from-[#FFF0D6] to-[#FFFAE8] p-8 sm:p-10 rounded-2xl shadow-2xl max-w-3xl w-full text-center transform transition-transform duration-500 scale-105 hover:scale-110">
-                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 sm:mb-8 text-[#a16e47]">
+                    <div className="bg-gradient-to-br from-[#FFF0D6] to-[#FFFAE8] p-6 sm:p-8 rounded-2xl shadow-2xl max-w-2xl w-full text-center transform transition-transform duration-500 scale-105 hover:scale-110">
+                        <h2 className="text-2xl sm:text-3xl font-extrabold mb-4 sm:mb-6 text-[#a16e47]">
                             정말로 탈퇴하시겠습니까?
                         </h2>
-                        <p className="mb-6 sm:mb-8 text-2xl sm:text-3xl text-[#a16e47]">
+                        <p className="mb-4 sm:mb-6 text-lg sm:text-xl text-[#a16e47]">
                             <span className="font-semibold text-[#a16e47]">
                                 탈퇴를 하시면 모든 정보가 삭제됩니다.
                             </span>
                         </p>
-                        <div className="flex justify-center space-x-8 sm:space-x-12 mt-8 sm:mt-10">
+                        <div className="flex justify-center space-x-4 sm:space-x-6 mt-6 sm:mt-8">
                             <button
-                                className="bg-[#a16e47] text-white py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#8a5d3b] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                className="bg-[#a16e47] text-white py-2 sm:py-3 px-8 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#8a5d3b] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-lg sm:text-xl"
                                 onClick={handleDeleteAccount}
                             >
                                 예
                             </button>
                             <button
-                                className="bg-[#f7f3e9] text-[#a16e47] py-4 sm:py-5 px-12 sm:px-16 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-2xl sm:text-3xl"
+                                className="bg-[#f7f3e9] text-[#a16e47] py-2 sm:py-3 px-8 sm:px-10 rounded-full border-2 border-[#a16e47] shadow-lg hover:bg-[#e4d7c7] hover:shadow-2xl transition duration-300 ease-in-out transform hover:scale-110 font-semibold text-lg sm:text-xl"
                                 onClick={closeModal}
                             >
                                 아니요
