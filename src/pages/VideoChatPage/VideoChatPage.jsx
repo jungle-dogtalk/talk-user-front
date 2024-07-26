@@ -74,7 +74,7 @@ const VideoChatPage = () => {
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
-    //AI 응답 상태
+    //AI 응답 모달 상태
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
 
     // const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
@@ -1501,7 +1501,6 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
-            // AI 응답 모달
             {isAnswerModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
