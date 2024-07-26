@@ -14,6 +14,7 @@ import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤 이미지 추가
+import AIimg from '../../assets/ai.png'; // AI 이미지 추가
 import raccoonImage from '../../assets/raccoon.png';
 import start_modalSound from '../../assets/start_modal_sound.mp3';
 import endModalSound from '../../assets/end_modal_sound.mp3';
@@ -69,17 +70,19 @@ const VideoChatPage = () => {
     const targetUserIndexRef = useRef(0);
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
-    let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
+    const [isTTSActive, setIsTTSActive] = useState(false); // TTS 활성화 상태를 저장하는 변수
 
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
     //AI 응답 모달 상태
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+    const [aiResponse, setAiResponse] = useState('');
 
     // const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
 
     const [isRecommending, setIsRecommending] = useState(false);
+    const [isAnswer, setIsAnswer] = useState(false);
 
     const [isMissionInProgress, setIsMissionInProgress] = useState(false);
 
@@ -236,6 +239,20 @@ const VideoChatPage = () => {
             // 5초후에 모달 닫기
             setTimeout(() => {
                 setRecommendedTopics([]);
+            }, 5000);
+        });
+
+        socket.current.on('answerRecommendations', (data) => {
+            console.log('Received AI Answer:', data);
+            setAiResponse((prevAnswer) => [...prevAnswer, data.trim()]);
+            // setTimeout(() => {
+            //     speakText(data);
+            // }, 2000);
+
+            // 5초후에 모달 닫기
+            setTimeout(() => {
+                setIsAnswerModalOpen(true);
+                speakText(data);
             }, 5000);
         });
 
@@ -553,6 +570,9 @@ const VideoChatPage = () => {
                 speakText(
                     '김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도 당황할 듯!'
                 );
+                setAiResponse(
+                    '김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도 당황할 듯!'
+                );
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -723,6 +743,12 @@ const VideoChatPage = () => {
         setIsRecommending(true);
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
+    };
+
+    // AI 클릭 핸들러 수정 - 실제로 AI 응답을 받아오는 함수
+    const requestAIAnswer = async () => {
+        console.log(`${sessionId}에서 AI 응답 요청`);
+        socket.current.emit('requestAIAnswer', { sessionId });
     };
 
     // 음성인식 시작
@@ -1005,11 +1031,12 @@ const VideoChatPage = () => {
             }
 
             utterance.onstart = () => {
-                isTTSActive = true; // TTS 시작 시 플래그 설정
+                setIsTTSActive(true); // TTS 시작 시 상태 설정
             };
 
             utterance.onend = () => {
-                isTTSActive = false; // TTS 끝날 시 플래그 리셋
+                setIsTTSActive(false); // TTS 끝날 시 상태 리셋
+                closeAnswerModal(); // TTS 끝날 때 모달 닫기
             };
 
             window.speechSynthesis.speak(utterance);
@@ -1127,6 +1154,13 @@ const VideoChatPage = () => {
     //     );
     // };
 
+    // AI 응답 모달 닫기 함수
+    const closeAnswerModal = () => {
+        window.speechSynthesis.cancel(); // TTS 중단
+        setIsAnswerModalOpen(false);
+        setAiResponse(''); // AI 응답 초기화
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-1 flex items-center justify-between shadow-lg">
@@ -1138,7 +1172,16 @@ const VideoChatPage = () => {
                         onClick={requestTopicRecommendations}
                     />
                 </div>
-
+                <div
+                    className="flex items-center"
+                    onClick={requestAIAnswer} // AI 클릭 핸들러 추가
+                >
+                    <img
+                        src={AIimg}
+                        alt="AI 응답"
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full transform hover:scale-105 transition-transform duration-300"
+                    />
+                </div>
                 <div
                     className="flex items-center"
                     onClick={() => {
@@ -1509,18 +1552,14 @@ const VideoChatPage = () => {
                         </h2>
 
                         <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4">
-                            <p className="text-2xl sm:text-3xl text-gray-600 animate-pulse">
-                                김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도
-                                당황할 듯!
+                            <p className="text-4xl sm:text-4xl lg:text-4xl font-bold">
+                                "{aiResponse}"
                             </p>
                         </div>
 
                         <button
                             className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                            onClick={() => {
-                                window.speechSynthesis.cancel(); // TTS 중단
-                                setIsAnswerModalOpen(false);
-                            }}
+                            onClick={closeAnswerModal} // 모달 닫기 함수 호출
                         >
                             닫기
                         </button>
