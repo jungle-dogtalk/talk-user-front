@@ -132,18 +132,6 @@ const RaccoonHand = React.memo((props) => {
         }
     }, [props.isChallengeCompleted, props.isChallengeCompletedTrigger]);
 
-    // useEffect(() => {
-    //     const updateHandPositions = () => {
-    //         if (handLandmarks.length > 0) {
-    //             setHandPositions([...handLandmarks]);
-    //         }
-    //     };
-
-    //     const intervalId = setInterval(updateHandPositions, 16);
-
-    //     return () => clearInterval(intervalId);
-    // }, []);
-
     const setup = useCallback(async () => {
         // WASM 파일 사전 로딩
         const preloadWasm = async () => {
@@ -199,6 +187,7 @@ const RaccoonHand = React.memo((props) => {
         navigator.mediaDevices
             .getUserMedia({
                 video: { width: 640, height: 480 },
+                frameRate: { ideal: 15, max: 30 },
             })
             .then((stream) => {
                 video.srcObject = stream;
@@ -227,7 +216,18 @@ const RaccoonHand = React.memo((props) => {
             }, 0);
         });
     };
+
+    const frameInterval = 1000 / 15; // 15 FPS
+    let lastFrameTime = 0;
+
     const predict = useCallback(async () => {
+        const now = performance.now();
+        if (now - lastFrameTime < frameInterval) {
+            requestAnimationFrame(predict);
+            return;
+        }
+        lastFrameTime = now;
+
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
             lastVideoTime = video.currentTime;
@@ -293,19 +293,20 @@ const RaccoonHand = React.memo((props) => {
             }
 
             // 비동기로 readPixels 호출
-            const buffer = await asyncReadPixels(
-                0,
-                0,
-                video.width,
-                video.height,
-                gl.RGBA,
-                gl.UNSIGNED_BYTE
-            );
+            // const buffer = await asyncReadPixels(
+            //     0,
+            //     0,
+            //     video.width,
+            //     video.height,
+            //     gl.RGBA,
+            //     gl.UNSIGNED_BYTE
+            // );
             // buffer 사용
 
-            setTimeout(() => {
-                requestAnimationFrame(predict);
-            }, 160); // 160ms 간격으로 실행
+            // setTimeout(() => {
+            //     requestAnimationFrame(predict);
+            // }, 160); // 160ms 간격으로 실행
+            requestAnimationFrame(predict);
         }
     }, [performQuiz]);
 

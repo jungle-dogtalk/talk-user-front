@@ -1547,7 +1547,7 @@ const VideoChatPage = () => {
             {isAnswerModalOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
-                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 text-black animate-pulse">
+                        <h2 className="text-4xl sm:text-7xl font-extrabold mb-6 text-black animate-pulse">
                             🤖 AI 응답
                         </h2>
 
