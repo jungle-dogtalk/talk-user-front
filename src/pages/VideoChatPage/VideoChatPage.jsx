@@ -1405,7 +1405,7 @@ const VideoChatPage = () => {
                             !quizChallenger &&
                             !quizResult && (
                                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-9xl h-80 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-8xl h-80 text-center transform transition-all duration-300 scale-100 hover:scale-105 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
                                         <div className="flex-1 text-left space-y-6">
                                             <h1 className="text-7xl font-extrabold text-orange-800 animate-pulse">
                                                 추천 주제
