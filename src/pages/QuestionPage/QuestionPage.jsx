@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/barking-talk.png';
 import { fetchUserProfile } from '../../redux/slices/userSlice';
-import { apiCall } from '../../utils/apiCall';
-import { API_LIST } from '../../utils/apiList';
 
 const QuestionPage = () => {
     const dispatch = useDispatch();
@@ -15,11 +13,12 @@ const QuestionPage = () => {
     );
     const [answer, setAnswer] = useState('');
 
+    // 컴포넌트 마운트 시 사용자 프로필 불러오기
     useEffect(() => {
         if (!token) {
-            navigate('/');
+            navigate('/'); // 토큰이 없으면 로그인 페이지로 리디렉션
         } else {
-            dispatch(fetchUserProfile());
+            dispatch(fetchUserProfile());  // 사용자 프로필 불러오기
         }
     }, [dispatch, navigate, token]);
 
@@ -70,8 +69,7 @@ const QuestionPage = () => {
                     <div className="flex flex-col items-center">
                         <div className="bg-gradient-to-r from-[#e4d7c7] to-[#f7f3e9] p-8 rounded-2xl mb-6 w-full text-center shadow-xl">
                             <h3 className="text-base sm:text-5xl font-semibold text-[#5c3d2e] leading-relaxed">
-                                MBTI({userMbti})를 바탕으로 <br /> 본인을
-                                소개해주세요.
+                                나누고 싶은 이야기에 대해서 적어주세요.
                             </h3>
                         </div>
                     </div>

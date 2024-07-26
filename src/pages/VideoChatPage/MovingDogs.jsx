@@ -145,10 +145,10 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
 
             {showModal && selectedUser && (
                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                    <div className="bg-gradient-to-r from-blue-100 via-sky-50 to-indigo-100 bg-opacity-95 p-10 rounded-3xl shadow-2xl w-11/12 max-w-3xl text-center transform transition-all duration-300 scale-105 hover:scale-110 flex flex-col items-center justify-center overflow-hidden border-3 border-blue-300 backdrop-filter backdrop-blur-sm relative">
+                    <div className="bg-gradient-to-r from-amber-50 to-yellow-50 p-10 rounded-3xl shadow-2xl w-11/12 max-w-3xl text-center transform transition-all duration-300 scale-105 hover:scale-110 flex flex-col items-center justify-center overflow-hidden border-3 border-amber-200 relative">
                         <button
                             onClick={closeModal}
-                            className="absolute top-6 right-6 text-blue-700 hover:text-red-500 transition-colors duration-300 z-10"
+                            className="absolute top-6 right-6 text-amber-700 hover:text-red-500 transition-colors duration-300 z-10"
                         >
                             <svg
                                 className="w-9 h-9"
@@ -165,24 +165,33 @@ const MovingDogs = ({ sessionData, speechLengths, targetUserIndex }) => {
                                 ></path>
                             </svg>
                         </button>
-                        <h1 className="text-8xl font-extrabold text-blue-800 mb-6 animate-pulse">
+                        <h1 className="text-8xl font-extrabold text-amber-800 mb-6">
                             <span className="relative">
                                 하고싶은 이야기
-                                <span className="absolute inset-0 bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-300 opacity-20 rounded-lg transform scale-105 blur-lg"></span>
+                                <span className="absolute inset-0 bg-gradient-to-r from-amber-200 to-yellow-200 opacity-30 rounded-lg transform scale-105 blur-lg"></span>
                             </span>
                         </h1>
-                        <p className="text-8xl text-blue-700 font-medium relative leading-relaxed mx-8">
-                            <span className="absolute -left-8 top-0 text-8xl text-[#1e40af] opacity-25">
+                        <p className="text-8xl text-amber-700 font-medium relative leading-relaxed mx-8">
+                            <span className="absolute -left-8 top-0 text-8xl text-amber-600 opacity-25">
                                 "
                             </span>
+
                             <span className="relative z-10 text-8xl">
-                                {maskMBTI(selectedUser.answer)}
+                                <span
+                                    className="bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-700 font-bold px-10 py-6 rounded-full relative inline-block
+                   border-2 border-amber-200 shadow-md transform hover:scale-105 transition-transform duration-300"
+                                >
+                                    <span className="relative z-10 drop-shadow-sm">
+                                        {selectedUser.answer}
+                                    </span>
+                                </span>
                             </span>
-                            <span className="absolute -right-8 top-0 text-6xl text-[#1e40af] opacity-25">
+
+                            <span className="absolute -right-8 top-0 text-6xl text-amber-600 opacity-25">
                                 "
                             </span>
                         </p>
-                        <p className="text-5xl text-blue-600 mt-8 animate-pulse">
+                        <p className="text-5xl text-amber-700 mt-8 font-semibold">
                             5초 후 자동으로 닫힘
                         </p>
                     </div>

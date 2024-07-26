@@ -259,7 +259,7 @@ const ReviewPage = () => {
                 <img
                     src={logo}
                     alt="멍톡 로고"
-                    className="w-16 h-16 sm:w-60 sm:h-24"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
             </header>
             <div className="flex-1 overflow-auto flex flex-col p-4 sm:p-5">
@@ -293,19 +293,19 @@ const ReviewPage = () => {
                         userRankings.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-5"
+                                className="bg-white p-1 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-5"
                             >
                                 <div className="flex flex-col items-center space-y-2 sm:space-y-3">
                                     <img
                                         src={user.profileImage}
                                         alt="프로필"
-                                        className="w-20 h-20 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full"
+                                        className="w-16 h-16 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full"
                                     />
-                                    <div className="flex space-x-1 sm:space-x-2">
+                                    <div className="flex  sm:space-x-1">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`cursor-pointer text-4xl sm:text-5xl ${
+                                                className={`cursor-pointer text-2xl sm:text-5xl ${
                                                     ratings[index] >= star
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
@@ -322,11 +322,11 @@ const ReviewPage = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="flex-1 flex items-center space-x-14">
-                                    <h3 className="text-3xl sm:text-5xl lg:text-7xl font-semibold mb-2">
+                                <div className="flex-1 flex items-center space-x-3 sm:space-x-6">
+                                    <h3 className="text-2xl sm:text-5xl lg:text-6xl font-semibold mb-2">
                                         {user.nickname}
                                     </h3>
-                                    <p className="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-500 drop-shadow-lg">
+                                    <p className="text-lg sm:text-4xl lg:text-5xl font-bold text-gray-500 drop-shadow-lg">
                                         ({index + 1}등)
                                     </p>
                                 </div>

@@ -11,6 +11,7 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const { token, error, loading } = useSelector((state) => state.user); // Redux store의 상태를 읽어오는 데 사용.
 
+    // 로그인 핸들러
     const handleLogin = async (e) => {
         e.preventDefault(); // 폼 제출시 페이지가 새로고침 되는 것 방지
         const resultAction = await dispatch(loginUser({ username, password })); // 비동기 액션을 디스패치하여 로그인 요청 보내기
@@ -19,13 +20,14 @@ const LoginPage = () => {
         if (loginUser.fulfilled.match(resultAction)) {
             navigate('/main'); // 로그인 성공 시 메인 페이지로 이동
         } else {
-            alert('ID/PW 확인해주세요.');
+            alert('ID/PW 확인해주세요.'); // 로그인 실패 시 알림
         }
     };
 
+    // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
     useEffect(() => {
         if (token) {
-            navigate('/main'); // 이미 로그인되어 있는 경우 메인 페이지로 리디렉션
+            navigate('/main');
         }
     }, [token, navigate]);
 

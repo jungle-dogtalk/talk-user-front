@@ -6,31 +6,38 @@ import logo from '../../assets/barking-talk.png';
 import profileImage from '../../assets/profile.jpg';
 import '../../styles.css';
 import axios from 'axios';
-import { API_LIST } from '../../utils/apiList.js';
 
+// 메인 페이지 컴포넌트
 const MainPage = () => {
+    // Redux를 사용하여 사용자 정보와 토큰을 가져옴
     const userInfo = useSelector((state) => state.user.userInfo);
     const token = useSelector((state) => state.user.token);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    // 관심사와 마지막 업데이트 시간을 저장할 상태 변수
     const [topInterests, setTopInterests] = useState([]);
     const [lastUpdated, setLastUpdated] = useState('');
 
+    // 토큰이 없으면 홈으로 리디렉션
     useEffect(() => {
         if (!token) {
             navigate('/');
         }
     }, [token, navigate]);
 
+    // 로그아웃 핸들러
     const handleLogout = () => {
         dispatch(logoutUser());
         navigate('/');
     };
 
+    // 컴포넌트가 마운트될 때 사용자 프로필을 가져옴
     useEffect(() => {
         dispatch(fetchUserProfile());
     }, [dispatch]);
 
+     // API에서 상위 관심사를 가져옴
     useEffect(() => {
         const fetchTopInterests = async () => {
             try {
@@ -58,9 +65,9 @@ const MainPage = () => {
         fetchTopInterests();
     }, []);
 
+    // 매너 점수와 발화 점수를 계산
     const mannerScore = userInfo?.reviewAverageScore || 0;
     const utteranceScore = userInfo?.utterance || 0;
-
     const displayMannerScore = mannerScore === 0 ? 50 : mannerScore;
     const displayUtteranceScore = utteranceScore === 0 ? 50 : utteranceScore;
 
