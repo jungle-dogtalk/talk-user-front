@@ -74,6 +74,9 @@ const VideoChatPage = () => {
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
+    //AI 응답 상태
+    const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+
     // const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
 
     const [isRecommending, setIsRecommending] = useState(false);
@@ -542,6 +545,14 @@ const VideoChatPage = () => {
                     setShowQuizSuccess(false);
                     setShowQuizFailure(false);
                 }, 5000);
+            });
+
+            // AI응답 처리
+            session.on('signal:AIanswer', (event) => {
+                setIsAnswerModalOpen(true);
+                speakText(
+                    '김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도 당황할 듯!'
+                );
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -1128,7 +1139,14 @@ const VideoChatPage = () => {
                     />
                 </div>
 
-                <div className="flex items-center">
+                <div
+                    className="flex items-center"
+                    onClick={() => {
+                        session.signal({
+                            type: 'AIanswer',
+                        });
+                    }}
+                >
                     <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
@@ -1483,6 +1501,33 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
+            // AI 응답 모달
+            {isAnswerModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
+                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 text-black animate-pulse">
+                            🤖 AI 응답
+                        </h2>
+
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4">
+                            <p className="text-2xl sm:text-3xl text-gray-600 animate-pulse">
+                                김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도
+                                당황할 듯!
+                            </p>
+                        </div>
+
+                        <button
+                            className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                            onClick={() => {
+                                window.speechSynthesis.cancel(); // TTS 중단
+                                setIsAnswerModalOpen(false);
+                            }}
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
             {showInitialModal && <InitialQuestionModal />}
             {/* {showWelcomeModal && <WelcomeModal/>} */}
             {/* {showFaceRevealModal && <FaceRevealModal />} */}
