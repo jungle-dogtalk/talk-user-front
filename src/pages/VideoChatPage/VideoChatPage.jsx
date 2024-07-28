@@ -25,7 +25,7 @@ import wrong_sound from '../../assets/sounds/wrong.mp3';
 import topic_sound from '../../assets/sounds/topic.mp3';
 
 const VideoChatPage = () => {
-    const FRAME_RATE = 30;
+    const FRAME_RATE = 10;
     const location = useLocation();
     const sessionId = new URLSearchParams(location.search).get('sessionId');
     const recognitionRef = useRef(null);
@@ -357,95 +357,80 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.nickname, location.search, isLeaving]);
 
-    const startStreaming = (session, OV, mediaStream, pitchValue) => {
-        setTimeout(() => {
-            // 비디오 엘리먼트 생성 및 설정
-            const video = document.createElement('video');
-            video.srcObject = mediaStream;
-            video.autoplay = true;
-            video.playsInline = true;
+    const startStreaming = async (session, OV, mediaStream, pitchValue) => {
+        // 2초 대기
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-            // 너구리 캔버스 가져오기
-            const avatarCanvas = document
-                .getElementById('avatar_canvas')
-                .querySelector('div')
-                .querySelector('canvas');
+        const video = document.createElement('video');
+        video.srcObject = mediaStream;
+        video.autoplay = true;
+        video.playsInline = true;
 
-            // 합성 캔버스 생성
-            const compositeCanvas = document.createElement('canvas');
+        // 너구리 캔버스를 한 번만 가져옴
+        const avatarCanvas = document
+            .getElementById('avatar_canvas')
+            .querySelector('div')
+            .querySelector('canvas');
 
-            // 16:9 비율
-            compositeCanvas.width = 1280; // 너비(16)
-            compositeCanvas.height = 720; // 높이(9)
+        const compositeCanvas = document.createElement('canvas');
+        compositeCanvas.width = 1280;
+        compositeCanvas.height = 720;
 
-            const ctx = compositeCanvas.getContext('2d');
+        const ctx = compositeCanvas.getContext('2d');
 
-            // 렌더링 함수
-            const render = () => {
-                // 비디오 그리기
-                ctx.drawImage(
-                    video,
-                    0,
-                    0,
-                    compositeCanvas.width,
-                    compositeCanvas.height
-                );
+        let animationFrameId;
 
-                // 너구리 캔버스 그리기
-                ctx.drawImage(
-                    avatarCanvas,
-                    0,
-                    0,
-                    compositeCanvas.width,
-                    compositeCanvas.height
-                );
+        const render = () => {
+            ctx.drawImage(
+                video,
+                0,
+                0,
+                compositeCanvas.width,
+                compositeCanvas.height
+            );
+            ctx.drawImage(
+                avatarCanvas,
+                0,
+                0,
+                compositeCanvas.width,
+                compositeCanvas.height
+            );
+            animationFrameId = requestAnimationFrame(render);
+        };
 
-                requestAnimationFrame(render);
-            };
-
-            // 비디오 로드 완료 후 렌더링 시작
+        await new Promise((resolve) => {
             video.onloadedmetadata = () => {
                 video.play();
                 render();
+                resolve();
             };
+        });
 
-            if (!pitchValue) {
-                pitchValue = 1.0;
+        const compositeStream = compositeCanvas.captureStream(FRAME_RATE);
+
+        const publisher = OV.initPublisher(undefined, {
+            audioSource: mediaStream.getAudioTracks()[0],
+            videoSource: compositeStream.getVideoTracks()[0],
+            frameRate: FRAME_RATE,
+            videoCodec: 'H264',
+        });
+
+        setPublisher(publisher);
+        await session.publish(publisher);
+
+        startSpeechRecognition(
+            publisher.stream.getMediaStream(),
+            userInfo.nickname
+        );
+
+        socket.current.emit('joinSession', sessionId);
+
+        // 컴포넌트 언마운트 시 정리 함수 반환
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
             }
-
-            var filterOptions = {
-                type: 'GStreamerFilter',
-                options: {
-                    command:
-                        // 'audioecho delay=50000000 intensity=0.6 feedback=0.4', // 음성 echo 설정
-                        `pitch pitch=${pitchValue}`,
-                },
-            };
-
-            // 합성 캔버스의 스트림 가져오기
-            const compositeStream = compositeCanvas.captureStream(FRAME_RATE);
-
-            // OpenVidu publisher 초기화 및 게시
-            const publisher = OV.initPublisher(undefined, {
-                audioSource: mediaStream.getAudioTracks()[0],
-                videoSource: compositeStream.getVideoTracks()[0],
-                frameRate: FRAME_RATE, // 프레임 레이트 낮추기
-                filter: filterOptions,
-                videoCodec: 'VP8', // VP8 코덱
-            });
-
-            setPublisher(publisher);
-            session.publish(publisher);
-
-            // 음성 인식 시작
-            startSpeechRecognition(
-                publisher.stream.getMediaStream(),
-                userInfo.nickname
-            );
-            // startInactivityTimer();
-
-            socket.current.emit('joinSession', sessionId);
-        }, 1000);
+        };
     };
 
     const updatePublisherWithNewPitch = (pitchValue) => {

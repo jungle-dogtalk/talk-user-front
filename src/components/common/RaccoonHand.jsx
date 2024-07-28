@@ -187,7 +187,6 @@ const RaccoonHand = React.memo((props) => {
         navigator.mediaDevices
             .getUserMedia({
                 video: { width: 640, height: 480 },
-                frameRate: { ideal: 15, max: 30 },
             })
             .then((stream) => {
                 video.srcObject = stream;
@@ -303,10 +302,10 @@ const RaccoonHand = React.memo((props) => {
             // );
             // buffer 사용
 
-            // setTimeout(() => {
-            //     requestAnimationFrame(predict);
-            // }, 160); // 160ms 간격으로 실행
-            requestAnimationFrame(predict);
+            setTimeout(() => {
+                requestAnimationFrame(predict);
+            }, 160); // 160ms 간격으로 실행
+            // requestAnimationFrame(predict);
         }
     }, [performQuiz]);
 
