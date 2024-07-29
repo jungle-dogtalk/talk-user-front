@@ -461,7 +461,7 @@ const VideoChatPage = () => {
         }
     };
 
-    //세션 참여
+    // 세션 참여
     const joinSession = useCallback(
         async (sid) => {
             const audio = new Audio(start_sound);
@@ -473,8 +473,7 @@ const VideoChatPage = () => {
             setSession(session);
 
             session.on('streamCreated', (event) => {
-                const subscriber = session.subscribe(event.stream, undefined);
-                handleSubscriberChromaKey(event.stream);
+                let subscriber = session.subscribe(event.stream, undefined);
                 setSubscribers((prevSubscribers) => [
                     ...prevSubscribers,
                     subscriber,
