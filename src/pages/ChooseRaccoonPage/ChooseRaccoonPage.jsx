@@ -165,7 +165,7 @@ const ChooseRaccoonPage = () => {
             </header>
 
             <div className="flex flex-1 flex-col lg:flex-row items-start justify-center gap-2 lg:gap-10 p-2 lg:p-8 overflow-auto">
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mb-1 lg:mb-0">
+            <div className="w-full lg:w-1/2 flex flex-col items-center justify-start h-full mb-1 lg:mb-0">
                     <h2
                         className="text-2xl sm:text-7xl font-bold mb-2 lg:mb-8 text-[#8B4513] tracking-wide"
                         style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}

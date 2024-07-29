@@ -18,7 +18,7 @@ const QuestionPage = () => {
         if (!token) {
             navigate('/'); // 토큰이 없으면 로그인 페이지로 리디렉션
         } else {
-            dispatch(fetchUserProfile()); // 사용자 프로필 불러오기
+            dispatch(fetchUserProfile());  // 사용자 프로필 불러오기
         }
     }, [dispatch, navigate, token]);
 

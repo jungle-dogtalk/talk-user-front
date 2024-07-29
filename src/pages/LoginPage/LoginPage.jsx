@@ -56,9 +56,7 @@ const LoginPage = () => {
                                     type="text"
                                     id="username"
                                     value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
+                                    onChange={(e) => setUsername(e.target.value)}
                                     placeholder="아이디를 입력하세요"
                                     required
                                     className="block px-4 py-2 sm:px-8 sm:py-6 lg:px-10 lg:py-8 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xl sm:text-3xl lg:text-4xl w-full"
@@ -75,9 +73,7 @@ const LoginPage = () => {
                                     type="password"
                                     id="password"
                                     value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
+                                    onChange={(e) => setPassword(e.target.value)}
                                     placeholder="비밀번호를 입력하세요"
                                     required
                                     className="block px-4 py-2 sm:px-8 sm:py-6 lg:px-10 lg:py-8 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-xl sm:text-3xl lg:text-4xl w-full"
@@ -118,12 +114,12 @@ const LoginPage = () => {
                     >
                         ID/PW 찾기
                     </a>
-                    <div className="mt-4 sm:hidden"></div>{' '}
-                    {/* 작은 화면에서만 마진 추가 */}
+                    <div className="mt-4 sm:hidden"></div> {/* 작은 화면에서만 마진 추가 */}
                 </div>
             </div>
         </div>
     );
+    
 };
 
 export default LoginPage;

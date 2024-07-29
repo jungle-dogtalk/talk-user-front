@@ -37,7 +37,7 @@ const MainPage = () => {
         dispatch(fetchUserProfile());
     }, [dispatch]);
 
-    // API에서 상위 관심사를 가져옴
+     // API에서 상위 관심사를 가져옴
     useEffect(() => {
         const fetchTopInterests = async () => {
             try {
