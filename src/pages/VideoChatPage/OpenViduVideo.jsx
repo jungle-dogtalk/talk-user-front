@@ -1,15 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-import styles from './VideoChatPage.module.css';
 
-const OpenViduVideo = ({ streamManager, isPublisher }) => {
+const OpenViduVideo = (props) => {
     const videoRef = useRef();
-    const canvasRef = useRef();
 
     useEffect(() => {
-        if (streamManager && videoRef.current) {
-            streamManager.addVideoElement(videoRef.current);
+        if (props.streamManager && videoRef) {
+            props.streamManager.addVideoElement(videoRef.current);
         }
-    }, [streamManager]);
+    }, [props.streamManager]);
 
     return (
         <video
