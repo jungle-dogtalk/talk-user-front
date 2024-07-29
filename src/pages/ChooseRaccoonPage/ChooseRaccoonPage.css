@@ -1,0 +1,162 @@
+:root {
+    --background-color: #f7f3e9;
+    --header-background-color: #a16e47;
+    --text-color: #333;
+    --button-background-color: #d2691e;
+    --button-hover-color: #b5521e;
+    --button-text-color: white;
+    --font-family: 'Noto Sans KR', sans-serif;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+}
+
+.avatar-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.header {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: var(--header-background-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 70px;
+    margin-right: auto;
+}
+
+.header-links {
+    display: flex;
+    align-items: center;
+}
+
+.header-links span,
+.header-links a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+.header-links .logout-link {
+    cursor: pointer;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+    padding-top: 20px; /* 헤더와의 간격을 늘림 */
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5px 0; /* 섹션 간의 간격을 줄임 */
+}
+
+h2 {
+    margin: 10px 0;
+    font-family: var(--font-family);
+    color: var(--text-color);
+}
+
+.video-box {
+    width: 480px;
+    height: 360px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    object-fit: cover;
+    /* transform: scaleX(-1); */
+}
+
+.fixed-size {
+    width: 520px;
+    height: 390px;
+}
+
+.avatar-box {
+    width: 480px;
+    height: 360px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0; /* 버튼 간의 간격을 동일하게 설정 */
+}
+
+button.action-button {
+    background-color: var(--header-background-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    font-family: var(--font-family);
+    min-width: 100px;
+}
+
+button.action-button:hover {
+    background-color: var(--button-hover-color);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.6;
+    }
+}
+
+.pulse-container {
+    animation: pulse 2s infinite ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 1.5rem;
+    background-color: rgba(139, 69, 19, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #8b4513;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.video-fade-in {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.video-fade-in.loaded {
+    opacity: 1;
+}
