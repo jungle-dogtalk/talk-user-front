@@ -14,6 +14,7 @@ import MovingDogs from './MovingDogs';
 import forestBackground from '../../assets/forest-background.jpg'; // 배경 이미지 추가
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
 import RaccoonImg from '../../assets/WelcomeRaccoon.png'; // WelcomeModal 라쿤 이미지 추가
+import AIimg from '../../assets/ai.png'; // AI 이미지 추가
 import raccoonImage from '../../assets/raccoon.png';
 import start_modalSound from '../../assets/start_modal_sound.mp3';
 import endModalSound from '../../assets/end_modal_sound.mp3';
@@ -24,7 +25,7 @@ import wrong_sound from '../../assets/sounds/wrong.mp3';
 import topic_sound from '../../assets/sounds/topic.mp3';
 
 const VideoChatPage = () => {
-    const FRAME_RATE = 30;
+    const FRAME_RATE = 10;
     const location = useLocation();
     const sessionId = new URLSearchParams(location.search).get('sessionId');
     const recognitionRef = useRef(null);
@@ -69,14 +70,19 @@ const VideoChatPage = () => {
     const targetUserIndexRef = useRef(0);
     const inactivityTimeoutRef = useRef(null); // Inactivity timer ref
     const ttsStreamRef = useRef(null); // TTS 스트림 참조
-    let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
+    const [isTTSActive, setIsTTSActive] = useState(false); // TTS 활성화 상태를 저장하는 변수
 
     const [speechLengths, setSpeechLengths] = useState([]);
     const [speakingUsers, setSpeakingUsers] = useState(new Set());
 
+    //AI 응답 모달 상태
+    const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+    const [aiResponse, setAiResponse] = useState('');
+
     // const [showFaceRevealModal, setShowFaceRevealModal] = useState(false);
 
     const [isRecommending, setIsRecommending] = useState(false);
+    const [isAnswer, setIsAnswer] = useState(false);
 
     const [isMissionInProgress, setIsMissionInProgress] = useState(false);
 
@@ -236,6 +242,20 @@ const VideoChatPage = () => {
             }, 5000);
         });
 
+        socket.current.on('answerRecommendations', (data) => {
+            console.log('Received AI Answer:', data);
+            setAiResponse((prevAnswer) => [...prevAnswer, data.trim()]);
+            // setTimeout(() => {
+            //     speakText(data);
+            // }, 2000);
+
+            // 5초후에 모달 닫기
+            setTimeout(() => {
+                setIsAnswerModalOpen(true);
+                speakText(data);
+            }, 5000);
+        });
+
         socket.current.on('endOfStream', () => {
             console.log('Streaming ended');
         });
@@ -337,95 +357,80 @@ const VideoChatPage = () => {
         }
     }, [session, publisher, userInfo.nickname, location.search, isLeaving]);
 
-    const startStreaming = (session, OV, mediaStream, pitchValue) => {
-        setTimeout(() => {
-            // 비디오 엘리먼트 생성 및 설정
-            const video = document.createElement('video');
-            video.srcObject = mediaStream;
-            video.autoplay = true;
-            video.playsInline = true;
+    const startStreaming = async (session, OV, mediaStream, pitchValue) => {
+        // 2초 대기
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
-            // 너구리 캔버스 가져오기
-            const avatarCanvas = document
-                .getElementById('avatar_canvas')
-                .querySelector('div')
-                .querySelector('canvas');
+        const video = document.createElement('video');
+        video.srcObject = mediaStream;
+        video.autoplay = true;
+        video.playsInline = true;
 
-            // 합성 캔버스 생성
-            const compositeCanvas = document.createElement('canvas');
+        // 너구리 캔버스를 한 번만 가져옴
+        const avatarCanvas = document
+            .getElementById('avatar_canvas')
+            .querySelector('div')
+            .querySelector('canvas');
 
-            // 16:9 비율
-            compositeCanvas.width = 1280; // 너비(16)
-            compositeCanvas.height = 720; // 높이(9)
+        const compositeCanvas = document.createElement('canvas');
+        compositeCanvas.width = 1280;
+        compositeCanvas.height = 720;
 
-            const ctx = compositeCanvas.getContext('2d');
+        const ctx = compositeCanvas.getContext('2d');
 
-            // 렌더링 함수
-            const render = () => {
-                // 비디오 그리기
-                ctx.drawImage(
-                    video,
-                    0,
-                    0,
-                    compositeCanvas.width,
-                    compositeCanvas.height
-                );
+        let animationFrameId;
 
-                // 너구리 캔버스 그리기
-                ctx.drawImage(
-                    avatarCanvas,
-                    0,
-                    0,
-                    compositeCanvas.width,
-                    compositeCanvas.height
-                );
+        const render = () => {
+            ctx.drawImage(
+                video,
+                0,
+                0,
+                compositeCanvas.width,
+                compositeCanvas.height
+            );
+            ctx.drawImage(
+                avatarCanvas,
+                0,
+                0,
+                compositeCanvas.width,
+                compositeCanvas.height
+            );
+            animationFrameId = requestAnimationFrame(render);
+        };
 
-                requestAnimationFrame(render);
-            };
-
-            // 비디오 로드 완료 후 렌더링 시작
+        await new Promise((resolve) => {
             video.onloadedmetadata = () => {
                 video.play();
                 render();
+                resolve();
             };
+        });
 
-            if (!pitchValue) {
-                pitchValue = 1.0;
+        const compositeStream = compositeCanvas.captureStream(FRAME_RATE);
+
+        const publisher = OV.initPublisher(undefined, {
+            audioSource: mediaStream.getAudioTracks()[0],
+            videoSource: compositeStream.getVideoTracks()[0],
+            frameRate: FRAME_RATE,
+            videoCodec: 'H264',
+        });
+
+        setPublisher(publisher);
+        await session.publish(publisher);
+
+        startSpeechRecognition(
+            publisher.stream.getMediaStream(),
+            userInfo.nickname
+        );
+
+        socket.current.emit('joinSession', sessionId);
+
+        // 컴포넌트 언마운트 시 정리 함수 반환
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
             }
-
-            var filterOptions = {
-                type: 'GStreamerFilter',
-                options: {
-                    command:
-                        // 'audioecho delay=50000000 intensity=0.6 feedback=0.4', // 음성 echo 설정
-                        `pitch pitch=${pitchValue}`,
-                },
-            };
-
-            // 합성 캔버스의 스트림 가져오기
-            const compositeStream = compositeCanvas.captureStream(FRAME_RATE);
-
-            // OpenVidu publisher 초기화 및 게시
-            const publisher = OV.initPublisher(undefined, {
-                audioSource: mediaStream.getAudioTracks()[0],
-                videoSource: compositeStream.getVideoTracks()[0],
-                frameRate: FRAME_RATE, // 프레임 레이트 낮추기
-                filter: filterOptions,
-                videoCodec: 'VP8', // VP8 코덱
-            });
-
-            setPublisher(publisher);
-            session.publish(publisher);
-
-            // 음성 인식 시작
-            startSpeechRecognition(
-                publisher.stream.getMediaStream(),
-                userInfo.nickname
-            );
-            // startInactivityTimer();
-
-            socket.current.emit('joinSession', sessionId);
-        }, 1000);
+        };
     };
 
     const updatePublisherWithNewPitch = (pitchValue) => {
@@ -542,6 +547,17 @@ const VideoChatPage = () => {
                     setShowQuizSuccess(false);
                     setShowQuizFailure(false);
                 }, 5000);
+            });
+
+            // AI응답 처리
+            session.on('signal:AIanswer', (event) => {
+                setIsAnswerModalOpen(true);
+                speakText(
+                    '김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도 당황할 듯!'
+                );
+                setAiResponse(
+                    '김밥천국 첫 데이트? 그건 좀 오반데ㅋㅋㅋ AI도 당황할 듯!'
+                );
             });
 
             // 세션 연결 종료 시 (타이머 초과에 의한 종료)
@@ -712,6 +728,12 @@ const VideoChatPage = () => {
         setIsRecommending(true);
         console.log(`${sessionId}에서 주제추천 요청`);
         socket.current.emit('requestTopicRecommendations', { sessionId });
+    };
+
+    // AI 클릭 핸들러 수정 - 실제로 AI 응답을 받아오는 함수
+    const requestAIAnswer = async () => {
+        console.log(`${sessionId}에서 AI 응답 요청`);
+        socket.current.emit('requestAIAnswer', { sessionId });
     };
 
     // 음성인식 시작
@@ -994,11 +1016,12 @@ const VideoChatPage = () => {
             }
 
             utterance.onstart = () => {
-                isTTSActive = true; // TTS 시작 시 플래그 설정
+                setIsTTSActive(true); // TTS 시작 시 상태 설정
             };
 
             utterance.onend = () => {
-                isTTSActive = false; // TTS 끝날 시 플래그 리셋
+                setIsTTSActive(false); // TTS 끝날 시 상태 리셋
+                closeAnswerModal(); // TTS 끝날 때 모달 닫기
             };
 
             window.speechSynthesis.speak(utterance);
@@ -1116,6 +1139,13 @@ const VideoChatPage = () => {
     //     );
     // };
 
+    // AI 응답 모달 닫기 함수
+    const closeAnswerModal = () => {
+        window.speechSynthesis.cancel(); // TTS 중단
+        setIsAnswerModalOpen(false);
+        setAiResponse(''); // AI 응답 초기화
+    };
+
     return (
         <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#f7f3e9] to-[#e7d4b5]">
             <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-1 flex items-center justify-between shadow-lg">
@@ -1127,8 +1157,24 @@ const VideoChatPage = () => {
                         onClick={requestTopicRecommendations}
                     />
                 </div>
-
-                <div className="flex items-center">
+                <div
+                    className="flex items-center"
+                    onClick={requestAIAnswer} // AI 클릭 핸들러 추가
+                >
+                    <img
+                        src={AIimg}
+                        alt="AI 응답"
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full transform hover:scale-105 transition-transform duration-300"
+                    />
+                </div>
+                <div
+                    className="flex items-center"
+                    onClick={() => {
+                        session.signal({
+                            type: 'AIanswer',
+                        });
+                    }}
+                >
                     <h2 className="text-white text-4xl font-bold bg-[#8b5e3c] bg-opacity-80 rounded-lg px-5 py-3 mr-5 shadow-inner">
                         남은 시간: {Math.floor(remainingTime / 60)}분{' '}
                         {remainingTime % 60}초
@@ -1387,7 +1433,7 @@ const VideoChatPage = () => {
                             !quizChallenger &&
                             !quizResult && (
                                 <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-                                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-9xl h-80 text-center transform transition-all duration-300 scale-105 hover:scale-110 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
+                                    <div className="bg-gradient-to-r from-yellow-200 via-orange-100 to-yellow-200 bg-opacity-80 p-8 rounded-3xl shadow-2xl w-11/12 max-w-8xl h-80 text-center transform transition-all duration-300 scale-100 hover:scale-105 flex items-center justify-between overflow-hidden border-6 border-orange-300 backdrop-filter backdrop-blur-sm">
                                         <div className="flex-1 text-left space-y-6">
                                             <h1 className="text-7xl font-extrabold text-orange-800 animate-pulse">
                                                 추천 주제
@@ -1483,6 +1529,28 @@ const VideoChatPage = () => {
                     </div>
                 </div>
             </div>
+            {isAnswerModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
+                        <h2 className="text-4xl sm:text-7xl font-extrabold mb-6 text-black animate-pulse">
+                            🤖 AI 응답
+                        </h2>
+
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4">
+                            <p className="text-4xl sm:text-4xl lg:text-4xl font-bold">
+                                "{aiResponse}"
+                            </p>
+                        </div>
+
+                        <button
+                            className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                            onClick={closeAnswerModal} // 모달 닫기 함수 호출
+                        >
+                            닫기
+                        </button>
+                    </div>
+                </div>
+            )}
             {showInitialModal && <InitialQuestionModal />}
             {/* {showWelcomeModal && <WelcomeModal/>} */}
             {/* {showFaceRevealModal && <FaceRevealModal />} */}
