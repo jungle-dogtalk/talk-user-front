@@ -4,6 +4,8 @@ const GET = 'GET';
 const DELETE = 'DELETE';
 const PATCH = 'PATCH';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 // 백엔드 서버 API 목록
 const API_LIST = {
     TEST_MULTIPLE_DATA: {
@@ -59,27 +61,27 @@ const API_LIST = {
     END_CALL: {
         method: POST,
         path: `/api/audio/end-call`,
-        desc: '통화 종료 및 관심사 도출',
+        desc: '통화 종료 및 관심사 도출 및 대화 피드백 요청',
     },
     GET_TOKEN: {
         method: 'POST',
         path: `/api/openvidu/token`,
-        desc: 'OpenVidu 토큰 발급'
+        desc: 'OpenVidu 토큰 발급',
     },
     GET_SESSION_DATA: {
         method: GET,
         path: `/api/user/session-data`,
-        desc: '세션 데이터 조회'
+        desc: '세션 데이터 조회',
     },
     GET_SESSION_TIMER: {
         method: GET,
         path: `/api/openvidu/session/timer`,
-        desc: '세션 남은시간 조회'
+        desc: '세션 남은시간 조회',
     },
     GET_CALL_USER_INFO: {
         method: POST,
         path: `/api/user/call-user-info`,
-        desc: '통화 유저 정보 조회'
+        desc: '통화 유저 정보 조회',
     },
     SUBMIT_REVIEW: {
         method: POST,
@@ -91,7 +93,6 @@ const API_LIST = {
         path: '/api/questions/random',
         desc: 'Get a random question',
     },
-    
 };
 
 // OPEN API 목록

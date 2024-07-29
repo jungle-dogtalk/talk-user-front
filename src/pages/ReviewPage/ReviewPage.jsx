@@ -25,6 +25,19 @@ const ReviewPage = () => {
     const [callUserInfo, setCallUserInfo] = useState([]); // 통화 유저 정보 저장
     const [topTalker, setTopTalker] = useState(null); // 오늘의 수다왕
 
+    const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+    const [feedback, setFeedback] = useState('');
+    const [isFeedbackFetched, setIsFeedbackFetched] = useState(false);
+
+    const [userRankings, setUserRankings] = useState([]);
+
+    let isTTSActive = false; // TTS 활성화 상태를 저장하는 변수
+
+    let ranking = sessionStorage.getItem('ranking');
+    if (ranking) {
+        ranking = JSON.parse(ranking);
+    }
+
     useEffect(() => {
         const fromVideoChat = sessionStorage.getItem('fromVideoChat');
         if (!fromVideoChat) {
@@ -83,8 +96,50 @@ const ReviewPage = () => {
                         ? prev
                         : current
                 );
-                setTopTalker(topTalker);
 
+                const rankArr = [];
+                ranking.forEach((userRank, index) => {
+                    const users = response.data;
+                    users.forEach((user) => {
+                        if (user.nickname == userRank.nickname) {
+                            const profileData = callUserInfoResponse.data.find(
+                                (item) => {
+                                    return item.nickname === userRank.nickname;
+                                }
+                            );
+                            if (profileData) {
+                                user.profileImage = profileData.profileImage;
+                            }
+
+                            rankArr.push(user);
+                        }
+                    });
+                });
+                // const testArr = [
+                //     {
+                //         nickname: 'User1',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User2',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User3',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                //     {
+                //         nickname: 'User4',
+                //         profileImage:
+                //             'https://talk-static-file-storage.s3.ap-northeast-2.amazonaws.com/img/0261765f-e398-4174-a21d-b8fb2a4eb44c-dog.jpg',
+                //     },
+                // ];
+                setUserRankings(rankArr);
+
+                setTopTalker(ranking[0]);
                 setSessionData(mergedData);
                 setCallUserInfo(mergedData);
                 setRatings(new Array(mergedData.length).fill(0));
@@ -116,7 +171,11 @@ const ReviewPage = () => {
                 })),
             });
             alert('리뷰가 제출되었습니다.');
-            // window.location.href = '/main';
+
+            // sessionStorage에서 feedback을 삭제
+            sessionStorage.removeItem('feedback');
+
+            window.location.href = '/main';
         } catch (error) {
             console.error('Error submitting reviews:', error);
             alert('리뷰 제출 중 오류가 발생했습니다.');
@@ -141,72 +200,112 @@ const ReviewPage = () => {
 
     const username = userInfo?.username || '사용자';
 
+    const fetchFeedback = async () => {
+        const savedFeedback = sessionStorage.getItem('feedback');
+        if (savedFeedback) {
+            setFeedback(savedFeedback);
+
+            // 첫 문장 추출
+            const firstSentence = savedFeedback.split('. ')[0] + '.';
+            speakText(firstSentence);
+
+            setIsFeedbackFetched(true);
+        }
+        setIsFeedbackModalOpen(true);
+    };
+
+    const speakText = (text, delay) => {
+        if (isTTSActive) {
+            return; // TTS가 이미 실행 중인 경우 함수 종료
+        }
+
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR'; // 언어 설정 (한국어)
+            utterance.rate = 1.2; // 말하기 속도 조절 (기본값: 1)
+            utterance.pitch = 0.6; // 음조 조절 (기본값: 1)
+
+            const voices = window.speechSynthesis.getVoices();
+            console.log('사용 가능: ', voices);
+            const selectedVoice = voices.find((voice) =>
+                voice.name.includes('Google 한국의')
+            );
+
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            } else {
+                console.warn(
+                    `Voice 'Google 한국의' not found. Using default voice.`
+                );
+            }
+
+            utterance.onstart = () => {
+                isTTSActive = true; // TTS 시작 시 플래그 설정
+            };
+
+            utterance.onend = () => {
+                isTTSActive = false; // TTS 끝날 시 플래그 리셋
+            };
+
+            window.speechSynthesis.speak(utterance);
+        } else {
+            console.error('This browser does not support speech synthesis.');
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center">
-            <header className="w-full bg-[#a16e47] p-1 flex justify-between items-center">
-                <div className="flex items-center">
-                    <img
-                        src={logo}
-                        alt="명톡 로고"
-                        className="w-16 h-16 sm:w-24 sm:h-24 ml-2"
-                    />
-                </div>
+        <div className="h-screen bg-gray-100 flex flex-col">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center shadow-lg">
+                <img
+                    src={logo}
+                    alt="멍톡 로고"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
+                />
             </header>
-            <div className="bg-gray-100 rounded-lg p-4 sm:p-8 mt-4 w-full max-w-md sm:max-w-4xl">
-                <h2 className="text-lg sm:text-2xl font-bold text-center mb-4">
-                    통화 시간이 종료되었습니다.
-                </h2>
-                <p className="text-center mb-4 sm:mb-6">
-                    즐거운 통화 시간이 되셨나요? 리뷰를 남겨보세요!
-                </p>
+            <div className="flex-1 overflow-auto flex flex-col p-4 sm:p-5">
                 {topTalker && (
-                    <div className="text-center mb-4 p-2 border border-yellow-400 bg-yellow-50 rounded-lg relative">
-                        <h2 className="text-xl sm:text-2xl font-bold text-yellow-600">
-                            오늘의 수다왕
-                        </h2>
-                        <img
-                            src={crownIcon}
-                            alt="왕관"
-                            className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mt-1"
-                        />
-                        <h3 className="text-lg sm:text-xl font-semibold mt-1">
-                            {topTalker.nickname}님
-                        </h3>
-                        <p className="text-sm sm:text-base text-gray-600 mt-1">
-                            발화량: {topTalker.utterance}
-                        </p>
-                        <img
-                            src={celebrationEffect}
-                            alt="축하 이펙트"
-                            className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mt-2"
-                        />
+                    <div className="text-center mb-4 p-3 sm:p-4 border-2 border-yellow-400 bg-yellow-50 rounded-lg flex items-center justify-center">
+                        <div>
+                            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-yellow-600 mb-2">
+                                오늘의 수다왕
+                            </h2>
+                            <h3 className="text-2xl sm:text-4xl lg:text-5xl font-semibold mb-1">
+                                '{topTalker.nickname}'님
+                            </h3>
+                        </div>
+                        <div className="ml-4 sm:ml-6">
+                            <img
+                                src={crownIcon}
+                                alt="왕관"
+                                className="w-20 h-20 sm:w-24 sm:h-24"
+                            />
+                            {/* <img
+                                src={celebrationEffect}
+                                alt="축하 이펙트"
+                                className="w-20 h-20 sm:w-24 sm:h-24 mt-2"
+                            /> */}
+                        </div>
                     </div>
                 )}
 
-                <div className="space-y-4 sm:space-y-6">
-                    {sessionData && sessionData.length > 0 ? (
-                        sessionData.map((user, index) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 flex-1">
+                    {userRankings && userRankings.length > 0 ? (
+                        userRankings.map((user, index) => (
                             <div
                                 key={index}
-                                className="bg-gray-50 p-2 sm:p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4"
+                                className="bg-white p-1 sm:p-4 rounded-lg shadow-lg flex items-center space-x-4 sm:space-x-5"
                             >
-                                <img
-                                    src={user.profileImage}
-                                    alt="프로필"
-                                    className="w-12 h-12 sm:w-16 sm:h-16 rounded-full"
-                                />
-                                <div className="flex-1">
-                                    <h3 className="text-base sm:text-xl font-semibold">
-                                        {user.nickname}{' '}
-                                        <span className="text-sm text-gray-500">
-                                            발화량 {user.utterance || 0}
-                                        </span>
-                                    </h3>
-                                    <div className="flex space-x-1 mt-2">
+                                <div className="flex flex-col items-center space-y-2 sm:space-y-3">
+                                    <img
+                                        src={user.profileImage}
+                                        alt="프로필"
+                                        className="w-16 h-16 sm:w-28 sm:h-28 lg:w-32 lg:h-32 rounded-full"
+                                    />
+                                    <div className="flex  sm:space-x-1">
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <span
                                                 key={star}
-                                                className={`cursor-pointer text-xl sm:text-2xl ${
+                                                className={`cursor-pointer text-2xl sm:text-5xl ${
                                                     ratings[index] >= star
                                                         ? 'text-yellow-400'
                                                         : 'text-gray-300'
@@ -223,32 +322,32 @@ const ReviewPage = () => {
                                         ))}
                                     </div>
                                 </div>
-                                <button
-                                    className="bg-red-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full flex items-center space-x-2"
-                                    onClick={() => handleReport(user.nickname)}
-                                >
-                                    <span>신고하기</span>
-                                    <img
-                                        src={Declaration}
-                                        alt="이모티콘"
-                                        className="w-4 h-4 sm:w-6 sm:h-6"
-                                    />
-                                </button>
+                                <div className="flex-1 flex items-center space-x-3 sm:space-x-6">
+                                    <h3 className="text-2xl sm:text-5xl lg:text-6xl font-semibold mb-2">
+                                        {user.nickname}
+                                    </h3>
+                                    <p className="text-lg sm:text-4xl lg:text-5xl font-bold text-gray-500 drop-shadow-lg">
+                                        ({index + 1}등)
+                                    </p>
+                                </div>
                             </div>
                         ))
                     ) : (
-                        <p className="text-center">Now Loading..</p>
+                        <p className="text-center text-2xl sm:text-3xl col-span-2">
+                            Now Loading..
+                        </p>
                     )}
                 </div>
-                <div className="flex justify-center mt-8 sm:mt-12 space-x-4">
+
+                <div className="flex justify-center mt-4 sm:mt-6 space-x-4 sm:space-x-6">
                     <button
-                        className="bg-gray-300 text-black px-4 py-2 sm:px-6 sm:py-3 rounded-full"
-                        onClick={() => (window.location.href = '/main')}
+                        className="bg-gray-300 text-black px-8 py-4 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
+                        onClick={fetchFeedback}
                     >
-                        SKIP
+                        AI 피드백
                     </button>
                     <button
-                        className="bg-green-500 text-white px-4 py-2 sm:px-6 sm:py-3 rounded-full"
+                        className="bg-green-500 text-white px-8 py-4 sm:px-12 sm:py-6 rounded-full text-2xl sm:text-3xl font-bold"
                         onClick={handleSubmitReview}
                     >
                         완료
@@ -256,7 +355,7 @@ const ReviewPage = () => {
                 </div>
             </div>
 
-            {reportingUser && (
+            {/* {reportingUser && (
                 <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg shadow-lg w-full max-w-xs sm:max-w-md">
                         <header className="bg-[#a16e47] text-white p-4 rounded-t-lg flex justify-between items-center">
@@ -326,6 +425,43 @@ const ReviewPage = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )} */}
+
+            {isFeedbackModalOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-3xl shadow-2xl w-11/12 max-w-5xl p-8 text-center transform transition-all duration-300 scale-105 hover:scale-110 border-2 border-gray-300 backdrop-filter backdrop-blur-sm">
+                        <h2 className="text-4xl sm:text-5xl font-extrabold mb-6 text-black animate-pulse">
+                            🤖 AI 피드백
+                        </h2>
+
+                        <div className="space-y-6 max-h-[60vh] overflow-y-auto px-4">
+                            {feedback ? (
+                                feedback.split('\n').map((line, index) => (
+                                    <p
+                                        key={index}
+                                        className="text-xl sm:text-2xl text-black leading-relaxed tracking-wide"
+                                    >
+                                        {line}
+                                    </p>
+                                ))
+                            ) : (
+                                <p className="text-2xl sm:text-3xl text-gray-600 animate-pulse">
+                                    피드백을 불러오는 중...
+                                </p>
+                            )}
+                        </div>
+
+                        <button
+                            className="mt-8 bg-gradient-to-r from-gray-400 to-gray-600 text-white px-8 py-3 rounded-full text-xl sm:text-2xl font-bold hover:from-gray-500 hover:to-gray-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                            onClick={() => {
+                                window.speechSynthesis.cancel(); // TTS 중단
+                                setIsFeedbackModalOpen(false);
+                            }}
+                        >
+                            닫기
+                        </button>
                     </div>
                 </div>
             )}

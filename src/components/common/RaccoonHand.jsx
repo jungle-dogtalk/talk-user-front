@@ -1,17 +1,33 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import React, { useEffect, useRef, useState } from 'react';
-import { Color, Euler, Matrix4, Vector3 } from 'three';
+import React, {
+    useEffect,
+    useRef,
+    useState,
+    useCallback,
+    useMemo,
+} from 'react';
+import {
+    Color,
+    Euler,
+    Matrix4,
+    Vector3,
+    TextureLoader,
+    CanvasTexture,
+} from 'three';
 import { useGLTF, Sphere } from '@react-three/drei';
 import {
     FaceLandmarker,
-    HandLandmarker,
+    // HandLandmarker,
     GestureRecognizer,
     FilesetResolver,
 } from '@mediapipe/tasks-vision';
+import { loadFromLocalStorage } from '../../utils/localStorage';
+import { useDispatch } from 'react-redux';
+import { setSelectedModel } from '../../redux/slices/racoonSlice';
 
 let video;
 let faceLandmarker;
-let handLandmarker;
+// let handLandmarker;
 let gestureRecognizer;
 let lastVideoTime = -1;
 
@@ -19,34 +35,124 @@ let rotation = null;
 let blendshapes = [];
 let faceLandmarks = [];
 let transformationMatrix = null;
-let handLandmarks = [];
+// let handLandmarks = [];ㄴ
 let avatarPosition = new Vector3(0, 0, 0);
 let currentGesture = '';
+let gl; // WebGL context를 위한 변수 추가
 
 const models = [
-    '/blue_raccoon.glb',
-    '/jungle_raccoon_head.glb',
+    // '/blue_raccoon.glb',
+    // '/jungle_raccoon_head.glb',
     '/raccoon_head.glb',
-    '/warrior_raccoon_head.glb',
-    '/yellow_raccoon_head.glb',
-    '/yupyup_raccoon_head.glb',
+    // '/warrior_raccoon_head.glb',
+    // '/yellow_raccoon_head.glb',
+    '/monkey.glb',
+    '/panda.glb',
+    '/cat.glb',
 ];
 
-const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
+const victoryModels = [
+    // '/blue_raccoon_crown.glb',
+    // '/jungle_raccoon_crown.glb',
+    '/raccoon_crown.glb',
+    // '/warrior_raccoon_crown.glb',
+    // '/yellow_raccoon_crown.glb',
+    '/monkey_crown.glb',
+    '/panda_crown.glb',
+    '/cat_crown.glb',
+];
 
-function RaccoonHand() {
-    const [modelPath, setModelPath] = useState(models[0]);
+const combinedModels = models.map((model, i) => [model, victoryModels[i]]);
+const randomElement =
+    combinedModels[Math.floor(Math.random() * combinedModels.length)];
+const modelVictoryMap = models.reduce(
+    (acc, model, index) => ({ ...acc, [model]: victoryModels[index] }),
+    {}
+);
+
+// const handColors = ['red', 'blue', 'white', 'yellow', 'purple'];
+
+console.log(randomElement);
+console.log(modelVictoryMap, '매핑정보');
+
+const RaccoonHand = React.memo((props) => {
+    const [modelPath, setModelPath] = useState(randomElement[0]);
     const [modelIndex, setModelIndex] = useState(0);
-    const [handColorIndex, setHandColorIndex] = useState(0);
+    const [victoryModelIndex, setVictoryModelIndex] = useState(
+        randomElement[1]
+    );
+    // const [iceBreakingActive, setIceBreakingActive] = useState(false);
+    // const [handPositions, setHandPositions] = useState([]);
+    // const [clearedPercentage, setClearedPercentage] = useState(0);
+    const isQuizCompletedRef = useRef(false);
+    const quizInProgressRef = useRef(false);
+    const [isVictoryModelLoading, setIsVictoryModelLoading] = useState(false);
+    const dispatch = useDispatch();
+    const savedModel = loadFromLocalStorage('racoon');
+    const victoryModel = modelVictoryMap[savedModel];
+    const [isModelVisible, setIsModelVisible] = useState(true);
 
-    const setup = async () => {
+    const memoizedRaccoon = useMemo(
+        () => (
+            <Raccoon
+                modelPath={modelPath}
+                onLoad={() => {
+                    console.timeEnd('Model Load Time');
+                    setIsVictoryModelLoading(false);
+                }}
+            />
+        ),
+        [modelPath, setIsVictoryModelLoading]
+    );
+
+    useEffect(() => {
+        if (savedModel) {
+            dispatch(setSelectedModel(savedModel));
+            setModelPath(savedModel);
+        }
+    }, [dispatch, savedModel]);
+
+    useEffect(() => {
+        if (props.quizResult === 'success') {
+            quizInProgressRef.current = true;
+            isQuizCompletedRef.current = true;
+            changeVictoryModel();
+        }
+
+        if (props.quizResult === 'failure') {
+            quizInProgressRef.current = false;
+            // handleIceBreaking();
+            handleFailure();
+        }
+    }, [props.quizResult, props.quizResultTrigger]);
+
+    useEffect(() => {
+        if (props.isChallengeCompleted) {
+            quizInProgressRef.current = false;
+        }
+    }, [props.isChallengeCompleted, props.isChallengeCompletedTrigger]);
+
+    const setup = useCallback(async () => {
+        // WASM 파일 사전 로딩
+        const preloadWasm = async () => {
+            const wasmResponse = await fetch(
+                `/models/vision_wasm_internal.wasm`
+            );
+            const wasmArrayBuffer = await wasmResponse.arrayBuffer();
+            return wasmArrayBuffer;
+        };
+
+        // WASM 파일 사전 로딩 시작
+        const wasmLoadPromise = preloadWasm();
+
         const vision = await FilesetResolver.forVisionTasks(
-            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+            { wasmLoaderFunction: async () => await wasmLoadPromise }
         );
 
         faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
             baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`,
+                modelAssetPath: `/models/face_landmarker.task`,
                 delegate: 'GPU',
             },
             outputFaceBlendshapes: true,
@@ -55,19 +161,19 @@ function RaccoonHand() {
             runningMode: 'VIDEO',
         });
 
-        handLandmarker = await HandLandmarker.createFromOptions(vision, {
-            baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
-                delegate: 'GPU',
-            },
-            runningMode: 'VIDEO',
-            numHands: 2,
-        });
+        // handLandmarker = await HandLandmarker.createFromOptions(vision, {
+        //     baseOptions: {
+        //         modelAssetPath: `/models/hand_landmarker.task`,
+        //         delegate: 'GPU',
+        //     },
+        //     runningMode: 'VIDEO',
+        //     numHands: 2,
+        // });
 
         //Gesture
         gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
             baseOptions: {
-                modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
+                modelAssetPath: `/models/gesture_recognizer.task`,
                 delegate: 'GPU',
             },
             runningMode: 'VIDEO',
@@ -76,7 +182,7 @@ function RaccoonHand() {
             minTrackingConfidence: 0.5,
         });
 
-        //////
+        // Setup video
         video = document.getElementById('video');
         navigator.mediaDevices
             .getUserMedia({
@@ -84,22 +190,49 @@ function RaccoonHand() {
             })
             .then((stream) => {
                 video.srcObject = stream;
-                video.addEventListener('loadeddata', predict);
+                video.addEventListener('loadeddata', () => {
+                    // WebGL context 초기화
+                    const canvas = document.createElement('canvas');
+                    gl = canvas.getContext('webgl');
+                    predict(); // predict 함수 호출
+                });
             });
+    }, []);
+
+    const performQuiz = useCallback(() => {
+        console.log('자식컴포넌트 퀴즈 시작');
+        quizInProgressRef.current = true;
+        props.onQuizEvent({ quizInProgress: true });
+    }, [props]);
+
+    // 비동기 readPixels 호출
+    const asyncReadPixels = async (x, y, width, height, format, type) => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                const pixels = new Uint8Array(width * height * 4);
+                gl.readPixels(x, y, width, height, format, type, pixels);
+                resolve(pixels);
+            }, 0);
+        });
     };
 
-    const minX = -2,
-        maxX = 2,
-        minY = -1.5,
-        maxY = 1.5; // 바운더리 설정
+    const frameInterval = 1000 / 15; // 15 FPS
+    let lastFrameTime = 0;
 
-    const predict = () => {
+    const predict = useCallback(async () => {
+        const now = performance.now();
+        if (now - lastFrameTime < frameInterval) {
+            requestAnimationFrame(predict);
+            return;
+        }
+        lastFrameTime = now;
+
         const nowInMs = Date.now();
         if (lastVideoTime !== video.currentTime) {
             lastVideoTime = video.currentTime;
 
             const faceResult = faceLandmarker.detectForVideo(video, nowInMs);
-            const handResult = handLandmarker.detectForVideo(video, nowInMs);
+            // const handResult = handLandmarker.detectForVideo(video, nowInMs);
             const gestureResult = gestureRecognizer.recognizeForVideo(
                 video,
                 nowInMs
@@ -107,12 +240,9 @@ function RaccoonHand() {
 
             // Face result processing
             if (
-                faceResult.facialTransformationMatrixes &&
-                faceResult.facialTransformationMatrixes.length > 0 &&
-                faceResult.faceBlendshapes &&
-                faceResult.faceBlendshapes.length > 0 &&
-                faceResult.faceLandmarks &&
-                faceResult.faceLandmarks.length > 0
+                faceResult.facialTransformationMatrixes?.length > 0 &&
+                faceResult.faceBlendshapes?.length > 0 &&
+                faceResult.faceLandmarks?.length > 0
             ) {
                 const matrix = new Matrix4().fromArray(
                     faceResult.facialTransformationMatrixes[0].data
@@ -121,89 +251,129 @@ function RaccoonHand() {
                 blendshapes = faceResult.faceBlendshapes[0].categories;
                 faceLandmarks = faceResult.faceLandmarks[0];
                 transformationMatrix = matrix;
+
+                recognizeEmotion(blendshapes);
             }
 
             // Hand result processing
-            if (handResult.landmarks) {
-                handLandmarks = handResult.landmarks;
-            } else {
-                handLandmarks = [];
-            }
+            // if (handResult.landmarks) {
+            //     handLandmarks = handResult.landmarks;
+            //     setHandPositions(handResult.landmarks);
+            // } else {
+            //     handLandmarks = [];
+            // }
 
-            //TODO: 제스처 결과 수정 필요
             // Gesture result processing
-            if (
-                gestureResult &&
-                gestureResult.gestures &&
-                gestureResult.gestures.length > 0
-            ) {
+            if (gestureResult?.gestures?.length > 0) {
                 const gesture = gestureResult.gestures[0][0];
                 currentGesture = gesture.categoryName;
-                console.log('Current Gesture:', currentGesture);
 
-                // Update avatar position based on gesture
-                const moveSpeed = 0.1;
                 switch (currentGesture) {
-                    case 'Thumb_Up':
-                        avatarPosition.y = Math.min(
-                            avatarPosition.y + moveSpeed,
-                            maxY
+                    case 'Victory':
+                        console.log(
+                            '브이감지 퀴즈 진행중?-> ',
+                            quizInProgressRef.current
                         );
+                        if (
+                            !isQuizCompletedRef.current &&
+                            !quizInProgressRef.current
+                        ) {
+                            performQuiz();
+                        }
                         break;
-                    case 'Thumb_Down':
-                        avatarPosition.y = Math.max(
-                            avatarPosition.y - moveSpeed,
-                            minY
-                        );
-                        break;
-                    case 'Closed_Fist':
-                        avatarPosition.x = Math.max(
-                            avatarPosition.x - moveSpeed,
-                            minX
-                        );
-                        break;
-                    case 'Open_Palm':
-                        avatarPosition.x = Math.min(
-                            avatarPosition.x + moveSpeed,
-                            maxX
-                        );
-                        break;
-
+                    // case 'ILoveYou':
+                    // case 'Thumb_Up':
+                    //     // console.log('Love gesture detected');
+                    //     removeMask();
+                    // break;
                     default:
-                        // No movement for other gestures
                         break;
                 }
             }
+
+            // 비동기로 readPixels 호출
+            // const buffer = await asyncReadPixels(
+            //     0,
+            //     0,
+            //     video.width,
+            //     video.height,
+            //     gl.RGBA,
+            //     gl.UNSIGNED_BYTE
+            // );
+            // buffer 사용
+
+            setTimeout(() => {
+                requestAnimationFrame(predict);
+            }, 160); // 160ms 간격으로 실행
+            // requestAnimationFrame(predict);
         }
-        requestAnimationFrame(predict);
-    };
+    }, [performQuiz]);
+
+    // const removeMask = useCallback(() => {
+    //     setIsModelVisible(false);
+    // }, []);
 
     useEffect(() => {
         setup();
-    }, []);
+    }, [setup]);
 
-    const changeModel = () => {
+    const changeModel = useCallback(() => {
+        console.time('Model Load Time');
         const nextIndex = (modelIndex + 1) % models.length;
         setModelIndex(nextIndex);
-        setModelPath(models[nextIndex]);
-    };
+        setIsModelVisible(true); // 모델 변경 시 다시 보이도록 설정
+    }, [modelIndex]);
 
-    const changeHandColor = () => {
-        const nextColorIndex = (handColorIndex + 1) % handColors.length;
-        setHandColorIndex(nextColorIndex);
-    };
+    const changeVictoryModel = useCallback(() => {
+        setIsVictoryModelLoading(true);
+        setModelPath(victoryModel);
+        setIsVictoryModelLoading(false);
+    }, [victoryModel]);
 
+    const handleFailure = useCallback(() => {
+        setModelPath('/poop.glb');
+        setIsModelVisible(true);
+    }, []);
+
+    // const handleIceBreaking = useCallback(() => {
+    //     setIceBreakingActive((prev) => !prev);
+    //     setTimeout(() => {
+    //         setIceBreakingActive(false);
+    //     }, 10000);
+    // }, []);
+
+    const recognizeEmotion = useCallback((blendshapes) => {
+        const blendshapeMap = blendshapes.reduce((map, obj) => {
+            map[obj.categoryName] = obj.score;
+            return map;
+        }, {});
+
+        const smileValueLeft = blendshapeMap['mouthSmileLeft'] || 0;
+        const smileValueRight = blendshapeMap['mouthSmileRight'] || 0;
+        const smileValue = (smileValueLeft + smileValueRight) / 2;
+
+        // console.log(
+        //     `Smile Left: ${smileValueLeft}, Smile Right: ${smileValueRight}, Average: ${smileValue}`
+        // );
+
+        // if (smileValue > 0.5) {
+        //     console.log('Smiling');
+        // }
+    });
     return (
         <div
             className="App"
-            style={{ position: 'relative', width: 640, height: 480 }}
+            style={{
+                position: 'absolute',
+                left: '-9999px',
+                top: '-9999px',
+            }}
         >
             <video
                 autoPlay
                 id="video"
                 style={{ width: 640, height: 480 }}
             ></video>
-
             <Canvas
                 id="avatar_canvas"
                 style={{
@@ -215,7 +385,7 @@ function RaccoonHand() {
                     height: 480,
                 }}
                 camera={{
-                    fov: 20,
+                    fov: 10,
                     position: [0, 0, 10],
                 }}
             >
@@ -230,24 +400,164 @@ function RaccoonHand() {
                     color={new Color(0, 1, 0)}
                     intensity={0.5}
                 />
-                <Raccoon modelPath={modelPath} />
-                <Hand handColor={handColors[handColorIndex]} />
+                {!isVictoryModelLoading && isModelVisible && memoizedRaccoon}
+                {/* {iceBreakingActive && (
+                    <IceBreakingBackground
+                        handPositions={handPositions}
+                        onPercentageChange={setClearedPercentage}
+                    />
+                )} */}
             </Canvas>
-            <button
-                onClick={changeModel}
-                style={{ position: 'absolute', top: 10, left: 10 }}
-            >
-                Change Raccoon Face
-            </button>
-            <button
-                onClick={changeHandColor}
-                style={{ position: 'absolute', top: 10, right: 30 }}
-            >
-                Change Raccoon Hand Color
-            </button>
         </div>
     );
-}
+});
+
+// function IceBreakingBackground({ handPositions, onPercentageChange }) {
+//     const meshRef = useRef();
+//     const canvasRef = useRef();
+//     const textureRef = useRef();
+//     const [canvasTexture, setCanvasTexture] = useState(null);
+//     const [clearedPercentage, setClearedPercentage] = useState(0);
+//     const originalImageData = useRef(null);
+//     const lastClearedPercentage = useRef(0);
+
+//     useEffect(() => {
+//         const canvas = document.createElement('canvas');
+//         canvas.width = 640;
+//         canvas.height = 480;
+//         const ctx = canvas.getContext('2d');
+
+//         const textureLoader = new TextureLoader();
+
+//         // 이미지 로드
+//         textureLoader.load('/ice.jpg', (texture) => {
+//             const img = texture.image;
+//             canvas.width = img.width; // 이미지의 원래 너비
+//             canvas.height = img.height; // 이미지의 원래 높이
+//             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+//             const newTexture = new CanvasTexture(canvas);
+//             setCanvasTexture(newTexture);
+//             textureRef.current = texture;
+//             originalImageData.current = ctx.getImageData(
+//                 0,
+//                 0,
+//                 canvas.width,
+//                 canvas.height
+//             );
+
+//             // 이미지 로드 후 텍스처 업데이트
+//             if (meshRef.current) {
+//                 meshRef.current.material.map = newTexture;
+//                 meshRef.current.material.needsUpdate = true;
+//             }
+//         });
+
+//         canvasRef.current = canvas;
+
+//         // 10초 후에 캔버스를 완전히 지우기
+//         const timer = setTimeout(() => {
+//             const ctx = canvasRef.current.getContext('2d');
+//             clearCanvas(ctx);
+//             canvasTexture.needsUpdate = true;
+//         }, 10000);
+
+//         return () => clearTimeout(timer);
+//     }, []);
+
+//     const clearCanvas = (ctx) => {
+//         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+//         setClearedPercentage(100);
+//         onPercentageChange(100);
+//         setCanvasTexture(new CanvasTexture(ctx.canvas));
+//     };
+
+//     useFrame(() => {
+//         if (
+//             canvasRef.current &&
+//             canvasTexture &&
+//             meshRef.current &&
+//             textureRef.current &&
+//             originalImageData.current
+//         ) {
+//             const ctx = canvasRef.current.getContext('2d');
+
+//             // if (currentGesture === 'Closed_Fist' && handPositions.length >= 1) {
+//             if (handPositions.length >= 1) {
+//                 ctx.globalCompositeOperation = 'destination-out';
+//                 ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'; // 지우는 강도 조절 (여기서 알파 값을 조정)
+
+//                 ctx.lineWidth = 3; // 브러쉬 크기 조절
+//                 ctx.globalAlpha = 1; // 투명도
+
+//                 handPositions.forEach((hand) => {
+//                     ctx.beginPath();
+//                     const firstPoint = hand[12];
+//                     const startX = firstPoint.x * canvasRef.current.width;
+//                     const startY =
+//                         (1 - firstPoint.y) * canvasRef.current.height;
+//                     ctx.moveTo(startX, startY);
+
+//                     hand.forEach((point) => {
+//                         const x = point.x * canvasRef.current.width;
+//                         const y = (1 - point.y) * canvasRef.current.height;
+//                         ctx.lineTo(x, y);
+//                     });
+
+//                     ctx.closePath();
+//                     ctx.stroke();
+//                 });
+
+//                 canvasTexture.needsUpdate = true;
+//             }
+
+//             const newImageData = ctx.getImageData(
+//                 0,
+//                 0,
+//                 canvasRef.current.width,
+//                 canvasRef.current.height
+//             );
+
+//             let clearedPixels = 0;
+//             let totalNonTransparentPixels = 0;
+
+//             for (let i = 0; i < newImageData.data.length; i += 4) {
+//                 if (originalImageData.current.data[i + 3] !== 0) {
+//                     totalNonTransparentPixels++;
+//                     if (newImageData.data[i + 3] === 0) {
+//                         clearedPixels++;
+//                     }
+//                 }
+//             }
+
+//             /// TODO) 현재 의도한 백분율로 나오지 않아서 수정 필요
+//             // 얼음 배경 픽셀 얼마나 지웠는지 계산 - newClearedPercentage
+//             // const newClearedPercentage =
+//             //     (clearedPixels / totalNonTransparentPixels) * 100;
+//             // if (newClearedPercentage > lastClearedPercentage.current) {
+//             //     lastClearedPercentage.current = newClearedPercentage;
+//             //     setClearedPercentage(newClearedPercentage);
+//             //     onPercentageChange(newClearedPercentage);
+
+//             //     // console.log('얼음 얼마나 깼는가:', newClearedPercentage);
+
+//             //     meshRef.current.material.map = canvasTexture;
+//             //     meshRef.current.material.needsUpdate = true;
+//             // }
+//         }
+//     });
+
+//     return (
+//         <mesh ref={meshRef} position={[0, 0, 1]}>
+//             <planeGeometry args={[10, 10]} />
+//             <meshBasicMaterial
+//                 map={canvasTexture}
+//                 transparent={true}
+//                 opacity={0.8}
+//             />
+//         </mesh>
+//     );
+// }
 
 function Raccoon({ modelPath }) {
     const { scene, nodes } = useGLTF(modelPath);
@@ -257,6 +567,11 @@ function Raccoon({ modelPath }) {
     const tuftsMeshRef = useRef();
     const [modelScale, setModelScale] = useState(new Vector3(1, 1, 1));
 
+    const [minX, maxX] = [-0.8, 0.8]; // 더 좁은 X축 제한
+    const [minY, maxY] = [-0.6, 0.6]; // 더 좁은 Y축 제한
+    const positionFactor = 3; // 위치 조정 팩터
+    const scaleFactor = 1.08; // 스케일 팩터 조정
+
     useEffect(() => {
         headMeshRef.current = nodes.head_geo002;
         hairMeshRef.current = nodes.hair_geo;
@@ -264,7 +579,7 @@ function Raccoon({ modelPath }) {
         tuftsMeshRef.current = nodes.tufts_geo;
     }, [nodes]);
 
-    useFrame(() => {
+    useFrame(({ camera }) => {
         if (rotation) {
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
@@ -293,7 +608,7 @@ function Raccoon({ modelPath }) {
             blendshapes.forEach((blendshape) => {
                 const index =
                     headMeshRef.current.morphTargetDictionary[
-                    blendshape.categoryName
+                        blendshape.categoryName
                     ];
                 if (index !== undefined) {
                     headMeshRef.current.morphTargetInfluences[index] =
@@ -303,79 +618,77 @@ function Raccoon({ modelPath }) {
         }
 
         if (faceLandmarks.length > 0) {
-            const noseLandmark = faceLandmarks[1]; // 코 랜드마크 사용
+            const noseLandmark = faceLandmarks[1];
 
-
-            // 스케일 팩터 계산 (이 값은 조정이 필요할 수 있습니다)
-            const scaleFactor =  1.8;
-
-            // 새로운 스케일 설정
             setModelScale(new Vector3(scaleFactor, scaleFactor, scaleFactor));
 
-
-            const facePosition = new Vector3(
-                (noseLandmark.x - 0.5) * 2, // x 좌표 정규화
-                -(noseLandmark.y - 0.5) * 2, // y 좌표 정규화
-                noseLandmark.z // z 좌표
+            let facePosition = new Vector3(
+                ((noseLandmark.x - 0.5) * 2) / positionFactor,
+                -((noseLandmark.y - 0.5) * 2) / positionFactor,
+                ((noseLandmark.z - 0.5) * 2) / positionFactor
             );
+
+            facePosition.x = Math.max(minX, Math.min(maxX, facePosition.x));
+            facePosition.y = Math.max(minY, Math.min(maxY, facePosition.y));
+
             [headMeshRef, hairMeshRef, earsMeshRef, tuftsMeshRef].forEach(
                 (ref) => {
                     if (ref.current) {
                         ref.current.position
                             .copy(facePosition)
                             .add(avatarPosition);
-                        // 스케일 적용
                         ref.current.scale.copy(modelScale);
                     }
                 }
             );
         }
+
+        // 카메라 위치 조정 (옵션)
+        camera.position.z = 5;
     });
 
     return <primitive object={scene} scale={modelScale} />;
 }
 
-function Hand({ handColor }) {
-    const handRef = useRef();
-
-    useFrame(() => {
-        if (handLandmarks.length > 0 && handRef.current) {
-            handLandmarks.forEach((hand, index) => {
-                hand.forEach((landmark, i) => {
-                    const joint = handRef.current.children[index * 21 + i];
-                    if (joint) {
-                        joint.position.set(
-                            (landmark.x - 0.5) * 2 + avatarPosition.x,
-                            -(landmark.y - 0.5) * 2 + avatarPosition.y,
-                            landmark.z
-                        );
-                    }
-                });
-            });
-        } else if (handRef.current) {
-            // 손 랜드마크가 없을 때 위치 초기화
-            handRef.current.children.forEach((joint) => {
-                joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
-            });
-        }
-    });
-
-    return (
-        <group ref={handRef}>
-            {[0, 1].map((handIndex) =>
-                Array(21)
-                    .fill()
-                    .map((_, i) => (
-                        <Sphere
-                            key={`hand-${handIndex}-${i}`}
-                            args={[0.05, 16, 16]}
-                        >
-                            <meshBasicMaterial color={handColor} />
-                        </Sphere>
-                    ))
-            )}
-        </group>
-    );
-}
+// function Hand({ handColor }) {
+// const handRef = useRef();
+// useFrame(() => {
+//     if (handLandmarks.length > 0 && handRef.current) {
+//         handLandmarks.forEach((hand, index) => {
+//             hand.forEach((landmark, i) => {
+//                 const joint = handRef.current.children[index * 21 + i];
+//                 if (joint) {
+//                     joint.position.set(
+//                         (landmark.x - 0.5) * 2 + avatarPosition.x,
+//                         -(landmark.y - 0.5) * 2 + avatarPosition.y,
+//                         landmark.z
+//                     );
+//                 }
+//             });
+//         });
+//     } else if (handRef.current) {
+//         // 손 랜드마크가 없을 때 위치 초기화
+//         handRef.current.children.forEach((joint) => {
+//             joint.position.set(0, 0, -10); // 화면 밖의 좌표로 설정하여 보이지 않게 함
+//         });
+//     }
+// });
+// return (
+//     <group ref={handRef}>
+//         {[0, 1].map((handIndex) =>
+//             Array(21)
+//                 .fill()
+//                 .map((_, i) => (
+//                     <Sphere
+//                         key={`hand-${handIndex}-${i}`}
+//                         args={[0.05, 16, 16]}
+//                     >
+//                         <meshBasicMaterial color={handColor} />
+//                     </Sphere>
+//                 ))
+//         )}
+//     </group>
+// );
+// }
 
 export default RaccoonHand;

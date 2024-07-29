@@ -5,7 +5,7 @@ import { apiCall } from '../../utils/apiCall'; // apiCall 함수 임포트
 import { API_LIST } from '../../utils/apiList'; // API_LIST 임포트
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/barking-talk.png'; // 로고 이미지 경로
-import defaultProfileImage from '../../assets/profile.jpg'; // 기본 프로필 이미지 경로
+import defaultProfileImage from '../../assets/profile.png'; // 기본 프로필 이미지 경로
 import editIcon from '../../assets/settings-icon.jpg'; // 수정 아이콘 경로
 
 const SignUpPage = () => {
@@ -21,6 +21,7 @@ const SignUpPage = () => {
     const navigate = useNavigate(); // 페이지 이동을 위한 네비게이트 함수 가져오기
     const [profileImage, setProfileImage] = useState(defaultProfileImage);
     const [selectedFile, setSelectedFile] = useState(null); // 선택된 파일 상태
+    const [mbti, setMbti] = useState('');
 
     const { token, error } = useSelector((state) => state.user);
 
@@ -54,6 +55,7 @@ const SignUpPage = () => {
         formData.append('nickname', nickname);
         interests.forEach((interest) => formData.append('interests', interest));
         formData.append('profileImage', selectedFile);
+        formData.append('mbti', mbti);
 
         // interests2를 빈 값으로 추가
         formData.append('interests2', JSON.stringify([]));
@@ -94,7 +96,11 @@ const SignUpPage = () => {
                 interests.filter((interest) => interest !== interestName)
             );
         } else {
-            setInterests([...interests, interestName]);
+            if (interests.length < 3) {
+                setInterests([...interests, interestName]);
+            } else {
+                alert('최대 3개의 관심사만 선택할 수 있습니다.');
+            }
         }
     };
 
@@ -137,30 +143,30 @@ const SignUpPage = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#FFFAE8] items-center">
-            <header className="w-full bg-[#89644C] p-2 flex items-center justify-between">
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#FFFAE8] to-[#FFE0B2] items-center">
+            <header className="w-full bg-gradient-to-r from-[#a16e47] to-[#8b5e3c] p-3 flex items-center justify-between shadow-lg">
                 <img
                     src={logo}
-                    alt="명톡 로고"
-                    className="w-12 h-12 sm:w-16 sm:h-16"
+                    alt="멍톡 로고"
+                    className="w-28 h-16 sm:w-60 sm:h-24"
                 />
             </header>
-            <div className="flex flex-col items-center py-4 sm:py-8 flex-1 w-full px-4 sm:px-0">
-                <div className="relative mb-6 sm:mb-8 w-full flex justify-center">
-                    <div className="relative ml-4 sm:ml-8 ">
+            <div className="flex flex-col items-center py-8 sm:py-12 flex-1 w-full px-4 sm:px-8 max-w-6xl mx-auto">
+                <div className="relative mb-8 sm:mb-12 w-full flex justify-center">
+                    <div className="relative">
                         <img
                             src={profileImage}
-                            alt="프로필 사진"
-                            className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-2 border-gray-300"
+                            alt="Profile"
+                            className="w-48 h-48 sm:w-56 sm:h-56 rounded-full shadow-lg"
                         />
                         <label
                             htmlFor="file-input"
-                            className="absolute bottom-0 right-0 bg-white p-1 sm:p-2 rounded-full cursor-pointer"
+                            className="absolute bottom-2 right-2 bg-white p-2 sm:p-3 rounded-full cursor-pointer shadow-md hover:shadow-lg transition-all duration-300"
                         >
                             <img
                                 src={editIcon}
                                 alt="수정 아이콘"
-                                className="w-4 h-4 sm:w-6 sm:h-6"
+                                className="w-8 h-8 sm:w-10 sm:h-10"
                             />
                         </label>
                         <input
@@ -173,123 +179,149 @@ const SignUpPage = () => {
                 </div>
                 <form
                     onSubmit={handleSignUp}
-                    className="w-full max-w-xl space-y-4 sm:space-y-6"
+                    className="w-full max-w-6xl space-y-10 sm:space-y-12"
                 >
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="username"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            아이디
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="아이디를 입력하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleUsernameCheck}
-                            className="bg-gray-200 px-2 py-1 sm:px-4 sm:py-2 rounded-r-md text-xs sm:text-sm whitespace-nowrap"
-                        >
-                            중복검사
-                        </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-12 w-full ">
+                        <div className="flex flex-col space-y-4 sm:col-span-2 items-center">
+                            <label
+                                htmlFor="username"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                아이디
+                            </label>
+                            <div className="flex">
+                                <input
+                                    type="text"
+                                    id="username"
+                                    value={username}
+                                    onChange={(e) =>
+                                        setUsername(e.target.value)
+                                    }
+                                    placeholder="아이디를 입력하세요"
+                                    required
+                                    className="flex-1 px-4 py-3 border-2 border-[#89644C] rounded-l-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleUsernameCheck}
+                                    className="bg-[#89644C] text-white px-4 py-3 rounded-r-lg text-xl sm:text-2xl hover:bg-[#a16e47] transition-colors duration-300"
+                                >
+                                    중복검사
+                                </button>
+                            </div>
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="password"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                비밀번호
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="비밀번호를 입력하세요"
+                                required
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="confirm-password"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                비밀번호 확인
+                            </label>
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                value={confirmPassword}
+                                onChange={(e) =>
+                                    setConfirmPassword(e.target.value)
+                                }
+                                placeholder="비밀번호를 확인하세요"
+                                required
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="name"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                이름
+                            </label>
+                            <input
+                                type="text"
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="이름을 입력하세요"
+                                required
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="nickname"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                닉네임
+                            </label>
+                            <input
+                                type="text"
+                                id="nickname"
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                placeholder="닉네임을 입력하세요"
+                                required
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="email"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                이메일
+                            </label>
+                            <input
+                                type="email"
+                                id="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="이메일을 입력하세요"
+                                required
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
+                        <div className="flex flex-col space-y-4">
+                            <label
+                                htmlFor="mbti"
+                                className="text-2xl sm:text-3xl font-semibold text-[#89644C]"
+                            >
+                                MBTI
+                            </label>
+                            <input
+                                type="text"
+                                id="mbti"
+                                value={mbti}
+                                onChange={(e) => setMbti(e.target.value)}
+                                placeholder="MBTI를 입력하세요"
+                                className="px-4 py-3 border-2 border-[#89644C] rounded-lg text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-[#89644C]"
+                            />
+                        </div>
                     </div>
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="password"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            비밀번호
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="비밀번호를 입력하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="confirm-password"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            비밀번호 확인
-                        </label>
-                        <input
-                            type="password"
-                            id="confirm-password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="비밀번호를 확인하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="name"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            이름
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="이름을 입력하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="nickname"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            닉네임
-                        </label>
-                        <input
-                            type="text"
-                            id="nickname"
-                            value={nickname}
-                            onChange={(e) => setNickname(e.target.value)}
-                            placeholder="닉네임을 입력하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                    </div>
-                    <div className="flex items-center justify-center space-x-2 sm:space-x-4 sm:ml-16">
-                        <label
-                            htmlFor="email"
-                            className="w-28 sm:w-32 text-right text-sm sm:text-base"
-                        >
-                            이메일
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="이메일을 입력하세요"
-                            required
-                            className="flex-1 px-2 py-1 sm:px-4 sm:py-2 border rounded-md text-sm sm:text-base"
-                        />
-                    </div>
-                    <hr className="w-full my-6 sm:my-8 border-gray-400" />
-                    <div className="text-center mt-6 sm:mt-8 w-full max-w-4xl mx-auto">
-                        <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
+
+                    <hr className="w-full my-8 sm:my-10 border-[#89644C] opacity-30" />
+
+                    <div className="text-center w-full">
+                        <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-[#89644C]">
                             관심사
                         </h2>
-                        <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-4">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-6 sm:gap-8">
                             {[
                                 { name: '독서', icon: '📚' },
                                 { name: '영화 감상', icon: '🎬' },
@@ -312,7 +344,7 @@ const SignUpPage = () => {
                             ].map((interest) => (
                                 <div
                                     key={interest.name}
-                                    className={`p-1 sm:p-2 w-full rounded-xl border cursor-pointer ${
+                                    className={`p-3 sm:p-4 w-full rounded-xl border-2 cursor-pointer ${
                                         interests.includes(interest.name)
                                             ? 'bg-blue-100'
                                             : 'bg-white'
@@ -321,32 +353,34 @@ const SignUpPage = () => {
                                         handleInterestChange(interest.name)
                                     }
                                 >
-                                    <span className="block text-center text-lg sm:text-2xl">
+                                    <span className="block text-center text-3xl sm:text-4xl mb-2">
                                         {interest.icon}
                                     </span>
-                                    <span className="block text-center text-xs sm:text-sm">
+                                    <span className="block text-center text-sm sm:text-base">
                                         {interest.name}
                                     </span>
                                 </div>
                             ))}
                         </div>
                     </div>
+
                     {error && (
-                        <p className="text-red-500 text-center text-sm sm:text-base">
+                        <p className="text-red-500 text-center text-xl sm:text-2xl">
                             {error}
                         </p>
                     )}
-                    <div className="flex w-full justify-center mt-6 sm:mt-8 space-x-4">
+
+                    <div className="flex w-full justify-center mt-10 sm:mt-12 space-x-8">
                         <button
                             type="button"
-                            className="px-4 py-1 sm:px-6 sm:py-2 bg-[#89644C] text-white rounded-lg text-sm sm:text-base"
+                            className="px-10 py-4 bg-[#89644C] text-white rounded-lg text-xl sm:text-2xl hover:bg-[#a16e47] transition-colors duration-300"
                             onClick={() => navigate(-1)}
                         >
                             뒤로가기
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-1 sm:px-6 sm:py-2 bg-[#89644C] text-white rounded-lg text-sm sm:text-base"
+                            className="px-10 py-4 bg-[#89644C] text-white rounded-lg text-xl sm:text-2xl hover:bg-[#a16e47] transition-colors duration-300"
                         >
                             회원가입
                         </button>

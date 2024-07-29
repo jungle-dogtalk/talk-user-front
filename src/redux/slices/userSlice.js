@@ -25,11 +25,14 @@ export const fetchUserProfile = createAsyncThunk(
     async (_, { getState, rejectWithValue }) => {
         const token = getState().user.token; // Redux state에서 사용자 토큰을 가져옴
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
-                headers: {
-                    Authorization: `Bearer ${token}`, // 요청 헤더에 인증 토큰을 포함
-                },
-            });
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/user/profile`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // 요청 헤더에 인증 토큰을 포함
+                    },
+                }
+            );
             if (!response.ok) {
                 throw new Error('Failed to fetch user profile');
             }
@@ -42,8 +45,6 @@ export const fetchUserProfile = createAsyncThunk(
     }
 );
 
-
-
 const userSlice = createSlice({
     name: 'user',
 
@@ -54,11 +55,11 @@ const userSlice = createSlice({
         error: null,
     },
     reducers: {
-
         // 사용자 로그아웃 시 쿠키에서 토큰과 사용자 정보 삭제 + 상태 초기화
         logoutUser: (state) => {
             Cookies.remove('token');
             Cookies.remove('user');
+            localStorage.removeItem('racoon'); // 로컬 스토리지에서 raccoon 키 삭제
             state.token = null;
             state.userInfo = null;
             state.error = null;
@@ -78,13 +79,13 @@ const userSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            //loginUser 액션이 성공적으로 완료되어 서버에서 응답을 받은 후 실행된다. 
+            //loginUser 액션이 성공적으로 완료되어 서버에서 응답을 받은 후 실행된다.
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload.token;
                 state.userInfo = action.payload.user;
             })
-            // loginUser 액션이 실패하여 에러가 발생했을 때 실행된다. 
+            // loginUser 액션이 실패하여 에러가 발생했을 때 실행된다.
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
@@ -101,7 +102,6 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             });
-
     },
 });
 
